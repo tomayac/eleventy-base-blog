@@ -48,5 +48,9 @@
 		"prismjs": "^1.30.0",
 		"zod": "^3.25.67",
 		"zod-validation-error": "^3.5.2"
+	},
+	"dependencies": {
+		"built-in-ai-task-apis-polyfills": "^1.4.0",
+		"prompt-api-polyfill": "^1.4.0"
 	}
 }
