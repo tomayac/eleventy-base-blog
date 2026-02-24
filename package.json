@@ -49,6 +49,7 @@
 		"zod-validation-error": "^3.5.2"
 	},
 	"dependencies": {
+		"built-in-ai-skills-md-agent-md": "^1.0.0",
 		"built-in-ai-task-apis-polyfills": "^1.4.0",
 		"marked": "^17.0.3",
 		"prompt-api-polyfill": "^1.4.0"

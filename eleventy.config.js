@@ -25,7 +25,11 @@ export default async function(eleventyConfig) {
 		.addPassthroughCopy({
 			"./public/": "/",
 			"./node_modules/marked/lib/marked.umd.js": "/js/marked.js",
-			"./node_modules/jszip/dist/jszip.min.js": "/js/jszip.min.js"
+			"./node_modules/jszip/dist/jszip.min.js": "/js/jszip.min.js",
+			"./node_modules/prompt-api-polyfill/dist/prompt-api-polyfill.js": "/js/prompt-api-polyfill.js",
+			"./node_modules/prompt-api-polyfill/dist/backends/": "/js/backends/",
+			"./node_modules/prompt-api-polyfill/dist/chunks/": "/js/chunks/",
+			"./node_modules/built-in-ai-task-apis-polyfills/dist/": "/js/task-apis/"
 		})
 		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
 
