@@ -1,0 +1,624 @@
+---
+layout: layouts/base.njk
+eleventyExcludeFromCollections: true
+---
+<h1>Create Blog Post</h1>
+
+<div class="editor-container">
+	<div class="editor-sidebar">
+		<div class="sidebar-header">
+			<h2>Drafts</h2>
+			<button id="new-draft-btn" title="New Draft">+</button>
+		</div>
+		<ul id="drafts-list"></ul>
+	</div>
+
+	<div class="editor-main">
+		<form id="post-form">
+			<div class="form-group">
+				<label for="post-title">Title</label>
+				<input type="text" id="post-title" required placeholder="My Awesome Post">
+			</div>
+
+			<div class="form-group">
+				<label for="post-description">Description</label>
+				<input type="text" id="post-description" placeholder="A brief summary of the post">
+			</div>
+
+			<div class="form-group">
+				<label for="post-date">Date</label>
+				<input type="date" id="post-date" required>
+			</div>
+
+			<div class="form-group">
+				<label for="post-tags">Tags (comma separated)</label>
+				<input type="text" id="post-tags" placeholder="tag1, tag2">
+			</div>
+
+			<div class="form-group">
+				<label for="post-content">Content (Markdown)</label>
+				<div id="drop-zone">
+					<textarea id="post-content" rows="15" placeholder="Write your post here... Drag and drop images to upload."></textarea>
+				</div>
+				<input type="file" id="file-input" multiple accept="image/*" style="display: none;">
+				<button type="button" id="upload-btn" style="margin-top: 0.5rem;">Upload Images</button>
+			</div>
+		</form>
+
+		<div class="editor-actions">
+			<button id="copy-btn">Copy Markdown</button>
+			<button id="download-btn">Save (ZIP)</button>
+		</div>
+	</div>
+
+	<div class="editor-preview">
+		<h2>Preview</h2>
+		<div id="preview-content" class="markdown-body"></div>
+	</div>
+</div>
+
+{% css %}
+body {
+	max-width: 90em;
+}
+
+.editor-container {
+	display: grid;
+	grid-template-columns: 250px 1fr 1fr;
+	gap: 2rem;
+	margin-top: 2rem;
+}
+
+.editor-sidebar {
+	border-right: 1px solid #ccc;
+	padding-right: 1rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.sidebar-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.sidebar-header h2 {
+	margin: 0;
+}
+
+#new-draft-btn {
+	padding: 0 0.5rem;
+	font-size: 1.5rem;
+	line-height: 1;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+}
+
+#drafts-list {
+	list-style: none;
+	padding: 0;
+	flex-grow: 1;
+	overflow-y: auto;
+}
+
+#drafts-list li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem;
+	cursor: pointer;
+	border-radius: 4px;
+	margin-bottom: 0.5rem;
+	background: #f0f0f0;
+	color: #333;
+	font-size: 0.8rem;
+	gap: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+	#drafts-list li {
+		background: #2c3e50;
+		color: #ecf0f1;
+	}
+}
+
+#drafts-list li .draft-radio {
+	margin: 0;
+	cursor: pointer;
+}
+
+#drafts-list li .draft-title {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex-grow: 1;
+}
+
+#drafts-list li.active {
+	background: #007bff;
+	color: white;
+}
+
+#drafts-list li .delete-draft-btn {
+	background: transparent;
+	border: none;
+	padding: 2px;
+	cursor: pointer;
+	color: inherit;
+	opacity: 0.6;
+	display: flex;
+	align-items: center;
+}
+
+#drafts-list li .delete-draft-btn:hover {
+	opacity: 1;
+}
+
+.form-group {
+	margin-bottom: 1rem;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.25rem;
+	font-weight: bold;
+}
+
+.form-group input, .form-group textarea {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-family: inherit;
+}
+
+#drop-zone {
+	border: 2px dashed transparent;
+	border-radius: 4px;
+	transition: border-color 0.2s;
+}
+
+#drop-zone.dragover {
+	border-color: #007bff;
+	background: rgba(0, 123, 255, 0.05);
+}
+
+.editor-actions {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.editor-preview {
+	border-left: 1px solid #ccc;
+	padding-left: 1rem;
+}
+
+#preview-content {
+	border: 1px solid #eee;
+	padding: 1rem;
+	min-height: 400px;
+}
+
+button {
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+	border: 1px solid #ccc;
+	background: #fff;
+	border-radius: 4px;
+}
+
+button:hover {
+	background: #f8f8f8;
+}
+
+@media (max-width: 1000px) {
+	.editor-container {
+		grid-template-columns: 1fr;
+	}
+	.editor-sidebar, .editor-preview {
+		border: none;
+		padding: 0;
+	}
+	.editor-preview {
+		order: 3;
+	}
+	.editor-main {
+		order: 2;
+	}
+	.editor-sidebar {
+		order: 1;
+		border-bottom: 1px solid #ccc;
+		padding-bottom: 1rem;
+	}
+}
+{% endcss %}
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+{% js %}
+const draftsListEl = document.getElementById('drafts-list');
+const newDraftBtn = document.getElementById('new-draft-btn');
+const postForm = document.getElementById('post-form');
+const titleInput = document.getElementById('post-title');
+const descInput = document.getElementById('post-description');
+const dateInput = document.getElementById('post-date');
+const tagsInput = document.getElementById('post-tags');
+const contentInput = document.getElementById('post-content');
+const previewContent = document.getElementById('preview-content');
+const copyBtn = document.getElementById('copy-btn');
+const downloadBtn = document.getElementById('download-btn');
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const uploadBtn = document.getElementById('upload-btn');
+
+let drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
+let currentDraftId = localStorage.getItem('current-draft-id');
+
+// IndexedDB for images
+const dbPromise = new Promise((resolve, reject) => {
+	const request = indexedDB.open('blog-images', 1);
+	request.onupgradeneeded = () => request.result.createObjectStore('images');
+	request.onsuccess = () => resolve(request.result);
+	request.onerror = () => reject(request.error);
+});
+
+async function saveImage(id, data) {
+	const db = await dbPromise;
+	return new Promise((resolve, reject) => {
+		const tx = db.transaction('images', 'readwrite');
+		tx.objectStore('images').put(data, id);
+		tx.oncomplete = () => resolve();
+		tx.onerror = () => reject(tx.error);
+	});
+}
+
+async function getImage(id) {
+	const db = await dbPromise;
+	return new Promise((resolve, reject) => {
+		const tx = db.transaction('images', 'readonly');
+		const request = tx.objectStore('images').get(id);
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(tx.error);
+	});
+}
+
+async function deleteImagesForDraft(draftId) {
+	const db = await dbPromise;
+	const tx = db.transaction('images', 'readwrite');
+	const store = tx.objectStore('images');
+	const request = store.openKeyCursor();
+	request.onsuccess = (event) => {
+		const cursor = event.target.result;
+		if (cursor) {
+			if (cursor.key.startsWith(draftId + ':')) {
+				store.delete(cursor.key);
+			}
+			cursor.continue();
+		}
+	};
+}
+
+function saveDrafts() {
+	localStorage.setItem('blog-drafts', JSON.stringify(drafts));
+}
+
+function renderDraftsList() {
+	draftsListEl.innerHTML = '';
+	drafts.forEach(draft => {
+		const li = document.createElement('li');
+		if (draft.id === currentDraftId) li.classList.add('active');
+		li.onclick = () => loadDraft(draft.id);
+
+		const radio = document.createElement('input');
+		radio.type = 'radio';
+		radio.name = 'current-draft';
+		radio.className = 'draft-radio';
+		radio.checked = draft.id === currentDraftId;
+		// Clicking the radio button should also load the draft (li.onclick handles this via bubbling)
+		
+		const titleSpan = document.createElement('span');
+		titleSpan.className = 'draft-title';
+		titleSpan.textContent = draft.title || 'Untitled Draft';
+		
+		const deleteBtn = document.createElement('button');
+		deleteBtn.className = 'delete-draft-btn';
+		deleteBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+		deleteBtn.title = "Delete Draft";
+		deleteBtn.onclick = (e) => {
+			e.stopPropagation();
+			deleteDraft(draft.id);
+		};
+		
+		li.appendChild(radio);
+		li.appendChild(titleSpan);
+		li.appendChild(deleteBtn);
+		draftsListEl.appendChild(li);
+	});
+}
+
+function createNewDraft() {
+	const id = Date.now().toString();
+	const newDraft = {
+		id,
+		title: '',
+		description: '',
+		date: new Date().toISOString().split('T')[0],
+		tags: '',
+		content: '',
+		imageFiles: [],
+		lastModified: Date.now()
+	};
+	drafts.unshift(newDraft);
+	currentDraftId = id;
+	localStorage.setItem('current-draft-id', id);
+	saveDrafts();
+	loadDraft(id);
+	renderDraftsList();
+}
+
+async function deleteDraft(id) {
+	if (!confirm('Are you sure you want to delete this draft?')) return;
+	await deleteImagesForDraft(id);
+	drafts = drafts.filter(d => d.id !== id);
+	saveDrafts();
+	
+	if (currentDraftId === id) {
+		if (drafts.length > 0) {
+			loadDraft(drafts[0].id);
+		} else {
+			createNewDraft();
+		}
+	} else {
+		renderDraftsList();
+	}
+}
+
+function loadDraft(id) {
+	const draft = drafts.find(d => d.id === id);
+	if (!draft) return;
+	
+	currentDraftId = id;
+	localStorage.setItem('current-draft-id', id);
+	
+	titleInput.value = draft.title || '';
+	descInput.value = draft.description || '';
+	dateInput.value = draft.date || '';
+	tagsInput.value = draft.tags || '';
+	contentInput.value = draft.content || '';
+	
+	updatePreview();
+	renderDraftsList();
+}
+
+function updateCurrentDraft() {
+	const draft = drafts.find(d => d.id === currentDraftId);
+	if (!draft) return;
+	
+	draft.title = titleInput.value;
+	draft.description = descInput.value;
+	draft.date = dateInput.value;
+	draft.tags = tagsInput.value;
+	draft.content = contentInput.value;
+	draft.lastModified = Date.now();
+	
+	saveDrafts();
+	renderDraftsList();
+	updatePreview();
+}
+
+async function updatePreview() {
+	const draft = drafts.find(d => d.id === currentDraftId);
+	let content = contentInput.value;
+	
+	if (draft && draft.imageFiles) {
+		for (const img of draft.imageFiles) {
+			const data = await getImage(img.id);
+			if (data) {
+				const blob = new Blob([data]);
+				const url = URL.createObjectURL(blob);
+				content = content.replaceAll(`./${img.name}`, url);
+			}
+		}
+	}
+	
+	previewContent.innerHTML = marked.parse(content);
+}
+
+function generateMarkdown() {
+	const tags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+	const tagsYaml = tags.length > 0 ? `tags: [${tags.join(', ')}]` : 'tags: []';
+	
+	const frontmatter = [
+		'---',
+		`title: ${titleInput.value}`,
+		`description: ${descInput.value}`,
+		`date: ${dateInput.value}`,
+		tagsYaml,
+		'---',
+		''
+	].join('\n');
+	
+	return frontmatter + contentInput.value;
+}
+
+async function handleFiles(files) {
+	const draft = drafts.find(d => d.id === currentDraftId);
+	if (!draft) return;
+
+	// Initialize imageFiles if it doesn't exist for older drafts
+	if (!draft.imageFiles) {
+		draft.imageFiles = [];
+	}
+
+	for (const file of files) {
+		const id = `${currentDraftId}:${Date.now()}:${file.name}`;
+		const buffer = await file.arrayBuffer();
+		
+		// Get image dimensions
+		const dimensions = await new Promise((resolve) => {
+			const img = new Image();
+			img.onload = () => resolve({ width: img.width, height: img.height });
+			img.onerror = () => resolve({ width: '', height: '' });
+			const blob = new Blob([buffer]);
+			img.src = URL.createObjectURL(blob);
+		});
+
+		await saveImage(id, buffer);
+		
+		draft.imageFiles.push({ name: file.name, id });
+		
+		const imgTag = `
+<figure>
+	<img src="./${file.name}" alt="Alt text here" width="${dimensions.width}" height="${dimensions.height}" loading="lazy" decoding="async">
+	<figcaption>Caption here</figcaption>
+</figure>
+`;
+		const start = contentInput.selectionStart;
+		const end = contentInput.selectionEnd;
+		contentInput.value = contentInput.value.substring(0, start) + imgTag + contentInput.value.substring(end);
+	}
+	updateCurrentDraft();
+}
+
+// Drag and drop handlers on both dropZone and contentInput
+[dropZone, contentInput].forEach(el => {
+	el.ondragover = (e) => {
+		e.preventDefault();
+		dropZone.classList.add('dragover');
+	};
+	el.ondragleave = () => dropZone.classList.remove('dragover');
+	el.ondrop = (e) => {
+		e.preventDefault();
+		dropZone.classList.remove('dragover');
+		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+			handleFiles(e.dataTransfer.files);
+		}
+	};
+});
+
+uploadBtn.onclick = () => fileInput.click();
+fileInput.onchange = () => handleFiles(fileInput.files);
+
+titleInput.oninput = updateCurrentDraft;
+descInput.oninput = updateCurrentDraft;
+dateInput.oninput = updateCurrentDraft;
+tagsInput.oninput = updateCurrentDraft;
+contentInput.oninput = updateCurrentDraft;
+
+newDraftBtn.onclick = createNewDraft;
+
+copyBtn.onclick = () => {
+	const md = generateMarkdown();
+	navigator.clipboard.writeText(md).then(() => {
+		alert('Markdown copied to clipboard!');
+	});
+};
+
+downloadBtn.onclick = async () => {
+	const draft = drafts.find(d => d.id === currentDraftId);
+	const slug = (titleInput.value || 'untitled').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+	const md = generateMarkdown();
+	
+	const files = [
+		{ name: `${slug}/${slug}.md`, content: new TextEncoder().encode(md) }
+	];
+
+	if (draft.imageFiles && draft.imageFiles.length > 0) {
+		for (const img of draft.imageFiles) {
+			const data = await getImage(img.id);
+			if (data) {
+				files.push({ name: `${slug}/${img.name}`, content: new Uint8Array(data) });
+			}
+		}
+	}
+
+	const CRC32 = (data) => {
+		let crc = 0 ^ -1;
+		for (let i = 0; i < data.length; i++) {
+			crc = (crc >>> 8) ^ crcTable[(crc ^ data[i]) & 0xFF];
+		}
+		return (crc ^ -1) >>> 0;
+	};
+	const crcTable = [];
+	for (let i = 0; i < 256; i++) {
+		let c = i;
+		for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+		crcTable[i] = c;
+	}
+
+	let offset = 0;
+	const centralDirectory = [];
+	const zipParts = [];
+
+	for (const file of files) {
+		const nameBuf = new TextEncoder().encode(file.name);
+		const crc = CRC32(file.content);
+		const size = file.content.length;
+		
+		const header = new Uint8Array(30 + nameBuf.length);
+		const view = new DataView(header.buffer);
+		view.setUint32(0, 0x04034b50, true);
+		view.setUint16(4, 10, true);
+		view.setUint16(6, 0, true);
+		view.setUint16(8, 0, true);
+		view.setUint16(10, 0, true);
+		view.setUint16(12, 0, true);
+		view.setUint32(14, crc, true);
+		view.setUint32(18, size, true);
+		view.setUint32(22, size, true);
+		view.setUint16(26, nameBuf.length, true);
+		view.setUint16(28, 0, true);
+		header.set(nameBuf, 30);
+
+		zipParts.push(header, file.content);
+
+		const dirHeader = new Uint8Array(46 + nameBuf.length);
+		const dirView = new DataView(dirHeader.buffer);
+		dirView.setUint32(0, 0x02014b50, true);
+		dirView.setUint16(4, 10, true);
+		dirView.setUint16(6, 10, true);
+		dirView.setUint16(10, 0, true);
+		dirView.setUint32(16, crc, true);
+		dirView.setUint32(20, size, true);
+		dirView.setUint32(24, size, true);
+		dirView.setUint16(28, nameBuf.length, true);
+		dirView.setUint32(42, offset, true);
+		dirHeader.set(nameBuf, 46);
+		centralDirectory.push(dirHeader);
+
+		offset += header.length + size;
+	}
+
+	const cdStart = offset;
+	let cdSize = 0;
+	for (const part of centralDirectory) cdSize += part.length;
+
+	const eocd = new Uint8Array(22);
+	const eocdView = new DataView(eocd.buffer);
+	eocdView.setUint32(0, 0x06054b50, true);
+	eocdView.setUint16(8, files.length, true);
+	eocdView.setUint16(10, files.length, true);
+	eocdView.setUint32(12, cdSize, true);
+	eocdView.setUint32(16, cdStart, true);
+
+	const blob = new Blob([...zipParts, ...centralDirectory, eocd], { type: 'application/zip' });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = `${slug}.zip`;
+	a.click();
+	URL.revokeObjectURL(url);
+};
+
+// Init
+if (drafts.length === 0) {
+	createNewDraft();
+} else if (currentDraftId) {
+	loadDraft(currentDraftId);
+} else {
+	loadDraft(drafts[0].id);
+}
+{% endjs %}
