@@ -1,0 +1,22 @@
+---
+permalink: /tags-schema.json
+eleventyExcludeFromCollections: true
+layout: ""
+---
+{%- set allTags = collections | getKeys | filterTagList -%}
+{
+  "type": "object",
+  "properties": {
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+        {%- if allTags | length > 0 -%},
+        "enum": {{ allTags | dump | safe }}
+        {%- endif -%}
+      }
+    }
+  },
+  "required": ["tags"],
+  "additionalProperties": false
+}

@@ -2,6 +2,7 @@ import { drafts, currentDraftId, createNewDraft, deleteDraft, updateDraftData } 
 import { updatePreview, handleFiles } from './editor-logic.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initAI } from './ai-features.js';
+import { initTagSuggestions } from './tag-suggestions.js';
 
 const ui = {
 	draftsListEl: document.getElementById('drafts-list'),
@@ -10,6 +11,7 @@ const ui = {
 	descInput: document.getElementById('post-description'),
 	dateInput: document.getElementById('post-date'),
 	tagsInput: document.getElementById('post-tags'),
+	aiSuggestTagsBtn: document.getElementById('ai-suggest-tags-btn'),
 	contentInput: document.getElementById('post-content'),
 	previewContent: document.getElementById('preview-content'),
 	copyBtn: document.getElementById('copy-btn'),
@@ -77,3 +79,4 @@ if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
 else loadDraft(currentDraftId || drafts[0].id);
 
 initAI(ui, sync);
+initTagSuggestions(ui, sync);
