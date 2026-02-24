@@ -4,6 +4,7 @@ import { updatePreview, handleFiles } from './editor-logic.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initAI } from './ai-features.js';
 import { initTagSuggestions } from './tag-suggestions.js';
+import { initAIWriter } from './ai-writer.js';
 import { initTagEditor } from './tag-editor.js';
 import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
 
@@ -55,9 +56,8 @@ ui.downloadBtn.onclick = () => {
 ui.contentInput.onpaste = (e) => {
 	const text = e.clipboardData.getData('text');
 	const { metadata, content } = parseFrontmatter(text);
-	if (metadata) {
-		e.preventDefault();
-		populateUIFromMetadata(metadata, ui, tagEditor);
+	if (metadata && Object.keys(metadata).length > 0) {
+		e.preventDefault(); populateUIFromMetadata(metadata, ui, tagEditor);
 		ui.contentInput.value = content; sync();
 	}
 };
@@ -76,3 +76,4 @@ else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 
 initAI(ui, sync);
 initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); });
+initAIWriter(ui, sync);

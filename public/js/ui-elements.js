@@ -19,5 +19,7 @@ export const ui = {
 	uploadBtn: document.getElementById('upload-btn'),
 	aiStatus: document.getElementById('ai-status'),
 	aiDownloadProgress: document.getElementById('ai-download-progress'),
-	aiStatusText: document.getElementById('ai-status-text')
+	aiStatusText: document.getElementById('ai-status-text'),
+	aiWriterInput: document.getElementById('ai-writer-input'),
+	aiWriterBtn: document.getElementById('ai-writer-btn')
 };
