@@ -236,7 +236,7 @@ button:hover {
 }
 {% endcss %}
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/js/marked.js"></script>
 
 {% js %}
 const draftsListEl = document.getElementById('drafts-list');
@@ -612,6 +612,9 @@ downloadBtn.onclick = async () => {
 	a.click();
 	URL.revokeObjectURL(url);
 };
+
+// Also export JSZip version if needed, but for now we use the native one.
+// We keep jszip in devDependencies and public/js for future use if native fails.
 
 // Init
 if (drafts.length === 0) {

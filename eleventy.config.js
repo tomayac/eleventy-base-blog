@@ -23,7 +23,9 @@ export default async function(eleventyConfig) {
 	// For example, `./public/css/` ends up in `_site/css/`
 	eleventyConfig
 		.addPassthroughCopy({
-			"./public/": "/"
+			"./public/": "/",
+			"./node_modules/marked/lib/marked.umd.js": "/js/marked.js",
+			"./node_modules/jszip/dist/jszip.min.js": "/js/jszip.min.js"
 		})
 		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
 
