@@ -1,18 +1,34 @@
 import { saveImage, getImage } from './db-storage.js';
 
+function formatPreviewDate(dateStr) {
+	if (!dateStr) return '';
+	const date = new Date(dateStr);
+	return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export async function updatePreview(currentDraftId, drafts, ui) {
 	const draft = drafts.find(d => d.id === currentDraftId);
+	if (!draft) return;
 	let content = ui.contentInput.value;
-	if (draft && draft.imageFiles) {
+	if (draft.imageFiles) {
 		for (const img of draft.imageFiles) {
 			const data = await getImage(img.id);
-			if (data) {
-				const blob = new Blob([data]);
-				content = content.replaceAll(`./${img.name}`, URL.createObjectURL(blob));
-			}
+			if (data) content = content.replaceAll(`./${img.name}`, URL.createObjectURL(new Blob([data])));
 		}
 	}
-	ui.previewContent.innerHTML = marked.parse(content);
+
+	const tags = ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t && t !== 'posts');
+	const tagsHtml = tags.map(t => `<li><a href="#" class="post-tag">${t}</a></li>`).join('');
+	const dateHtml = ui.dateInput.value ? `<time datetime="${ui.dateInput.value}">${formatPreviewDate(ui.dateInput.value)}</time>` : '';
+
+	ui.previewContent.innerHTML = `
+		<h1>${ui.titleInput.value || 'Untitled'}</h1>
+		<ul class="post-metadata">
+			<li>${dateHtml}</li>
+			${tagsHtml}
+		</ul>
+		${marked.parse(content)}
+	`;
 }
 
 export async function handleFiles(files, currentDraftId, drafts, ui, updateCallback) {
@@ -31,7 +47,6 @@ export async function handleFiles(files, currentDraftId, drafts, ui, updateCallb
 		});
 		await saveImage(id, buffer);
 		draft.imageFiles.push({ name: file.name, id });
-		
 		const imgTag = `\n<figure>\n\t<img src="./${file.name}" alt="Alt text" width="${dimensions.width}" height="${dimensions.height}" loading="lazy" decoding="async">\n\t<figcaption>Caption</figcaption>\n</figure>\n`;
 		const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
 		ui.contentInput.value = ui.contentInput.value.substring(0, start) + imgTag + ui.contentInput.value.substring(end);
