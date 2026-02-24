@@ -1,0 +1,23 @@
+export const ui = {
+	draftsListEl: document.getElementById('drafts-list'),
+	newDraftBtn: document.getElementById('new-draft-btn'),
+	titleInput: document.getElementById('post-title'),
+	aiSuggestTitleBtn: document.getElementById('ai-suggest-title-btn'),
+	descInput: document.getElementById('post-description'),
+	aiSuggestDescriptionBtn: document.getElementById('ai-suggest-description-btn'),
+	dateInput: document.getElementById('post-date'),
+	tagsInput: document.getElementById('post-tags'),
+	tagPills: document.getElementById('tag-pills'),
+	tagInput: document.getElementById('tag-input'),
+	aiSuggestTagsBtn: document.getElementById('ai-suggest-tags-btn'),
+	contentInput: document.getElementById('post-content'),
+	previewContent: document.getElementById('preview-content'),
+	copyBtn: document.getElementById('copy-btn'),
+	downloadBtn: document.getElementById('download-btn'),
+	dropZone: document.getElementById('drop-zone'),
+	fileInput: document.getElementById('file-input'),
+	uploadBtn: document.getElementById('upload-btn'),
+	aiStatus: document.getElementById('ai-status'),
+	aiDownloadProgress: document.getElementById('ai-download-progress'),
+	aiStatusText: document.getElementById('ai-status-text')
+};

@@ -6,8 +6,8 @@ function formatPreviewDate(dateStr) {
 	return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-export async function updatePreview(currentDraftId, drafts, ui) {
-	const draft = drafts.find(d => d.id === currentDraftId);
+export async function updatePreview(currentId, drafts, ui) {
+	const draft = drafts.find(d => d.id === currentId);
 	if (!draft) return;
 	let content = ui.contentInput.value;
 	if (draft.imageFiles) {
@@ -21,23 +21,22 @@ export async function updatePreview(currentDraftId, drafts, ui) {
 	const tagsHtml = tags.map(t => `<li><a href="#" class="post-tag">${t}</a></li>`).join('');
 	const dateHtml = ui.dateInput.value ? `<time datetime="${ui.dateInput.value}">${formatPreviewDate(ui.dateInput.value)}</time>` : '';
 
-	ui.previewContent.innerHTML = `
-		<h1>${ui.titleInput.value || 'Untitled'}</h1>
-		<ul class="post-metadata">
-			<li>${dateHtml}</li>
-			${tagsHtml}
-		</ul>
-		${marked.parse(content)}
-	`;
+	ui.previewContent.innerHTML = `<h1>${ui.titleInput.value || 'Untitled'}</h1><ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>${marked.parse(content)}`;
+	
+	// Syntax highlight code blocks in the preview
+	if (window.Prism) {
+		// Use highlightAllUnder which is standard for Prism to find and highlight <code> blocks
+		Prism.highlightAllUnder(ui.previewContent);
+	}
 }
 
-export async function handleFiles(files, currentDraftId, drafts, ui, updateCallback) {
-	const draft = drafts.find(d => d.id === currentDraftId);
-	if (!draft) return;
+export async function handleFiles(files, currentId, drafts, ui, updateCallback) {
+	const draft = drafts.find(d => d.id === currentId);
+	if (!draft || !files.length) return;
 	if (!draft.imageFiles) draft.imageFiles = [];
 
 	for (const file of files) {
-		const id = `${currentDraftId}:${Date.now()}:${file.name}`;
+		const id = `${currentId}:${Date.now()}:${file.name}`;
 		const buffer = await file.arrayBuffer();
 		const dimensions = await new Promise((resolve) => {
 			const img = new Image();

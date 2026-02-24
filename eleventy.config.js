@@ -29,7 +29,9 @@ export default async function(eleventyConfig) {
 			"./node_modules/prompt-api-polyfill/dist/prompt-api-polyfill.js": "/js/prompt-api-polyfill.js",
 			"./node_modules/prompt-api-polyfill/dist/backends/": "/js/backends/",
 			"./node_modules/prompt-api-polyfill/dist/chunks/": "/js/chunks/",
-			"./node_modules/built-in-ai-task-apis-polyfills/dist/": "/js/task-apis/"
+			"./node_modules/built-in-ai-task-apis-polyfills/dist/": "/js/task-apis/",
+			"./node_modules/prismjs/prism.js": "/js/prism.js",
+			"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css"
 		})
 		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
 

@@ -9,23 +9,30 @@ export async function initTagSuggestions(ui, updateCallback) {
 
 	try {
 		const status = await LanguageModel.availability();
-		if (status !== 'unavailable') ui.aiSuggestTagsBtn.style.display = 'inline-block';
+		if (status !== 'unavailable') ui.aiSuggestTagsBtn.style.display = 'flex';
 	} catch (e) { console.warn("AI LanguageModel availability check failed", e); }
 
 	ui.aiSuggestTagsBtn.onclick = async () => {
 		const content = ui.contentInput.value;
 		if (!content || content.length < 20) return alert('Write content first.');
 		ui.aiSuggestTagsBtn.disabled = true; ui.aiSuggestTagsBtn.textContent = '⏳';
+		let fullResponse = '';
 		try {
 			const schema = await fetchSchema();
 			const session = await LanguageModel.create({
 				initialPrompts: [{ role: 'system', content: 'Suggest appropriate tags for this blog post. Only use the tags provided in the schema.' }]
 			});
-			const response = await session.prompt(`Content: ${content}`, { responseConstraint: schema });
-			const suggestedTags = JSON.parse(response).tags;
-			if (suggestedTags && suggestedTags.length > 0) {
-				ui.tagsInput.value = suggestedTags.join(', ');
-				updateCallback();
+			const stream = session.promptStreaming(`Content: ${content}`, { responseConstraint: schema });
+			for await (const chunk of stream) {
+				// Concatenate chunks
+				fullResponse += chunk;
+				try {
+					const suggestedTags = JSON.parse(fullResponse).tags;
+					if (suggestedTags && Array.isArray(suggestedTags)) {
+						ui.tagsInput.value = suggestedTags.join(', ');
+						updateCallback();
+					}
+				} catch (e) { /* Partial JSON parsing fails as expected */ }
 			}
 		} catch (err) {
 			console.error(err); alert('Tag suggestion failed.');

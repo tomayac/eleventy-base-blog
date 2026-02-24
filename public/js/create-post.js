@@ -1,82 +1,78 @@
-import { drafts, currentDraftId, createNewDraft, deleteDraft, updateDraftData } from './draft-manager.js';
+import { ui } from './ui-elements.js';
+import { drafts, createNewDraft, deleteDraft, updateDraftData } from './draft-manager.js';
 import { updatePreview, handleFiles } from './editor-logic.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initAI } from './ai-features.js';
 import { initTagSuggestions } from './tag-suggestions.js';
+import { initTagEditor } from './tag-editor.js';
+import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
 
-const ui = {
-	draftsListEl: document.getElementById('drafts-list'),
-	newDraftBtn: document.getElementById('new-draft-btn'),
-	titleInput: document.getElementById('post-title'),
-	descInput: document.getElementById('post-description'),
-	dateInput: document.getElementById('post-date'),
-	tagsInput: document.getElementById('post-tags'),
-	aiSuggestTagsBtn: document.getElementById('ai-suggest-tags-btn'),
-	contentInput: document.getElementById('post-content'),
-	previewContent: document.getElementById('preview-content'),
-	copyBtn: document.getElementById('copy-btn'),
-	downloadBtn: document.getElementById('download-btn'),
-	dropZone: document.getElementById('drop-zone'),
-	fileInput: document.getElementById('file-input'),
-	uploadBtn: document.getElementById('upload-btn'),
-	aiSuggestTitleBtn: document.getElementById('ai-suggest-title-btn'),
-	aiStatus: document.getElementById('ai-status'),
-	aiDownloadProgress: document.getElementById('ai-download-progress'),
-	aiStatusText: document.getElementById('ai-status-text')
+const tagEditor = initTagEditor(ui, () => sync());
+const sync = () => {
+	const id = localStorage.getItem('current-draft-id');
+	updateDraftData(id, ui); updatePreview(id, drafts, ui); renderList();
 };
 
 function renderList() {
 	ui.draftsListEl.innerHTML = '';
+	const currentId = localStorage.getItem('current-draft-id');
 	drafts.forEach(d => {
-		const li = document.createElement('li');
-		if (d.id === currentDraftId) li.classList.add('active');
+		const li = document.createElement('li'); if (d.id === currentId) li.classList.add('active');
 		li.onclick = () => loadDraft(d.id);
-		const radio = document.createElement('input');
-		radio.type = 'radio'; radio.name = 'current-draft'; radio.checked = d.id === currentDraftId;
-		const title = document.createElement('span');
-		title.className = 'draft-title'; title.textContent = d.title || 'Untitled Draft';
-		const del = document.createElement('button');
-		del.className = 'delete-draft-btn'; del.innerHTML = '🗑️';
+		const radio = document.createElement('input'); radio.type = 'radio'; radio.name = 'current-draft'; radio.checked = d.id === currentId;
+		const title = document.createElement('span'); title.className = 'draft-title'; title.textContent = d.title || 'Untitled Draft';
+		const del = document.createElement('button'); del.className = 'delete-draft-btn'; del.textContent = '🗑️';
 		del.onclick = (e) => { e.stopPropagation(); deleteDraft(d.id, ui, () => createNewDraft(ui, loadDraft, renderList), loadDraft, renderList); };
 		li.append(radio, title, del); ui.draftsListEl.appendChild(li);
 	});
 }
 
 function loadDraft(id) {
-	const d = drafts.find(draft => draft.id === id);
-	if (!d) return;
+	const d = drafts.find(draft => draft.id === id); if (!d) return;
 	localStorage.setItem('current-draft-id', id);
 	ui.titleInput.value = d.title || ''; ui.descInput.value = d.description || '';
 	ui.dateInput.value = d.date || ''; ui.tagsInput.value = d.tags || '';
 	ui.contentInput.value = d.content || '';
-	updatePreview(id, drafts, ui); renderList();
+	tagEditor.renderPills(); updatePreview(id, drafts, ui); renderList();
 }
 
-const sync = () => { updateDraftData(currentDraftId, ui); updatePreview(currentDraftId, drafts, ui); renderList(); };
-ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync;
-ui.tagsInput.oninput = sync; ui.contentInput.oninput = sync;
+ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync; ui.contentInput.oninput = sync;
+
 ui.newDraftBtn.onclick = () => createNewDraft(ui, loadDraft, renderList);
 ui.copyBtn.onclick = () => {
-	const d = drafts.find(draft => draft.id === currentDraftId);
+	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	const md = generateMarkdown(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
-	navigator.clipboard.writeText(md).then(() => alert('Markdown copied!'));
+	navigator.clipboard.writeText(md).then(() => {
+		const oldText = ui.copyBtn.textContent; ui.copyBtn.textContent = '✅ Copied!';
+		setTimeout(() => ui.copyBtn.textContent = oldText, 2000);
+	});
 };
 ui.downloadBtn.onclick = () => {
-	const d = drafts.find(draft => draft.id === currentDraftId);
+	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	downloadZIP(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
+};
+
+ui.contentInput.onpaste = (e) => {
+	const text = e.clipboardData.getData('text');
+	const { metadata, content } = parseFrontmatter(text);
+	if (metadata) {
+		e.preventDefault();
+		populateUIFromMetadata(metadata, ui, tagEditor);
+		ui.contentInput.value = content; sync();
+	}
 };
 
 [ui.dropZone, ui.contentInput].forEach(el => {
 	el.ondragover = e => { e.preventDefault(); ui.dropZone.classList.add('dragover'); };
 	el.ondragleave = () => ui.dropZone.classList.remove('dragover');
-	el.ondrop = e => { e.preventDefault(); ui.dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files, currentDraftId, drafts, ui, sync); };
+	el.ondrop = e => { e.preventDefault(); ui.dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files, localStorage.getItem('current-draft-id'), drafts, ui, sync); };
 });
 
 ui.uploadBtn.onclick = () => ui.fileInput.click();
-ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, currentDraftId, drafts, ui, sync);
+ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
 
 if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
-else loadDraft(currentDraftId || drafts[0].id);
+else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 
 initAI(ui, sync);
-initTagSuggestions(ui, sync);
+initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); });

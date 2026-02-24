@@ -21,15 +21,14 @@ eleventyExcludeFromCollections: true
 					<input type="text" id="post-title" required placeholder="My Awesome Post">
 					<button type="button" id="ai-suggest-title-btn" style="display: none;" title="Suggest title using AI">✨</button>
 				</div>
-				<div id="ai-status" style="font-size: 0.7rem; color: #666; margin-top: 0.25rem; display: none;">
-					<progress id="ai-download-progress" value="0" max="100" style="width: 100px;"></progress>
-					<span id="ai-status-text">Downloading AI model...</span>
-				</div>
 			</div>
 
 			<div class="form-group">
 				<label for="post-description">Description</label>
-				<input type="text" id="post-description" placeholder="A brief summary of the post">
+				<div class="input-with-action">
+					<input type="text" id="post-description" placeholder="A brief summary of the post">
+					<button type="button" id="ai-suggest-description-btn" style="display: none;" title="Suggest description using AI">✨</button>
+				</div>
 			</div>
 
 			<div class="form-group">
@@ -38,26 +37,39 @@ eleventyExcludeFromCollections: true
 			</div>
 
 			<div class="form-group">
-				<label for="post-tags">Tags (comma separated)</label>
-				<div class="input-with-action">
-					<input type="text" id="post-tags" placeholder="tag1, tag2">
-					<button type="button" id="ai-suggest-tags-btn" style="display: none;" title="Suggest tags using AI">✨</button>
+				<label for="tag-input">Tags</label>
+				<div class="tag-container">
+					<div id="tag-pills" class="tag-pills"></div>
+					<div class="tag-input-wrapper">
+						<input type="text" id="tag-input" placeholder="Add tag and press Enter...">
+						<button type="button" id="ai-suggest-tags-btn" style="display: none;" title="Suggest tags using AI">✨</button>
+					</div>
 				</div>
+				<input type="hidden" id="post-tags">
 			</div>
 
 			<div class="form-group">
 				<label for="post-content">Content (Markdown)</label>
+				<p class="field-hint">💡 Tip: You can drag and drop images directly into the editor or use the button below to place them at the current cursor position.</p>
+				<div class="editor-header-actions">
+					<button type="button" id="upload-btn">📂 Open Images</button>
+				</div>
 				<div id="drop-zone">
-					<textarea id="post-content" rows="15" placeholder="Write your post here... Drag and drop images to upload."></textarea>
+					<textarea id="post-content" rows="20" placeholder="Write your post here..."></textarea>
 				</div>
 				<input type="file" id="file-input" multiple accept="image/*" style="display: none;">
-				<button type="button" id="upload-btn" style="margin-top: 0.5rem;">Upload Images</button>
+				<div class="editor-footer-actions">
+					<div id="ai-status" style="font-size: 0.7rem; color: #666; visibility: hidden;">
+						<progress id="ai-download-progress" value="0" max="100" style="width: 100px;"></progress>
+						<span id="ai-status-text">Ready</span>
+					</div>
+				</div>
 			</div>
 		</form>
 
 		<div class="editor-actions">
-			<button id="copy-btn">Copy Markdown</button>
-			<button id="download-btn">Save (ZIP)</button>
+			<button id="copy-btn">📋 Copy Markdown</button>
+			<button id="download-btn">💾 Save (ZIP)</button>
 		</div>
 	</div>
 
@@ -68,8 +80,10 @@ eleventyExcludeFromCollections: true
 </div>
 
 <link rel="stylesheet" href="/css/create-post.css">
+<link rel="stylesheet" href="/css/prism-okaidia.css">
 
 <script src="/js/marked.js"></script>
+<script src="/js/prism.js"></script>
 <script type="importmap" eleventy:ignore>
 {
   "imports": {
