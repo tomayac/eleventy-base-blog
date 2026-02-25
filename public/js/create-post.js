@@ -41,6 +41,7 @@ function loadDraft(id) {
 }
 
 ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync; ui.contentInput.oninput = sync;
+
 ui.newDraftBtn.onclick = () => createNewDraft(ui, loadDraft, renderList);
 ui.copyBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
@@ -68,11 +69,18 @@ ui.contentInput.onpaste = (e) => {
 	}
 };
 
-[ui.dropZone, ui.contentInput].forEach(el => {
-	el.ondragover = e => { e.preventDefault(); ui.dropZone.classList.add('dragover'); };
-	el.ondragleave = () => ui.dropZone.classList.remove('dragover');
-	el.ondrop = e => { e.preventDefault(); ui.dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files, localStorage.getItem('current-draft-id'), drafts, ui, sync); };
-});
+ui.dropZone.ondragover = e => {
+	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
+	e.preventDefault(); ui.dropZone.classList.add('dragover');
+};
+ui.dropZone.ondragleave = () => ui.dropZone.classList.remove('dragover');
+ui.dropZone.ondrop = e => {
+	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
+	e.preventDefault(); ui.dropZone.classList.remove('dragover');
+	if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+		handleFiles(e.dataTransfer.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
+	}
+};
 
 ui.uploadBtn.onclick = () => ui.fileInput.click();
 ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);

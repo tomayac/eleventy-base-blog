@@ -45,30 +45,36 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 	if (!draft || !files.length) return;
 	if (!draft.imageFiles) draft.imageFiles = [];
 
-	for (const file of files) {
-		const id = `${currentId}:${Date.now()}:${file.name}`;
-		const buffer = await file.arrayBuffer();
-		const dimensions = await new Promise((resolve) => {
-			const img = new Image();
-			img.onload = () => resolve({ width: img.width, height: img.height });
-			img.onerror = () => resolve({ width: '', height: '' });
-			img.src = URL.createObjectURL(new Blob([buffer]));
-		});
+	ui.uploadBtn.disabled = true;
+	const oldBtnText = ui.uploadBtn.textContent;
+	ui.uploadBtn.textContent = '⏳ Processing...';
+	ui.dropZone.setAttribute('data-disabled', 'true');
 
-		const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
-		const altText = aiMeta?.alt || "Alt text here";
-		const caption = aiMeta?.caption || "Caption here";
+	try {
+		for (const file of files) {
+			const id = `${currentId}:${Date.now()}:${file.name}`;
+			const buffer = await file.arrayBuffer();
+			const dimensions = await new Promise((resolve) => {
+				const img = new Image();
+				img.onload = () => resolve({ width: img.width, height: img.height });
+				img.onerror = () => resolve({ width: '', height: '' });
+				img.src = URL.createObjectURL(new Blob([buffer]));
+			});
 
-		await saveImage(id, buffer);
-		draft.imageFiles.push({ name: file.name, id });
-		
-		const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
-		const before = ui.contentInput.value.substring(0, start);
-		const after = ui.contentInput.value.substring(end);
-		const cleanBefore = before.replace(/\n+$/, '');
-		const needsNewlines = cleanBefore.length > 0;
-		
-		const imgTag = `${needsNewlines ? '\n\n' : ''}<figure>
+			const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
+			const altText = aiMeta?.alt || "Alt text here";
+			const caption = aiMeta?.caption || "Caption here";
+
+			await saveImage(id, buffer);
+			draft.imageFiles.push({ name: file.name, id });
+			
+			const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
+			const before = ui.contentInput.value.substring(0, start);
+			const after = ui.contentInput.value.substring(end);
+			const cleanBefore = before.replace(/\n+$/, '');
+			const needsNewlines = cleanBefore.length > 0;
+			
+			const imgTag = `${needsNewlines ? '\n\n' : ''}<figure>
   <img
       src="./${file.name}"
       alt="${altText}"
@@ -78,8 +84,13 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
     ${wrapText(caption, 80)}
   </figcaption>
 </figure>\n`;
-		
-		ui.contentInput.value = cleanBefore + imgTag + after;
+			
+			ui.contentInput.value = cleanBefore + imgTag + after;
+		}
+	} finally {
+		ui.uploadBtn.disabled = false;
+		ui.uploadBtn.textContent = oldBtnText;
+		ui.dropZone.removeAttribute('data-disabled');
 	}
 	updateCallback();
 }
