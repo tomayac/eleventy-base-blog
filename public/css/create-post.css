@@ -388,6 +388,30 @@ body {
 	overflow-x: auto;
 }
 
+.sidebar-footer {
+	margin-top: auto;
+	padding: 1rem;
+	border-top: 1px solid #ccc;
+}
+
+@media (prefers-color-scheme: dark) {
+	.sidebar-footer {
+		border-color: #444;
+	}
+}
+
+.ai-toggle-label {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.85rem;
+	font-weight: bold;
+}
+
+#ai-features-toggle {
+	accent-color: deeppink;
+}
+
 @media (max-width: 1000px) {
 	.editor-container { grid-template-columns: 1fr; }
 	.editor-sidebar, .editor-preview { border: none; padding: 0; }

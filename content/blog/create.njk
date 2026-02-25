@@ -11,6 +11,12 @@ eleventyExcludeFromCollections: true
 			<button id="new-draft-btn" title="New Draft">+</button>
 		</div>
 		<ul id="drafts-list"></ul>
+		<div class="sidebar-footer">
+			<label class="ai-toggle-label">
+				✨ AI Features
+				<input type="checkbox" switch id="ai-features-toggle" checked>
+			</label>
+		</div>
 	</div>
 
 	<div class="editor-main">
@@ -90,9 +96,11 @@ eleventyExcludeFromCollections: true
 
 <link rel="stylesheet" href="/css/create-post.css">
 <link rel="stylesheet" href="/css/prism-okaidia.css">
+<link rel="stylesheet" href="/js/input-switch-polyfill.css">
 
 <script src="/js/marked.js"></script>
 <script src="/js/prism.js"></script>
+<script type="module" src="/js/input-switch-polyfill.js" eleventy:ignore></script>
 <script type="importmap" eleventy:ignore>
 {
   "imports": {

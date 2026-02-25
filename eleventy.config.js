@@ -31,7 +31,9 @@ export default async function(eleventyConfig) {
 			"./node_modules/prompt-api-polyfill/dist/chunks/": "/js/chunks/",
 			"./node_modules/built-in-ai-task-apis-polyfills/dist/": "/js/task-apis/",
 			"./node_modules/prismjs/prism.js": "/js/prism.js",
-			"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css"
+			"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css",
+			"./node_modules/input-switch-polyfill/input-switch-polyfill.js": "/js/input-switch-polyfill.js",
+			"./node_modules/input-switch-polyfill/input-switch-polyfill.css": "/js/input-switch-polyfill.css"
 		})
 		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
 

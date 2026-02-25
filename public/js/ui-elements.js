@@ -21,5 +21,7 @@ export const ui = {
 	aiDownloadProgress: document.getElementById('ai-download-progress'),
 	aiStatusText: document.getElementById('ai-status-text'),
 	aiWriterInput: document.getElementById('ai-writer-input'),
-	aiWriterBtn: document.getElementById('ai-writer-btn')
+	aiWriterBtn: document.getElementById('ai-writer-btn'),
+	aiFeaturesToggle: document.getElementById('ai-features-toggle'),
+	aiWriterSection: document.querySelector('.ai-writer-section')
 };

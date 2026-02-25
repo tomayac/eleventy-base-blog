@@ -6,6 +6,7 @@ import { initAI } from './ai-features.js';
 import { initTagSuggestions } from './tag-suggestions.js';
 import { initAIWriter } from './ai-writer.js';
 import { initTagEditor } from './tag-editor.js';
+import { initAIToggle } from './ai-toggle.js';
 import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
 
 const tagEditor = initTagEditor(ui, () => sync());
@@ -77,3 +78,4 @@ else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 initAI(ui, sync);
 initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); });
 initAIWriter(ui, sync);
+initAIToggle(ui);
