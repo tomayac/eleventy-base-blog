@@ -396,6 +396,11 @@ body {
 
 .editor-preview {
 	padding-left: 1rem;
+	position: sticky;
+	top: 2rem;
+	max-height: calc(100vh - 100px);
+	overflow-y: auto;
+	align-self: start;
 }
 
 #preview-content {

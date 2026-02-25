@@ -32,8 +32,7 @@ export async function initAIWriter(ui, updateCallback) {
 		let mode = 'replace';
 		if (ui.contentInput.value.trim().length > 0) {
 			const choice = await customConfirm(ui, 'You already have content. Should the AI replace it or append at the end?', {
-				confirmText: 'Append',
-				cancelText: 'Replace'
+				confirmText: 'Append', cancelText: 'Replace'
 			});
 			if (choice === 'confirm') mode = 'append';
 			else if (choice !== 'cancel') return;
@@ -44,11 +43,12 @@ export async function initAIWriter(ui, updateCallback) {
 		const initialValue = mode === 'append' ? ui.contentInput.value.replace(/\n+$/, '') + '\n\n' : '';
 		
 		try {
-			const textToDetect = ui.contentInput.value.length > 20 ? ui.contentInput.value : input;
-			const lang = await detectLanguage(textToDetect);
+			// Detect language from the input bullets specifically
+			const lang = await detectLanguage(input);
 			const options = getWriterOptions(ui, lang);
 			const status = await Writer.availability(options);
 			if (status === 'unavailable') throw new Error(`Writer unavailable for: ${lang}`);
+			
 			const writer = await Writer.create(options);
 			const stream = writer.writeStreaming(input);
 			
