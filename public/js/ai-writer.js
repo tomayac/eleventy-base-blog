@@ -2,7 +2,6 @@ import { detectLanguage } from './language-detection.js';
 
 export async function initAIWriter(ui, updateCallback) {
 	if (!('Writer' in self)) await import('/js/task-apis/writer.js');
-
 	if (typeof Writer !== 'undefined') {
 		try {
 			const status = await Writer.availability();
@@ -16,9 +15,10 @@ export async function initAIWriter(ui, updateCallback) {
 		ui.aiWriterBtn.disabled = true; ui.aiWriterBtn.textContent = '⏳';
 		let fullResponse = '';
 		try {
-			const lang = await detectLanguage(input);
-			const writer = await Writer.create({
-				sharedContext: 'The user provides a few bullet points or a teaser. Expand them into a detailed, engaging blog post.',
+			const textToDetect = ui.contentInput.value.length > 20 ? ui.contentInput.value : input;
+			const lang = await detectLanguage(textToDetect);
+			const options = {
+				sharedContext: 'The user provides a few bullet points. Expand them into a detailed blog post.',
 				expectedInputLanguages: [lang], outputLanguage: lang,
 				monitor(m) {
 					m.addEventListener('downloadprogress', (e) => {
@@ -28,18 +28,16 @@ export async function initAIWriter(ui, updateCallback) {
 						if (e.loaded === e.total) setTimeout(() => ui.aiStatus.style.visibility = 'hidden', 2000);
 					});
 				}
-			});
+			};
+			const status = await Writer.availability(options);
+			if (status === 'unavailable') throw new Error(`Writer unavailable for: ${lang}`);
+			const writer = await Writer.create(options);
 			const stream = writer.writeStreaming(input);
-			ui.contentInput.value = ''; // Clear main editor
+			ui.contentInput.value = '';
 			for await (const chunk of stream) {
-				fullResponse += chunk;
-				ui.contentInput.value = fullResponse;
-				updateCallback();
+				fullResponse += chunk; ui.contentInput.value = fullResponse; updateCallback();
 			}
-		} catch (err) {
-			console.error(err); alert('Expansion failed.');
-		} finally {
-			ui.aiWriterBtn.disabled = false; ui.aiWriterBtn.textContent = '✨';
-		}
+		} catch (err) { console.error(err); alert('Expansion failed.'); }
+		finally { ui.aiWriterBtn.disabled = false; ui.aiWriterBtn.textContent = '✨'; }
 	};
 }

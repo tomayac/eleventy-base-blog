@@ -1,3 +1,5 @@
+import { detectLanguage } from './language-detection.js';
+
 export async function initTagSuggestions(ui, updateCallback) {
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
 
@@ -18,26 +20,25 @@ export async function initTagSuggestions(ui, updateCallback) {
 		ui.aiSuggestTagsBtn.disabled = true; ui.aiSuggestTagsBtn.textContent = '⏳';
 		let fullResponse = '';
 		try {
+			const lang = await detectLanguage(content);
 			const schema = await fetchSchema();
-			const session = await LanguageModel.create({
-				initialPrompts: [{ role: 'system', content: 'Suggest appropriate tags for this blog post. Only use the tags provided in the schema.' }]
-			});
+			const options = {
+				initialPrompts: [{ role: 'system', content: `Suggest tags for this blog post in ${lang}. Only use the tags provided in the schema.` }]
+			};
+			const status = await LanguageModel.availability(options);
+			if (status === 'unavailable') throw new Error('LanguageModel unavailable');
+			const session = await LanguageModel.create(options);
 			const stream = session.promptStreaming(`Content: ${content}`, { responseConstraint: schema });
 			for await (const chunk of stream) {
-				// Concatenate chunks
 				fullResponse += chunk;
 				try {
 					const suggestedTags = JSON.parse(fullResponse).tags;
 					if (suggestedTags && Array.isArray(suggestedTags)) {
-						ui.tagsInput.value = suggestedTags.join(', ');
-						updateCallback();
+						ui.tagsInput.value = suggestedTags.join(', '); updateCallback();
 					}
-				} catch (e) { /* Partial JSON parsing fails as expected */ }
+				} catch (e) { /* Partial JSON parsing fails */ }
 			}
-		} catch (err) {
-			console.error(err); alert('Tag suggestion failed.');
-		} finally {
-			ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨';
-		}
+		} catch (err) { console.error(err); alert('Tag suggestion failed.'); }
+		finally { ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨'; }
 	};
 }
