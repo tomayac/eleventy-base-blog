@@ -1,4 +1,5 @@
 import { detectLanguage } from './language-detection.js';
+import { customAlert } from './dialog-utils.js';
 
 const getSummarizerOptions = (ui, lang, type) => ({
 	type, format: 'plain-text', expectedInputLanguages: [lang], outputLanguage: lang,
@@ -13,7 +14,7 @@ const getSummarizerOptions = (ui, lang, type) => ({
 });
 
 async function runSummarizer(ui, type, input, targetInput, updateCallback) {
-	if (!input || input.length < 20) return alert('Please write some content first.');
+	if (!input || input.length < 20) return customAlert(ui, 'Please write some content first.');
 	const btn = type === 'headline' ? ui.aiSuggestTitleBtn : ui.aiSuggestDescriptionBtn;
 	btn.disabled = true; btn.textContent = '⏳'; targetInput.value = '';
 	try {
@@ -29,7 +30,7 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
 		targetInput.value = targetInput.value.trim().replace(/^["']|["']$/g, '');
 		if (type === 'headline') targetInput.value = targetInput.value.replace(/\.$/, '');
 		updateCallback();
-	} catch (err) { console.error(err); alert('AI Suggestion failed.'); }
+	} catch (err) { console.error(err); customAlert(ui, 'AI Suggestion failed.'); }
 	finally { btn.disabled = false; btn.textContent = '✨'; }
 }
 

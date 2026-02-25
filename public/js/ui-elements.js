@@ -23,5 +23,9 @@ export const ui = {
 	aiWriterInput: document.getElementById('ai-writer-input'),
 	aiWriterBtn: document.getElementById('ai-writer-btn'),
 	aiFeaturesToggle: document.getElementById('ai-features-toggle'),
-	aiWriterSection: document.querySelector('.ai-writer-section')
+	aiWriterSection: document.querySelector('.ai-writer-section'),
+	alertDialog: document.getElementById('alert-dialog'),
+	alertMessage: document.getElementById('alert-message'),
+	confirmDialog: document.getElementById('confirm-dialog'),
+	confirmMessage: document.getElementById('confirm-message')
 };

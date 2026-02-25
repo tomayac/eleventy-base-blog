@@ -1,4 +1,5 @@
 import { detectLanguage } from './language-detection.js';
+import { customAlert } from './dialog-utils.js';
 
 export async function initTagSuggestions(ui, updateCallback) {
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
@@ -16,7 +17,7 @@ export async function initTagSuggestions(ui, updateCallback) {
 
 	ui.aiSuggestTagsBtn.onclick = async () => {
 		const content = ui.contentInput.value;
-		if (!content || content.length < 20) return alert('Write content first.');
+		if (!content || content.length < 20) return customAlert(ui, 'Please write some content first.');
 		ui.aiSuggestTagsBtn.disabled = true; ui.aiSuggestTagsBtn.textContent = '⏳';
 		let fullResponse = '';
 		try {
@@ -38,7 +39,7 @@ export async function initTagSuggestions(ui, updateCallback) {
 					}
 				} catch (e) { /* Partial JSON parsing fails */ }
 			}
-		} catch (err) { console.error(err); alert('Tag suggestion failed.'); }
+		} catch (err) { console.error(err); customAlert(ui, 'Tag suggestion failed.'); }
 		finally { ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨'; }
 	};
 }

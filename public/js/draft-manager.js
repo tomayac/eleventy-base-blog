@@ -1,4 +1,5 @@
 import { deleteImagesForDraft } from './db-storage.js';
+import { customConfirm } from './dialog-utils.js';
 
 export let drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
 export let currentDraftId = localStorage.getItem('current-draft-id');
@@ -22,7 +23,8 @@ export function createNewDraft(ui, loadDraftFn, renderListFn) {
 }
 
 export async function deleteDraft(id, ui, createNewDraftFn, loadDraftFn, renderListFn) {
-	if (!confirm('Are you sure you want to delete this draft?')) return;
+	const confirmed = await customConfirm(ui, 'Are you sure you want to delete this draft?');
+	if (!confirmed) return;
 	await deleteImagesForDraft(id);
 	drafts = drafts.filter(d => d.id !== id);
 	saveDrafts();

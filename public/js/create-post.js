@@ -8,6 +8,7 @@ import { initAIWriter } from './ai-writer.js';
 import { initTagEditor } from './tag-editor.js';
 import { initAIToggle } from './ai-toggle.js';
 import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
+import { customAlert } from './dialog-utils.js';
 
 const tagEditor = initTagEditor(ui, () => sync());
 const sync = () => {
@@ -47,7 +48,7 @@ ui.copyBtn.onclick = () => {
 	navigator.clipboard.writeText(md).then(() => {
 		const oldText = ui.copyBtn.textContent; ui.copyBtn.textContent = '✅ Copied!';
 		setTimeout(() => ui.copyBtn.textContent = oldText, 2000);
-	});
+	}).catch(() => customAlert(ui, 'Failed to copy to clipboard.'));
 };
 ui.downloadBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);

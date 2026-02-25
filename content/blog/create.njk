@@ -93,3 +93,22 @@ eleventyExcludeFromCollections: true
 		<div id="preview-content" class="markdown-body"></div>
 	</div>
 </div>
+
+<dialog id="alert-dialog">
+	<form method="dialog">
+		<p id="alert-message"></p>
+		<div class="dialog-actions">
+			<button class="primary">OK</button>
+		</div>
+	</form>
+</dialog>
+
+<dialog id="confirm-dialog">
+	<form method="dialog">
+		<p id="confirm-message"></p>
+		<div class="dialog-actions">
+			<button value="cancel" class="secondary">Cancel</button>
+			<button value="confirm" class="danger">Delete</button>
+		</div>
+	</form>
+</dialog>

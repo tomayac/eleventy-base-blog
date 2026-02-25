@@ -1,4 +1,5 @@
 import { detectLanguage } from './language-detection.js';
+import { customAlert } from './dialog-utils.js';
 
 const getWriterOptions = (ui, lang) => ({
 	sharedContext: 'The user provides a few bullet points. Expand them into a detailed blog post.',
@@ -17,7 +18,6 @@ export async function initAIWriter(ui, updateCallback) {
 	if (!('Writer' in self)) await import('/js/task-apis/writer.js');
 	if (typeof Writer !== 'undefined') {
 		try {
-			// Initial check with generic options to see if button should even show
 			const status = await Writer.availability();
 			if (status !== 'unavailable') ui.aiWriterBtn.style.display = 'flex';
 		} catch (e) { console.warn("AI Writer availability check failed", e); }
@@ -25,7 +25,7 @@ export async function initAIWriter(ui, updateCallback) {
 
 	ui.aiWriterBtn.onclick = async () => {
 		const input = ui.aiWriterInput.value.trim();
-		if (!input) return alert('Please enter some bullets or a teaser first.');
+		if (!input) return customAlert(ui, 'Please write some content first.');
 		ui.aiWriterBtn.disabled = true; ui.aiWriterBtn.textContent = '⏳';
 		let fullResponse = '';
 		try {
@@ -40,7 +40,7 @@ export async function initAIWriter(ui, updateCallback) {
 			for await (const chunk of stream) {
 				fullResponse += chunk; ui.contentInput.value = fullResponse; updateCallback();
 			}
-		} catch (err) { console.error(err); alert('Expansion failed.'); }
+		} catch (err) { console.error(err); customAlert(ui, 'Expansion failed.'); }
 		finally { ui.aiWriterBtn.disabled = false; ui.aiWriterBtn.textContent = '✨'; }
 	};
 }
