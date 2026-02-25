@@ -14,7 +14,6 @@ body {
 }
 
 .editor-sidebar {
-	border-right: 1px solid #ccc;
 	padding-right: 0;
 	display: flex;
 	flex-direction: column;
@@ -222,7 +221,6 @@ body {
 .ai-writer-section {
 	margin-top: 0;
 	padding-top: 1rem;
-	border-top: 1px dashed #ccc;
 	position: relative;
 }
 
@@ -397,7 +395,7 @@ body {
 }
 
 .editor-preview {
-	border-left: 1px solid #ccc; padding-left: 1rem;
+	padding-left: 1rem;
 }
 
 #preview-content {
@@ -418,7 +416,6 @@ body {
 .sidebar-footer {
 	margin-top: auto;
 	padding: 1rem;
-	border-top: 1px solid #ccc;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -545,9 +542,17 @@ dialog p {
 }
 
 @media (max-width: 1000px) {
-	.editor-container { grid-template-columns: 1fr; }
-	.editor-sidebar, .editor-preview { border: none; padding: 0; }
-	.editor-preview { order: 3; }
+	.editor-container {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+	.editor-sidebar {
+		position: static;
+		max-height: none;
+		border: none;
+		padding-bottom: 1rem;
+		order: 1;
+	}
+	.editor-preview { border: none; padding: 0; order: 3; }
 	.editor-main { order: 2; }
-	.editor-sidebar { order: 1; border-bottom: 1px solid #ccc; padding-bottom: 1rem; }
 }
