@@ -1,13 +1,23 @@
 import { getImage } from './db-storage.js';
 
+function escapeYamlValue(val) {
+	if (typeof val !== 'string') return val;
+	// Wrap in quotes if it contains YAML-special characters
+	if (/[#:[\]{}>|&*?%@`']/.test(val) || val.includes(': ')) {
+		return `"${val.replace(/"/g, '\\"')}"`;
+	}
+	return val;
+}
+
 export function generateMarkdown(draft, title, description, date, tagsValue, content) {
 	const tags = tagsValue.split(',').map(t => t.trim()).filter(t => t);
-	const tagsYaml = tags.length > 0 ? `tags: [${tags.join(', ')}]` : 'tags: []';
+	const escapedTags = tags.map(t => `"${t.replace(/"/g, '\\"')}"`);
+	const tagsYaml = escapedTags.length > 0 ? `tags: [${escapedTags.join(', ')}]` : 'tags: []';
 	
 	const frontmatter = [
 		'---',
-		`title: ${title}`,
-		`description: ${description}`,
+		`title: ${escapeYamlValue(title)}`,
+		`description: ${escapeYamlValue(description)}`,
 		`date: ${date}`,
 		tagsYaml,
 		'---',
@@ -49,49 +59,35 @@ export async function downloadZIP(draft, title, description, date, tagsValue, co
 		const nameBuf = new TextEncoder().encode(file.name);
 		const crc = CRC32(file.content);
 		const size = file.content.length;
-		
 		const header = new Uint8Array(30 + nameBuf.length);
 		const view = new DataView(header.buffer);
-		view.setUint32(0, 0x04034b50, true);
-		view.setUint16(4, 10, true);
-		view.setUint16(6, 0, true);
-		view.setUint16(8, 0, true);
-		view.setUint16(10, 0, true);
-		view.setUint16(12, 0, true);
-		view.setUint32(14, crc, true);
-		view.setUint32(18, size, true);
-		view.setUint32(22, size, true);
-		view.setUint16(26, nameBuf.length, true);
-		view.setUint16(28, 0, true);
-		header.set(nameBuf, 30);
+		view.setUint32(0, 0x04034b50, true); view.setUint16(4, 10, true);
+		view.setUint16(6, 0, true); view.setUint16(8, 0, true);
+		view.setUint16(10, 0, true); view.setUint16(12, 0, true);
+		view.setUint32(14, crc, true); view.setUint32(18, size, true);
+		view.setUint32(22, size, true); view.setUint16(26, nameBuf.length, true);
+		view.setUint16(28, 0, true); header.set(nameBuf, 30);
 		zipParts.push(header, file.content);
 
 		const dirHeader = new Uint8Array(46 + nameBuf.length);
 		const dirView = new DataView(dirHeader.buffer);
-		dirView.setUint32(0, 0x02014b50, true);
-		dirView.setUint16(4, 10, true);
-		dirView.setUint16(6, 10, true);
-		dirView.setUint16(10, 0, true);
-		dirView.setUint32(16, crc, true);
-		dirView.setUint32(20, size, true);
-		dirView.setUint32(24, size, true);
-		dirView.setUint16(28, nameBuf.length, true);
-		dirView.setUint32(42, offset, true);
-		dirHeader.set(nameBuf, 46);
+		dirView.setUint32(0, 0x02014b50, true); dirView.setUint16(4, 10, true);
+		dirView.setUint16(6, 10, true); dirView.setUint16(10, 0, true);
+		dirView.setUint32(16, crc, true); dirView.setUint32(20, size, true);
+		dirView.setUint32(24, size, true); dirView.setUint16(28, nameBuf.length, true);
+		dirView.setUint32(42, offset, true); dirHeader.set(nameBuf, 46);
 		centralDirectory.push(dirHeader);
 		offset += header.length + size;
 	}
 
 	const eocd = new Uint8Array(22);
 	const eocdView = new DataView(eocd.buffer);
-	eocdView.setUint32(0, 0x06054b50, true);
-	eocdView.setUint16(8, files.length, true);
+	eocdView.setUint32(0, 0x06054b50, true); eocdView.setUint16(8, files.length, true);
 	eocdView.setUint16(10, files.length, true);
 	eocdView.setUint32(12, centralDirectory.reduce((a, b) => a + b.length, 0), true);
 	eocdView.setUint32(16, offset, true);
 
 	const url = URL.createObjectURL(new Blob([...zipParts, ...centralDirectory, eocd], { type: 'application/zip' }));
-	const a = document.createElement('a');
-	a.href = url; a.download = `${slug}.zip`; a.click();
+	const a = document.createElement('a'); a.href = url; a.download = `${slug}.zip`; a.click();
 	URL.revokeObjectURL(url);
 }

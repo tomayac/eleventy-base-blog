@@ -221,6 +221,17 @@ body {
 	margin-top: 0;
 	padding-top: 1rem;
 	border-top: 1px dashed #ccc;
+	position: relative;
+}
+
+.ai-writer-section .input-with-action {
+	display: flex;
+	align-items: flex-start; /* Align button to top of textarea */
+	gap: 0.5rem;
+}
+
+#ai-writer-btn {
+	margin-top: 0;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -250,6 +261,25 @@ body {
 	display: block;
 	margin-bottom: 0.25rem;
 	font-weight: bold;
+}
+
+.help-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	font-size: 12px;
+	text-decoration: none;
+	color: #007bff;
+	margin-left: 0.3rem;
+	vertical-align: middle;
+	transition: color 0.2s, transform 0.2s;
+}
+
+.help-icon:hover {
+	color: #0056b3;
+	transform: scale(1.2);
 }
 
 .input-with-action {
