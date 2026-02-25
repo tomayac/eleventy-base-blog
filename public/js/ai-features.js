@@ -27,6 +27,7 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
 			targetInput.value += chunk; updateCallback();
 		}
 		targetInput.value = targetInput.value.trim().replace(/^["']|["']$/g, '');
+		if (type === 'headline') targetInput.value = targetInput.value.replace(/\.$/, '');
 		updateCallback();
 	} catch (err) { console.error(err); alert('AI Suggestion failed.'); }
 	finally { btn.disabled = false; btn.textContent = '✨'; }
