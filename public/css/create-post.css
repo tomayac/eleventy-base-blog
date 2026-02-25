@@ -31,7 +31,7 @@ body {
 	align-items: center;
 	margin-bottom: 1rem;
 	padding-right: 1rem;
-	padding-top: 5px; /* Added padding to prevent transform clipping */
+	padding-top: 5px;
 }
 
 .sidebar-header h2 {
@@ -143,6 +143,10 @@ body {
 	min-width: 0;
 }
 
+#drafts-list li .draft-radio {
+	flex-shrink: 0;
+}
+
 .delete-draft-btn {
 	margin-left: auto;
 	background: transparent !important;
@@ -166,7 +170,7 @@ body {
 	transform: scale(1.2);
 }
 
-.editor-header-actions button, .editor-actions button, .editor-footer-actions button {
+.editor-header-actions button, .editor-actions button, .editor-footer-actions button, #github-pr-btn {
 	padding: 0.6rem 1.2rem;
 	cursor: pointer;
 	border: 1px solid #007bff;
@@ -181,7 +185,8 @@ body {
 	gap: 0.5rem;
 }
 
-.editor-header-actions button:hover, .editor-actions button:hover, .editor-footer-actions button:hover, #ai-suggest-title-btn:hover, #ai-suggest-description-btn:hover, #ai-suggest-tags-btn:hover {
+.editor-header-actions button:hover, .editor-actions button:hover, .editor-footer-actions button:hover, #github-pr-btn:hover,
+#ai-suggest-title-btn:hover, #ai-suggest-description-btn:hover, #ai-suggest-tags-btn:hover, #ai-writer-btn:hover {
 	background: #0056b3;
 	border-color: #0056b3;
 	transform: scale(1.05);
@@ -205,11 +210,6 @@ body {
 	transition: background 0.2s, transform 0.2s;
 }
 
-#ai-suggest-title-btn:hover, #ai-suggest-description-btn:hover, #ai-suggest-tags-btn:hover, #ai-writer-btn:hover {
-	background: #0056b3;
-	transform: scale(1.1);
-}
-
 #ai-suggest-title-btn:disabled, #ai-suggest-description-btn:disabled, #ai-suggest-tags-btn:disabled, #ai-writer-btn:disabled {
 	background: #6c757d;
 	border-color: #6c757d;
@@ -227,14 +227,6 @@ body {
 	.ai-writer-section {
 		border-color: #444;
 	}
-}
-
-
-#ai-suggest-title-btn:disabled, #ai-suggest-description-btn:disabled, #ai-suggest-tags-btn:disabled {
-	background: #6c757d;
-	border-color: #6c757d;
-	cursor: not-allowed;
-	transform: none;
 }
 
 .field-hint {
@@ -397,6 +389,33 @@ body {
 
 @media (prefers-color-scheme: dark) {
 	.sidebar-footer {
+		border-color: #444;
+	}
+}
+
+.settings-details summary {
+	cursor: pointer;
+	font-size: 0.9rem;
+	font-weight: bold;
+	padding: 0.5rem 0;
+}
+
+.settings-content {
+	padding-top: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.settings-content hr {
+	width: 100%;
+	border: 0;
+	border-top: 1px solid #eee;
+	margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+	.settings-content hr {
 		border-color: #444;
 	}
 }

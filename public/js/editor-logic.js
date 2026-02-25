@@ -1,9 +1,26 @@
 import { saveImage, getImage } from './db-storage.js';
+import { generateImageMetadata } from './ai-multimodal.js';
 
 function formatPreviewDate(dateStr) {
 	if (!dateStr) return '';
 	const date = new Date(dateStr);
 	return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function wrapText(text, limit) {
+	const words = text.split(' ');
+	let lines = [];
+	let currentLine = '';
+	words.forEach(word => {
+		if ((currentLine + word).length > limit) {
+			lines.push(currentLine.trim());
+			currentLine = word + ' ';
+		} else {
+			currentLine += word + ' ';
+		}
+	});
+	lines.push(currentLine.trim());
+	return lines.join('\n    ');
 }
 
 export async function updatePreview(currentId, drafts, ui) {
@@ -16,18 +33,11 @@ export async function updatePreview(currentId, drafts, ui) {
 			if (data) content = content.replaceAll(`./${img.name}`, URL.createObjectURL(new Blob([data])));
 		}
 	}
-
 	const tags = ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t && t !== 'posts');
 	const tagsHtml = tags.map(t => `<li><a href="#" class="post-tag">${t}</a></li>`).join('');
 	const dateHtml = ui.dateInput.value ? `<time datetime="${ui.dateInput.value}">${formatPreviewDate(ui.dateInput.value)}</time>` : '';
-
 	ui.previewContent.innerHTML = `<h1>${ui.titleInput.value || 'Untitled'}</h1><ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>${marked.parse(content)}`;
-	
-	// Syntax highlight code blocks in the preview
-	if (window.Prism) {
-		// Use highlightAllUnder which is standard for Prism to find and highlight <code> blocks
-		Prism.highlightAllUnder(ui.previewContent);
-	}
+	if (window.Prism) Prism.highlightAllUnder(ui.previewContent);
 }
 
 export async function handleFiles(files, currentId, drafts, ui, updateCallback) {
@@ -44,11 +54,32 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 			img.onerror = () => resolve({ width: '', height: '' });
 			img.src = URL.createObjectURL(new Blob([buffer]));
 		});
+
+		const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
+		const altText = aiMeta?.alt || "Alt text here";
+		const caption = aiMeta?.caption || "Caption here";
+
 		await saveImage(id, buffer);
 		draft.imageFiles.push({ name: file.name, id });
-		const imgTag = `\n<figure>\n\t<img src="./${file.name}" alt="Alt text" width="${dimensions.width}" height="${dimensions.height}" loading="lazy" decoding="async">\n\t<figcaption>Caption</figcaption>\n</figure>\n`;
+		
 		const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
-		ui.contentInput.value = ui.contentInput.value.substring(0, start) + imgTag + ui.contentInput.value.substring(end);
+		const before = ui.contentInput.value.substring(0, start);
+		const after = ui.contentInput.value.substring(end);
+		const cleanBefore = before.replace(/\n+$/, '');
+		const needsNewlines = cleanBefore.length > 0;
+		
+		const imgTag = `${needsNewlines ? '\n\n' : ''}<figure>
+  <img
+      src="./${file.name}"
+      alt="${altText}"
+      width="${dimensions.width}" height="${dimensions.height}" loading="lazy" decoding="async"
+  >
+  <figcaption>
+    ${wrapText(caption, 80)}
+  </figcaption>
+</figure>\n`;
+		
+		ui.contentInput.value = cleanBefore + imgTag + after;
 	}
 	updateCallback();
 }

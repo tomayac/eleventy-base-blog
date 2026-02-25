@@ -12,10 +12,28 @@ eleventyExcludeFromCollections: true
 		</div>
 		<ul id="drafts-list"></ul>
 		<div class="sidebar-footer">
-			<label class="ai-toggle-label">
-				✨ AI Features
-				<input type="checkbox" switch id="ai-features-toggle" checked>
-			</label>
+			<details class="settings-details">
+				<summary>⚙️ Settings</summary>
+				<div class="settings-content">
+					<label class="ai-toggle-label">
+						✨ AI Features
+						<input type="checkbox" switch id="ai-features-toggle" checked>
+					</label>
+					<hr>
+					<div class="form-group">
+						<label for="gh-token">GitHub Token</label>
+						<input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+					</div>
+					<div class="form-group">
+						<label for="gh-owner">GitHub Username</label>
+						<input type="text" id="gh-owner" placeholder="username">
+					</div>
+					<div class="form-group">
+						<label for="gh-repo">Repository Name</label>
+						<input type="text" id="gh-repo" placeholder="my-blog">
+					</div>
+				</div>
+			</details>
 		</div>
 	</div>
 
@@ -85,6 +103,7 @@ eleventyExcludeFromCollections: true
 		<div class="editor-actions">
 			<button id="copy-btn">📋 Copy Markdown</button>
 			<button id="download-btn">💾 Save (.zip)</button>
+			<button id="github-pr-btn">🚀 Create PR</button>
 		</div>
 	</div>
 

@@ -9,6 +9,7 @@ import { initTagEditor } from './tag-editor.js';
 import { initAIToggle } from './ai-toggle.js';
 import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
 import { customAlert } from './dialog-utils.js';
+import { initGitHubSync, createPR } from './github-integration.js';
 
 const tagEditor = initTagEditor(ui, () => sync());
 const sync = () => {
@@ -40,7 +41,6 @@ function loadDraft(id) {
 }
 
 ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync; ui.contentInput.oninput = sync;
-
 ui.newDraftBtn.onclick = () => createNewDraft(ui, loadDraft, renderList);
 ui.copyBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
@@ -53,6 +53,10 @@ ui.copyBtn.onclick = () => {
 ui.downloadBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	downloadZIP(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
+};
+ui.githubPrBtn.onclick = () => {
+	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
+	createPR(ui, d);
 };
 
 ui.contentInput.onpaste = (e) => {
@@ -76,7 +80,7 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 (async () => {
 	if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
 	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
-
+	initGitHubSync(ui);
 	await Promise.all([
 		initAI(ui, sync),
 		initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),

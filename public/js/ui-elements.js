@@ -27,5 +27,9 @@ export const ui = {
 	alertDialog: document.getElementById('alert-dialog'),
 	alertMessage: document.getElementById('alert-message'),
 	confirmDialog: document.getElementById('confirm-dialog'),
-	confirmMessage: document.getElementById('confirm-message')
+	confirmMessage: document.getElementById('confirm-message'),
+	ghTokenInput: document.getElementById('gh-token'),
+	ghOwnerInput: document.getElementById('gh-owner'),
+	ghRepoInput: document.getElementById('gh-repo'),
+	githubPrBtn: document.getElementById('github-pr-btn')
 };
