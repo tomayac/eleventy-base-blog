@@ -1,4 +1,4 @@
-import { detectLanguage } from './language-detection.js';
+import { detectLanguage } from './ai-language-detection.js';
 
 export const imageMetadataSchema = {
 	"type": "object",

@@ -1,4 +1,4 @@
-import { detectLanguage } from './language-detection.js';
+import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 
 const getSummarizerOptions = (ui, lang, type) => ({

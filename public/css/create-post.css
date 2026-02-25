@@ -258,7 +258,9 @@ body {
 }
 
 .form-group label {
-	display: block;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	margin-bottom: 0.25rem;
 	font-weight: bold;
 }
@@ -267,18 +269,19 @@ body {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 16px;
-	height: 16px;
-	font-size: 12px;
+	width: 20px;
+	height: 20px;
+	font-size: 14px;
 	text-decoration: none;
 	color: #007bff;
-	margin-left: 0.3rem;
-	vertical-align: middle;
-	transition: color 0.2s, transform 0.2s;
+	opacity: 0.6;
+	transition: opacity 0.2s, transform 0.2s;
+	transform-origin: center center;
 }
 
 .help-icon:hover {
-	color: #0056b3;
+	color: #007bff;
+	opacity: 1;
 	transform: scale(1.2);
 }
 

@@ -1,4 +1,4 @@
-import { detectLanguage } from './language-detection.js';
+import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 
 const getWriterOptions = (ui, lang) => ({
@@ -18,7 +18,10 @@ export async function initAIWriter(ui, updateCallback) {
 	if (!('Writer' in self)) await import('/js/task-apis/writer.js');
 	if (typeof Writer !== 'undefined') {
 		try {
-			const status = await Writer.availability();
+			// Use a base sharedContext for the initial availability check
+			const status = await Writer.availability({
+				sharedContext: 'The user provides a few bullet points. Expand them into a detailed blog post.'
+			});
 			if (status !== 'unavailable') ui.aiWriterBtn.style.display = 'flex';
 		} catch (e) { console.warn("AI Writer availability check failed", e); }
 	}
@@ -40,7 +43,7 @@ export async function initAIWriter(ui, updateCallback) {
 			for await (const chunk of stream) {
 				fullResponse += chunk; ui.contentInput.value = fullResponse; updateCallback();
 			}
-		} catch (err) { console.error(err); customAlert(ui, 'Expansion failed.'); }
+		} catch (err) { console.error(err); alert('Expansion failed.'); }
 		finally { ui.aiWriterBtn.disabled = false; ui.aiWriterBtn.textContent = '✨'; }
 	};
 }

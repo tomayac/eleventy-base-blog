@@ -3,7 +3,7 @@ import { drafts, createNewDraft, deleteDraft, updateDraftData } from './draft-ma
 import { updatePreview, handleFiles } from './editor-logic.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initAI } from './ai-features.js';
-import { initTagSuggestions } from './tag-suggestions.js';
+import { initTagSuggestions } from './ai-tag-suggestions.js';
 import { initAIWriter } from './ai-writer.js';
 import { initTagEditor } from './tag-editor.js';
 import { initAIToggle } from './ai-toggle.js';

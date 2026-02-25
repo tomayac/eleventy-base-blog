@@ -1,4 +1,4 @@
-import { detectLanguage } from './language-detection.js';
+import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 
 export async function initTagSuggestions(ui, updateCallback) {
@@ -11,7 +11,10 @@ export async function initTagSuggestions(ui, updateCallback) {
 	};
 
 	try {
-		const status = await LanguageModel.availability();
+		// Use a base options object for the initial availability check
+		const status = await LanguageModel.availability({
+			initialPrompts: [{ role: 'system', content: 'Suggest tags for this blog post.' }]
+		});
 		if (status !== 'unavailable') ui.aiSuggestTagsBtn.style.display = 'flex';
 	} catch (e) { console.warn("AI LanguageModel availability check failed", e); }
 
@@ -39,7 +42,7 @@ export async function initTagSuggestions(ui, updateCallback) {
 					}
 				} catch (e) { /* Partial JSON parsing fails */ }
 			}
-		} catch (err) { console.error(err); customAlert(ui, 'Tag suggestion failed.'); }
+		} catch (err) { console.error(err); alert('Tag suggestion failed.'); }
 		finally { ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨'; }
 	};
 }
