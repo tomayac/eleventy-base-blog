@@ -33,7 +33,10 @@ export default async function(eleventyConfig) {
 			"./node_modules/prismjs/prism.js": "/js/prism.js",
 			"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css",
 			"./node_modules/input-switch-polyfill/input-switch-polyfill.js": "/js/input-switch-polyfill.js",
-			"./node_modules/input-switch-polyfill/input-switch-polyfill.css": "/js/input-switch-polyfill.css"
+			"./node_modules/input-switch-polyfill/input-switch-polyfill.css": "/js/input-switch-polyfill.css",
+			"./node_modules/firebase/firebase-app.js": "/js/firebase-app.js",
+			"./node_modules/firebase/firebase-ai.js": "/js/firebase-ai.js",
+			"./node_modules/prompt-api-polyfill/dot_env.json": "/dot_env.json"
 		})
 		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
 

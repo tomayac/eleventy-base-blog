@@ -72,10 +72,14 @@ ui.contentInput.onpaste = (e) => {
 ui.uploadBtn.onclick = () => ui.fileInput.click();
 ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
 
-if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
-else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
+(async () => {
+	if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
+	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 
-initAI(ui, sync);
-initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); });
-initAIWriter(ui, sync);
-initAIToggle(ui);
+	await Promise.all([
+		initAI(ui, sync),
+		initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
+		initAIWriter(ui, sync)
+	]);
+	initAIToggle(ui);
+})();

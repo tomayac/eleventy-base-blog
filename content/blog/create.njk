@@ -1,5 +1,5 @@
 ---
-layout: layouts/base.njk
+layout: layouts/create.njk
 eleventyExcludeFromCollections: true
 ---
 <h1>Create Blog Post</h1>
@@ -66,7 +66,7 @@ eleventyExcludeFromCollections: true
 				<input type="file" id="file-input" multiple accept="image/*" style="display: none;">
 			</div>
 
-			<div class="form-group ai-writer-section">
+			<div class="form-group ai-writer-section" style="display: none;">
 				<label for="ai-writer-input">Help me write</label>
 				<p class="field-hint">💡 Enter a few bullet points or a teaser, and AI will expand it into a full post.</p>
 				<div class="input-with-action">
@@ -74,7 +74,7 @@ eleventyExcludeFromCollections: true
 					<button type="button" id="ai-writer-btn" style="display: none;" title="Expand into a full post">✨</button>
 				</div>
 				<div class="editor-footer-actions">
-					<div id="ai-status" style="font-size: 0.7rem; color: #666; visibility: hidden;">
+					<div id="ai-status" style="font-size: 0.7rem; color: #666; display: none;">
 						<progress id="ai-download-progress" value="0" max="100" style="width: 100px;"></progress>
 						<span id="ai-status-text">Ready</span>
 					</div>
@@ -93,19 +93,3 @@ eleventyExcludeFromCollections: true
 		<div id="preview-content" class="markdown-body"></div>
 	</div>
 </div>
-
-<link rel="stylesheet" href="/css/create-post.css">
-<link rel="stylesheet" href="/css/prism-okaidia.css">
-<link rel="stylesheet" href="/js/input-switch-polyfill.css">
-
-<script src="/js/marked.js"></script>
-<script src="/js/prism.js"></script>
-<script type="module" src="/js/input-switch-polyfill.js" eleventy:ignore></script>
-<script type="importmap" eleventy:ignore>
-{
-  "imports": {
-    "prompt-api-polyfill": "/js/prompt-api-polyfill.js"
-  }
-}
-</script>
-<script type="module" src="/js/create-post.js" eleventy:ignore></script>

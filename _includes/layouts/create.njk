@@ -1,0 +1,73 @@
+{% extends "layouts/base.njk" %}
+
+{% block head %}
+<script eleventy:ignore>
+  if (!('switch' in HTMLInputElement.prototype)) {
+    const js = document.createElement('link');
+    js.rel = 'modulepreload';
+    js.href = '/js/input-switch-polyfill.js';
+    document.head.appendChild(js);
+
+    const css = document.createElement('link');
+    css.rel = 'preload';
+    css.as = 'style';
+    css.href = '/js/input-switch-polyfill.css';
+    document.head.appendChild(css);
+  }
+</script>
+
+<style>
+  @keyframes hideBriefly {
+    0%,
+    100% {
+      visibility: hidden;
+    }
+  }
+
+  label:has(input[switch]),
+  input[switch] {
+    animation: hideBriefly 2s;
+  }
+</style>
+
+<noscript>
+  <style>
+    label:has(input[switch]),
+    input[switch] {
+      animation: none;
+    }
+  </style>
+</noscript>
+
+<script type="module" eleventy:ignore>
+  const response = await fetch('/.env.json');
+  window.FIREBASE_CONFIG = await response.json();
+
+  if (!('switch' in HTMLInputElement.prototype)) {
+    await import('/js/input-switch-polyfill.js');
+  } else {
+    document.head.insertAdjacentHTML(
+      'beforeend',
+      `<style>label:has(input[switch]),input[switch]{animation:none;}</style>`
+    );
+  }
+</script>
+
+<link rel="stylesheet" href="/js/input-switch-polyfill.css">
+<link rel="stylesheet" href="/css/create-post.css">
+<link rel="stylesheet" href="/css/prism-okaidia.css">
+
+<script src="/js/marked.js"></script>
+<script src="/js/prism.js"></script>
+<script type="importmap" eleventy:ignore>
+{
+  "imports": {
+    "prompt-api-polyfill": "/js/prompt-api-polyfill.js",
+    "firebase/app": "/js/firebase-app.js",
+    "firebase/ai": "/js/firebase-ai.js",
+    "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js": "/js/firebase-app.js"
+  }
+}
+</script>
+<script type="module" src="/js/create-post.js" eleventy:ignore></script>
+{% endblock %}

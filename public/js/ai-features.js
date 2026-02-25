@@ -4,10 +4,10 @@ const getSummarizerOptions = (ui, lang, type) => ({
 	type, format: 'plain-text', expectedInputLanguages: [lang], outputLanguage: lang,
 	monitor(m) {
 		m.addEventListener('downloadprogress', (e) => {
-			ui.aiStatus.style.visibility = 'visible';
+			ui.aiStatus.style.display = 'flex';
 			ui.aiDownloadProgress.value = e.loaded; ui.aiDownloadProgress.max = e.total;
 			ui.aiStatusText.textContent = `Downloading AI (${lang}): ${Math.round((e.loaded / e.total) * 100)}%`;
-			if (e.loaded === e.total) setTimeout(() => ui.aiStatus.style.visibility = 'hidden', 2000);
+			if (e.loaded === e.total) setTimeout(() => ui.aiStatus.style.display = 'none', 2000);
 		});
 	}
 });
@@ -42,7 +42,7 @@ export async function initAI(ui, updateCallback) {
 				ui.aiSuggestTitleBtn.style.display = 'flex'; ui.aiSuggestDescriptionBtn.style.display = 'flex';
 			}
 			if (status === 'downloadable' || status === 'downloading') {
-				ui.aiStatus.style.visibility = 'visible'; ui.aiStatusText.textContent = 'AI model available (needs download)';
+				ui.aiStatus.style.display = 'flex'; ui.aiStatusText.textContent = 'AI model available (needs download)';
 			}
 		} catch (e) { console.warn("AI Summarizer availability check failed", e); }
 	}
