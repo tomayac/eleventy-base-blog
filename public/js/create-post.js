@@ -1,5 +1,5 @@
 import { ui } from './ui-elements.js';
-import { drafts, createNewDraft, deleteDraft, updateDraftData } from './draft-manager.js';
+import { drafts, createNewDraft, deleteDraft, updateDraftData, resetApplication } from './draft-manager.js';
 import { updatePreview, handleFiles } from './editor-logic.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initAI } from './ai-features.js';
@@ -10,6 +10,7 @@ import { initAIToggle } from './ai-toggle.js';
 import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
 import { customAlert } from './dialog-utils.js';
 import { initGitHubSync, createPR } from './github-integration.js';
+import { cleanupOrphanedImages } from './db-storage.js';
 
 const tagEditor = initTagEditor(ui, () => sync());
 const sync = () => {
@@ -41,8 +42,8 @@ function loadDraft(id) {
 }
 
 ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync; ui.contentInput.oninput = sync;
-
 ui.newDraftBtn.onclick = () => createNewDraft(ui, loadDraft, renderList);
+ui.resetAppBtn.onclick = () => resetApplication(ui);
 ui.copyBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	const md = generateMarkdown(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
@@ -59,7 +60,6 @@ ui.githubPrBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	createPR(ui, d);
 };
-
 ui.contentInput.onpaste = (e) => {
 	const text = e.clipboardData.getData('text');
 	const { metadata, content } = parseFrontmatter(text);
@@ -69,19 +69,13 @@ ui.contentInput.onpaste = (e) => {
 	}
 };
 
-ui.dropZone.ondragover = e => {
-	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
-	e.preventDefault(); ui.dropZone.classList.add('dragover');
-};
+ui.dropZone.ondragover = e => { if (ui.dropZone.getAttribute('data-disabled') === 'true') return; e.preventDefault(); ui.dropZone.classList.add('dragover'); };
 ui.dropZone.ondragleave = () => ui.dropZone.classList.remove('dragover');
 ui.dropZone.ondrop = e => {
 	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
 	e.preventDefault(); ui.dropZone.classList.remove('dragover');
-	if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-		handleFiles(e.dataTransfer.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
-	}
+	if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
 };
-
 ui.uploadBtn.onclick = () => ui.fileInput.click();
 ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
 
@@ -90,9 +84,8 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 	initGitHubSync(ui);
 	await Promise.all([
-		initAI(ui, sync),
-		initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
-		initAIWriter(ui, sync)
+		initAI(ui, sync), initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }), initAIWriter(ui, sync)
 	]);
 	initAIToggle(ui);
+	await cleanupOrphanedImages(drafts.map(d => d.id));
 })();

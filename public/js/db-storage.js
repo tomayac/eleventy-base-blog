@@ -33,10 +33,21 @@ export async function deleteImagesForDraft(draftId) {
 	const request = store.openKeyCursor();
 	request.onsuccess = (event) => {
 		const cursor = event.target.result;
+		if (cursor && cursor.key.startsWith(draftId + ':')) store.delete(cursor.key);
+		if (cursor) cursor.continue();
+	};
+}
+
+export async function cleanupOrphanedImages(activeDraftIds) {
+	const db = await dbPromise;
+	const tx = db.transaction('images', 'readwrite');
+	const store = tx.objectStore('images');
+	const request = store.openKeyCursor();
+	request.onsuccess = (event) => {
+		const cursor = event.target.result;
 		if (cursor) {
-			if (cursor.key.startsWith(draftId + ':')) {
-				store.delete(cursor.key);
-			}
+			const ownerId = cursor.key.split(':')[0];
+			if (!activeDraftIds.includes(ownerId)) store.delete(cursor.key);
 			cursor.continue();
 		}
 	};

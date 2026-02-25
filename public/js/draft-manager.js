@@ -1,4 +1,4 @@
-import { deleteImagesForDraft } from './db-storage.js';
+import { deleteImagesForDraft, cleanupOrphanedImages, dbPromise } from './db-storage.js';
 import { customConfirm } from './dialog-utils.js';
 
 export let drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
@@ -28,13 +28,24 @@ export async function deleteDraft(id, ui, createNewDraftFn, loadDraftFn, renderL
 	await deleteImagesForDraft(id);
 	drafts = drafts.filter(d => d.id !== id);
 	saveDrafts();
-	
+	await cleanupOrphanedImages(drafts.map(d => d.id));
 	if (currentDraftId === id) {
 		if (drafts.length > 0) loadDraftFn(drafts[0].id);
 		else createNewDraftFn();
 	} else {
 		renderListFn();
 	}
+}
+
+export async function resetApplication(ui) {
+	const confirmed = await customConfirm(ui, 'CRITICAL: This will delete ALL drafts, images, and settings. This cannot be undone. Proceed?');
+	if (!confirmed) return;
+	
+	localStorage.clear();
+	const db = await dbPromise;
+	const tx = db.transaction('images', 'readwrite');
+	tx.objectStore('images').clear();
+	tx.oncomplete = () => window.location.reload();
 }
 
 export function updateDraftData(id, ui) {
