@@ -11,12 +11,17 @@ import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.j
 import { customAlert } from './dialog-utils.js';
 import { initGitHubSync, createPR } from './github-integration.js';
 import { cleanupOrphanedImages } from './db-storage.js';
+import { debounce } from './debounce.js';
 
 const tagEditor = initTagEditor(ui, () => sync());
+const debouncedPreview = debounce((id, ui) => {
+	if (ui.activeAiStreams === 0) updatePreview(id, drafts, ui);
+}, 300);
+
 const sync = () => {
 	const id = localStorage.getItem('current-draft-id');
 	updateDraftData(id, ui);
-	if (ui.activeAiStreams === 0) updatePreview(id, drafts, ui);
+	debouncedPreview(id, ui);
 	renderList();
 };
 
