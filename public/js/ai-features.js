@@ -17,6 +17,7 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
 	if (!input || input.length < 20) return customAlert(ui, 'Please write some content first.');
 	const btn = type === 'headline' ? ui.aiSuggestTitleBtn : ui.aiSuggestDescriptionBtn;
 	btn.disabled = true; btn.textContent = '⏳'; targetInput.value = '';
+	ui.activeAiStreams++;
 	try {
 		const lang = await detectLanguage(input);
 		const options = getSummarizerOptions(ui, lang, type);
@@ -29,9 +30,8 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
 		}
 		targetInput.value = targetInput.value.trim().replace(/^["']|["']$/g, '');
 		if (type === 'headline') targetInput.value = targetInput.value.replace(/\.$/, '');
-		updateCallback();
 	} catch (err) { console.error(err); customAlert(ui, 'AI Suggestion failed.'); }
-	finally { btn.disabled = false; btn.textContent = '✨'; }
+	finally { ui.activeAiStreams--; btn.disabled = false; btn.textContent = '✨'; updateCallback(); }
 }
 
 export async function initAI(ui, updateCallback) {

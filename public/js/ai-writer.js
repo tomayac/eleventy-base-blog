@@ -28,7 +28,6 @@ export async function initAIWriter(ui, updateCallback) {
 	ui.aiWriterBtn.onclick = async () => {
 		const input = ui.aiWriterInput.value.trim();
 		if (!input) return customAlert(ui, 'Please write some content first.');
-		
 		let mode = 'replace';
 		if (ui.contentInput.value.trim().length > 0) {
 			const choice = await customConfirm(ui, 'You already have content. Should the AI replace it or append at the end?', {
@@ -37,28 +36,21 @@ export async function initAIWriter(ui, updateCallback) {
 			if (choice === 'confirm') mode = 'append';
 			else if (choice !== 'cancel') return;
 		}
-
 		ui.aiWriterBtn.disabled = true; ui.aiWriterBtn.textContent = '⏳';
-		let fullResponse = '';
+		let fullResponse = ''; ui.activeAiStreams++;
 		const initialValue = mode === 'append' ? ui.contentInput.value.replace(/\n+$/, '') + '\n\n' : '';
-		
 		try {
-			// Detect language from the input bullets specifically
 			const lang = await detectLanguage(input);
 			const options = getWriterOptions(ui, lang);
 			const status = await Writer.availability(options);
 			if (status === 'unavailable') throw new Error(`Writer unavailable for: ${lang}`);
-			
 			const writer = await Writer.create(options);
 			const stream = writer.writeStreaming(input);
-			
 			ui.contentInput.value = initialValue;
 			for await (const chunk of stream) {
-				fullResponse += chunk;
-				ui.contentInput.value = initialValue + fullResponse;
-				updateCallback();
+				fullResponse += chunk; ui.contentInput.value = initialValue + fullResponse; updateCallback();
 			}
 		} catch (err) { console.error(err); customAlert(ui, 'Expansion failed.'); }
-		finally { ui.aiWriterBtn.disabled = false; ui.aiWriterBtn.textContent = '✨'; }
+		finally { ui.activeAiStreams--; ui.aiWriterBtn.disabled = false; ui.aiWriterBtn.textContent = '✨'; updateCallback(); }
 	};
 }

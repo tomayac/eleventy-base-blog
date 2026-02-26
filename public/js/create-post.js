@@ -15,7 +15,9 @@ import { cleanupOrphanedImages } from './db-storage.js';
 const tagEditor = initTagEditor(ui, () => sync());
 const sync = () => {
 	const id = localStorage.getItem('current-draft-id');
-	updateDraftData(id, ui); updatePreview(id, drafts, ui); renderList();
+	updateDraftData(id, ui);
+	if (ui.activeAiStreams === 0) updatePreview(id, drafts, ui);
+	renderList();
 };
 
 function renderList() {

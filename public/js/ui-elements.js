@@ -32,5 +32,6 @@ export const ui = {
 	ghTokenInput: document.getElementById('gh-token'),
 	ghOwnerInput: document.getElementById('gh-owner'),
 	ghRepoInput: document.getElementById('gh-repo'),
-	githubPrBtn: document.getElementById('github-pr-btn')
+	githubPrBtn: document.getElementById('github-pr-btn'),
+	activeAiStreams: 0
 };
