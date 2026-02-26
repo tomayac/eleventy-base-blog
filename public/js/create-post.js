@@ -65,11 +65,13 @@ ui.copyBtn.onclick = () => {
 		setTimeout(() => ui.copyBtn.textContent = oldText, 2000);
 	}).catch(() => customAlert(ui, 'Failed to copy to clipboard.'));
 };
-ui.downloadBtn.onclick = () => {
+ui.downloadBtn.onclick = async () => {
+	await cleanupOrphanedImages(drafts.map(d => d.id));
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	downloadZIP(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
 };
-ui.githubPrBtn.onclick = () => {
+ui.githubPrBtn.onclick = async () => {
+	await cleanupOrphanedImages(drafts.map(d => d.id));
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	createPR(ui, d);
 };
