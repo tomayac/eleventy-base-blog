@@ -42,7 +42,7 @@ export async function updatePreview(currentId, drafts, ui) {
 			if (blobUrl) content = content.replaceAll(`./${img.name}`, blobUrl);
 		}
 	}
-	const tags = ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t && t !== 'posts');
+	const tags = ui.getTags();
 	const tagsHtml = tags.map(t => `<li><a href="#" class="post-tag">${t}</a></li>`).join('');
 	const dateHtml = ui.dateInput.value ? `<time datetime="${ui.dateInput.value}">${formatPreviewDate(ui.dateInput.value)}</time>` : '';
 	ui.previewContent.innerHTML = `<h1>${ui.titleInput.value || 'Untitled'}</h1><ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>${marked.parse(content)}`;

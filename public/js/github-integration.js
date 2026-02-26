@@ -26,7 +26,7 @@ export async function createPR(ui, draft) {
 	if (!owner.value || !repo.value || !token.value) return customAlert(ui, 'Please fill in GitHub settings first.');
 	ui.githubPrBtn.disabled = true; ui.githubPrBtn.textContent = '⏳ Creating...';
 	try {
-		const slug = (ui.titleInput.value || 'untitled').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+		const slug = ui.getSlug(ui.titleInput.value);
 		const branchName = `post-${slug}-${Date.now()}`;
 		const md = generateMarkdown(draft, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
 

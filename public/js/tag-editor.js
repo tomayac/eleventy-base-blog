@@ -1,7 +1,7 @@
 export function initTagEditor(ui, onUpdate) {
 	const renderPills = () => {
 		ui.tagPills.innerHTML = '';
-		const tags = ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+		const tags = ui.getTags();
 		tags.forEach(tag => {
 			const pill = document.createElement('div');
 			pill.className = 'tag-pill';
@@ -25,7 +25,7 @@ export function initTagEditor(ui, onUpdate) {
 			e.preventDefault();
 			const val = ui.tagInput.value.trim().replace(/,/g, '');
 			if (val) {
-				const tags = ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+				const tags = ui.getTags();
 				if (!tags.includes(val)) {
 					tags.push(val);
 					ui.tagsInput.value = tags.join(', ');

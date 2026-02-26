@@ -8,7 +8,7 @@ eleventyExcludeFromCollections: true
 	<div class="editor-sidebar">
 		<div class="sidebar-header">
 			<h2>Drafts</h2>
-			<button id="new-draft-btn" title="New Draft">+</button>
+			<button id="new-draft-btn" class="btn" title="New Draft">+</button>
 		</div>
 		<ul id="drafts-list"></ul>
 		<div class="sidebar-footer">
@@ -50,7 +50,7 @@ eleventyExcludeFromCollections: true
 				<label for="post-title">Title</label>
 				<div class="input-with-action">
 					<input type="text" id="post-title" required placeholder="My Awesome Post">
-					<button type="button" id="ai-suggest-title-btn" class="ai-button" style="display: none;" title="Suggest title using AI">✨</button>
+					<button type="button" id="ai-suggest-title-btn" class="btn ai-button" style="display: none;" title="Suggest title using AI">✨</button>
 				</div>
 			</div>
 
@@ -58,7 +58,7 @@ eleventyExcludeFromCollections: true
 				<label for="post-description">Description</label>
 				<div class="input-with-action">
 					<input type="text" id="post-description" placeholder="A brief summary of the post">
-					<button type="button" id="ai-suggest-description-btn" class="ai-button" style="display: none;" title="Suggest description using AI">✨</button>
+					<button type="button" id="ai-suggest-description-btn" class="btn ai-button" style="display: none;" title="Suggest description using AI">✨</button>
 				</div>
 			</div>
 
@@ -73,7 +73,7 @@ eleventyExcludeFromCollections: true
 					<div id="tag-pills" class="tag-pills"></div>
 					<div class="tag-input-wrapper">
 						<input type="text" id="tag-input" placeholder="Add tag and press Enter...">
-						<button type="button" id="ai-suggest-tags-btn" class="ai-button" style="display: none;" title="Suggest tags using AI">✨</button>
+						<button type="button" id="ai-suggest-tags-btn" class="btn ai-button" style="display: none;" title="Suggest tags using AI">✨</button>
 					</div>
 				</div>
 				<input type="hidden" id="post-tags">
@@ -83,7 +83,7 @@ eleventyExcludeFromCollections: true
 				<label for="post-content">Content (Markdown)</label>
 				<p class="field-hint">💡 Tip: You can drag and drop images directly into the editor or use the button below to place them at the current cursor position.</p>
 				<div class="editor-header-actions">
-					<button type="button" id="upload-btn">📂 Add Images</button>
+					<button type="button" id="upload-btn" class="btn">📂 Add Images</button>
 				</div>
 				<div id="drop-zone">
 					<textarea id="post-content" rows="20" placeholder="Write your post here... Use Markdown for **bold**, *italics*, [links](url), - bullets, or ```code blocks```."></textarea>
@@ -96,7 +96,7 @@ eleventyExcludeFromCollections: true
 				<p class="field-hint">💡 Enter a few bullet points or a teaser, and AI will expand it into a full post.</p>
 				<div class="input-with-action">
 					<textarea id="ai-writer-input" rows="3" placeholder="e.g., - My trip to Tokyo&#10;- Visited Tsukiji market&#10;- Amazing sushi at 5am"></textarea>
-					<button type="button" id="ai-writer-btn" class="ai-button" style="display: none;" title="Expand into a full post">✨</button>
+					<button type="button" id="ai-writer-btn" class="btn ai-button" style="display: none;" title="Expand into a full post">✨</button>
 				</div>
 			</div>
 
@@ -120,7 +120,7 @@ eleventyExcludeFromCollections: true
 							<option value="longer">Longer</option>
 						</select>
 					</div>
-					<button type="button" id="ai-rewriter-btn" class="ai-button" style="display: none;" title="Rewrite content">✨</button>
+					<button type="button" id="ai-rewriter-btn" class="btn ai-button" style="display: none;" title="Rewrite content">✨</button>
 				</div>
 				<div class="editor-footer-actions">
 					<div id="ai-status" style="font-size: 0.7rem; color: #666; display: none;">
@@ -132,9 +132,9 @@ eleventyExcludeFromCollections: true
 		</form>
 
 		<div class="editor-actions">
-			<button id="copy-btn">📋 Copy Markdown</button>
-			<button id="download-btn">💾 Save (.zip)</button>
-			<button id="github-pr-btn">🚀 Create PR</button>
+			<button id="copy-btn" class="btn">📋 Copy Markdown</button>
+			<button id="download-btn" class="btn">💾 Save (.zip)</button>
+			<button id="github-pr-btn" class="btn">🚀 Create PR</button>
 		</div>
 	</div>
 
@@ -148,7 +148,7 @@ eleventyExcludeFromCollections: true
 	<form method="dialog">
 		<p id="alert-message"></p>
 		<div class="dialog-actions">
-			<button class="primary">OK</button>
+			<button class="btn">OK</button>
 		</div>
 	</form>
 </dialog>
@@ -157,8 +157,8 @@ eleventyExcludeFromCollections: true
 	<form method="dialog">
 		<p id="confirm-message"></p>
 		<div class="dialog-actions">
-			<button value="cancel" class="secondary">Cancel</button>
-			<button value="confirm" class="danger">Delete</button>
+			<button value="cancel" class="btn btn-secondary">Cancel</button>
+			<button value="confirm" class="btn btn-danger">Delete</button>
 		</div>
 	</form>
 </dialog>

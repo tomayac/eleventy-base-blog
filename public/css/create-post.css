@@ -1,5 +1,80 @@
+:root {
+	--primary-color: #007bff;
+	--primary-hover: #0056b3;
+	--secondary-color: #6c757d;
+	--secondary-hover: #5a6268;
+	--danger-color: #dc3545;
+	--danger-hover: #c82333;
+	--background-color: #ffffff;
+	--text-color: #333333;
+	--border-color: #cccccc;
+	--sidebar-bg: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background-color: #1a1a1a;
+		--text-color: #ecf0f1;
+		--border-color: #444444;
+		--sidebar-bg: #2c3e50;
+	}
+}
+
 body {
 	max-width: 90em;
+	background-color: var(--background-color);
+	color: var(--text-color);
+}
+
+.btn {
+	padding: 0.6rem 1.2rem;
+	cursor: pointer;
+	border: 1px solid var(--primary-color);
+	background: var(--primary-color);
+	color: white;
+	border-radius: 6px;
+	font-weight: 600;
+	transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.btn:hover {
+	background: var(--primary-hover);
+	border-color: var(--primary-hover);
+	transform: scale(1.05);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn:disabled {
+	background: var(--secondary-color);
+	border-color: var(--secondary-color);
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+.btn-secondary {
+	background: var(--secondary-color);
+	border-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+	background: var(--secondary-hover);
+	border-color: var(--secondary-hover);
+}
+
+.btn-danger {
+	background: var(--danger-color);
+	border-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+	background: var(--danger-hover);
+	border-color: var(--danger-hover);
 }
 
 .editor-container {
@@ -43,9 +118,9 @@ body {
 	border-radius: 50%;
 	width: 32px;
 	height: 32px;
-	background: #007bff;
+	background: var(--primary-color);
 	color: white;
-	border: 1px solid #007bff;
+	border: 1px solid var(--primary-color);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -54,8 +129,8 @@ body {
 }
 
 #new-draft-btn:hover {
-	background: #0056b3;
-	border-color: #0056b3;
+	background: var(--primary-hover);
+	border-color: var(--primary-hover);
 	transform: scale(1.1);
 }
 
@@ -106,7 +181,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
 	#drafts-list li {
-		color: #ecf0f1;
+		color: var(--text-color);
 	}
 	#drafts-list li:hover {
 		background: rgba(255, 255, 255, 0.05);
@@ -115,7 +190,7 @@ body {
 
 #drafts-list li.active {
 	background: var(--background-color);
-	border-color: #ccc;
+	border-color: var(--border-color);
 	border-right: 2px solid var(--background-color);
 	margin-right: -1px;
 	position: relative;
@@ -125,11 +200,11 @@ body {
 
 @media (prefers-color-scheme: dark) {
 	#drafts-list li.active {
-		border-color: #444;
+		border-color: var(--border-color);
 		background: var(--background-color);
 	}
 	.editor-sidebar {
-		border-color: #444;
+		border-color: var(--border-color);
 	}
 }
 
@@ -169,41 +244,10 @@ body {
 	transform: scale(1.2);
 }
 
-.editor-header-actions button, .editor-actions button, .editor-footer-actions button, #github-pr-btn, .ai-button {
-	padding: 0.6rem 1.2rem;
-	cursor: pointer;
-	border: 1px solid #007bff;
-	background: #007bff;
-	color: white;
-	border-radius: 6px;
-	font-weight: 600;
-	transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.editor-header-actions button:hover, .editor-actions button:hover, .editor-footer-actions button:hover, #github-pr-btn:hover, .ai-button:hover {
-	background: #0056b3;
-	border-color: #0056b3;
-	transform: scale(1.05);
-	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.editor-header-actions button:disabled, .editor-actions button:disabled, .editor-footer-actions button:disabled, #github-pr-btn:disabled, .ai-button:disabled {
-	background: #6c757d;
-	border-color: #6c757d;
-	cursor: not-allowed;
-	transform: none;
-	box-shadow: none;
-}
-
 .ai-button {
 	width: 40px !important;
 	height: 38px !important;
 	padding: 0 !important;
-	justify-content: center !important;
 	flex-shrink: 0;
 	font-size: 1.1rem;
 }
@@ -289,14 +333,14 @@ body {
 	height: 20px;
 	font-size: 14px;
 	text-decoration: none;
-	color: #007bff;
+	color: var(--primary-color);
 	opacity: 0.6;
 	transition: opacity 0.2s, transform 0.2s;
 	transform-origin: center center;
 }
 
 .help-icon:hover {
-	color: #007bff;
+	color: var(--primary-color);
 	opacity: 1;
 	transform: scale(1.2);
 }
@@ -347,7 +391,7 @@ body {
 }
 
 .tag-pill {
-	background: #007bff; color: white; padding: 0.2rem 0.6rem;
+	background: var(--primary-color); color: white; padding: 0.2rem 0.6rem;
 	border-radius: 20px; display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;
 	text-transform: capitalize;
 	font-style: italic;
@@ -524,48 +568,6 @@ dialog p {
 	justify-content: flex-end;
 	gap: 1rem;
 	margin-top: 1.5rem;
-}
-
-.dialog-actions button {
-	padding: 0.6rem 1.2rem;
-	cursor: pointer;
-	border: 1px solid #007bff;
-	background: #007bff;
-	color: white;
-	border-radius: 6px;
-	font-weight: 600;
-	transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.dialog-actions button:hover {
-	background: #0056b3;
-	border-color: #0056b3;
-	transform: scale(1.05);
-	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.dialog-actions button.secondary {
-	background: #6c757d;
-	border-color: #6c757d;
-}
-
-.dialog-actions button.secondary:hover {
-	background: #5a6268;
-	border-color: #5a6268;
-}
-
-.dialog-actions button.danger {
-	background: #dc3545;
-	border-color: #dc3545;
-}
-
-.dialog-actions button.danger:hover {
-	background: #c82333;
-	border-color: #bd2130;
 }
 
 @media (max-width: 1000px) {

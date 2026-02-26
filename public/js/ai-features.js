@@ -1,37 +1,58 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 
-const getSummarizerOptions = (ui, lang, type) => ({
-	type, format: 'plain-text', expectedInputLanguages: [lang], outputLanguage: lang,
+export const getMonitor = (ui, lang, modelName) => ({
 	monitor(m) {
 		m.addEventListener('downloadprogress', (e) => {
 			ui.aiStatus.style.display = 'flex';
 			ui.aiDownloadProgress.value = e.loaded; ui.aiDownloadProgress.max = e.total;
-			ui.aiStatusText.textContent = `Downloading AI (${lang}): ${Math.round((e.loaded / e.total) * 100)}%`;
+			ui.aiStatusText.textContent = `Downloading ${modelName} (${lang}): ${Math.round((e.loaded / e.total) * 100)}%`;
 			if (e.loaded === e.total) setTimeout(() => ui.aiStatus.style.display = 'none', 2000);
 		});
 	}
 });
 
+export async function runAIAction(ui, btn, actionFn, updateCallback) {
+	btn.disabled = true;
+	const oldText = btn.textContent;
+	btn.textContent = '⏳';
+	ui.activeAiStreams++;
+	try {
+		await actionFn();
+	} catch (err) {
+		console.error(err);
+		customAlert(ui, 'AI Action failed.');
+	} finally {
+		ui.activeAiStreams--;
+		btn.disabled = false;
+		btn.textContent = oldText === '⏳' ? '✨' : oldText;
+		updateCallback();
+	}
+}
+
+const getSummarizerOptions = (ui, lang, type) => ({
+	type, format: 'plain-text', expectedInputLanguages: [lang], outputLanguage: lang,
+	...getMonitor(ui, lang, 'AI Summarizer')
+});
+
 async function runSummarizer(ui, type, input, targetInput, updateCallback) {
 	if (!input || input.length < 20) return customAlert(ui, 'Please write some content first.');
 	const btn = type === 'headline' ? ui.aiSuggestTitleBtn : ui.aiSuggestDescriptionBtn;
-	btn.disabled = true; btn.textContent = '⏳'; targetInput.value = '';
-	ui.activeAiStreams++;
-	try {
+	
+	await runAIAction(ui, btn, async () => {
 		const lang = await detectLanguage(input);
 		const options = getSummarizerOptions(ui, lang, type);
 		const status = await Summarizer.availability(options);
 		if (status === 'unavailable') throw new Error(`Summarizer unavailable for: ${lang}`);
 		const summarizer = await Summarizer.create(options);
 		const stream = summarizer.summarizeStreaming(input);
+		targetInput.value = '';
 		for await (const chunk of stream) {
 			targetInput.value += chunk; updateCallback();
 		}
 		targetInput.value = targetInput.value.trim().replace(/^["']|["']$/g, '');
 		if (type === 'headline') targetInput.value = targetInput.value.replace(/\.$/, '');
-	} catch (err) { console.error(err); customAlert(ui, 'AI Suggestion failed.'); }
-	finally { ui.activeAiStreams--; btn.disabled = false; btn.textContent = '✨'; updateCallback(); }
+	}, updateCallback);
 }
 
 export async function initAI(ui, updateCallback) {

@@ -37,5 +37,7 @@ export const ui = {
 	ghOwnerInput: document.getElementById('gh-owner'),
 	ghRepoInput: document.getElementById('gh-repo'),
 	githubPrBtn: document.getElementById('github-pr-btn'),
-	activeAiStreams: 0
+	activeAiStreams: 0,
+	getTags: () => ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t && t !== 'posts'),
+	getSlug: (title) => (title || 'untitled').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
 };

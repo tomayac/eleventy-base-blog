@@ -1,5 +1,6 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
+import { runAIAction } from './ai-features.js';
 
 export async function initTagSuggestions(ui, updateCallback) {
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
@@ -18,18 +19,19 @@ export async function initTagSuggestions(ui, updateCallback) {
 	ui.aiSuggestTagsBtn.onclick = async () => {
 		const content = ui.contentInput.value;
 		if (!content || content.length < 20) return customAlert(ui, 'Please write some content first.');
-		ui.aiSuggestTagsBtn.disabled = true; ui.aiSuggestTagsBtn.textContent = '⏳';
-		const onlyExisting = ui.aiOnlyExistingTagsToggle.checked;
-		const finalTags = new Map(); ui.activeAiStreams++;
-		const addTags = (tags) => {
-			if (!Array.isArray(tags)) return;
-			tags.forEach(t => {
-				const trimmed = t.trim(); const lower = trimmed.toLowerCase();
-				if (trimmed && !finalTags.has(lower)) finalTags.set(lower, trimmed);
-			});
-			ui.tagsInput.value = Array.from(finalTags.values()).join(', '); updateCallback();
-		};
-		try {
+		
+		await runAIAction(ui, ui.aiSuggestTagsBtn, async () => {
+			const onlyExisting = ui.aiOnlyExistingTagsToggle.checked;
+			const finalTags = new Map();
+			const addTags = (tags) => {
+				if (!Array.isArray(tags)) return;
+				tags.forEach(t => {
+					const trimmed = t.trim(); const lower = trimmed.toLowerCase();
+					if (trimmed && !finalTags.has(lower)) finalTags.set(lower, trimmed);
+				});
+				ui.tagsInput.value = Array.from(finalTags.values()).join(', '); updateCallback();
+			};
+
 			const lang = await detectLanguage(content); const schema = await fetchSchema();
 			const runRestricted = async () => {
 				const opts = { initialPrompts: [{ role: 'system', content: `Suggest tags for this blog post in ${lang}. Only use the tags provided in the schema.` }] };
@@ -45,7 +47,6 @@ export async function initTagSuggestions(ui, updateCallback) {
 			};
 			const tasks = [runRestricted()]; if (!onlyExisting) tasks.push(runFreeform());
 			await Promise.all(tasks);
-		} catch (err) { console.error(err); customAlert(ui, 'Tag suggestion failed.'); }
-		finally { ui.activeAiStreams--; ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨'; updateCallback(); }
+		}, updateCallback);
 	};
 }

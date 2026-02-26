@@ -1,18 +1,12 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
+import { getMonitor, runAIAction } from './ai-features.js';
 
 const getRewriterOptions = (ui, lang) => ({
 	sharedContext: 'The user is rewriting a blog post.',
 	tone: ui.aiRewriterTone.value, format: 'markdown', length: ui.aiRewriterLength.value,
 	expectedInputLanguages: [lang], outputLanguage: lang,
-	monitor(m) {
-		m.addEventListener('downloadprogress', (e) => {
-			ui.aiStatus.style.display = 'flex';
-			ui.aiDownloadProgress.value = e.loaded; ui.aiDownloadProgress.max = e.total;
-			ui.aiStatusText.textContent = `Downloading Rewriter (${lang}): ${Math.round((e.loaded / e.total) * 100)}%`;
-			if (e.loaded === e.total) setTimeout(() => ui.aiStatus.style.display = 'none', 2000);
-		});
-	}
+	...getMonitor(ui, lang, 'Rewriter')
 });
 
 export async function initAIRewriter(ui, updateCallback) {
@@ -28,13 +22,9 @@ export async function initAIRewriter(ui, updateCallback) {
 		const fullContent = ui.contentInput.value.trim();
 		if (!fullContent) return customAlert(ui, 'Please write some content first.');
 
-		ui.aiRewriterBtn.disabled = true; ui.aiRewriterBtn.textContent = '⏳';
-		ui.activeAiStreams++; 
-		
-		const parts = fullContent.split(/(<figure>[\s\S]*?<\/figure>)/g);
-		ui.contentInput.value = '';
-		
-		try {
+		await runAIAction(ui, ui.aiRewriterBtn, async () => {
+			const parts = fullContent.split(/(<figure>[\s\S]*?<\/figure>)/g);
+			ui.contentInput.value = '';
 			const lang = await detectLanguage(fullContent);
 			const options = getRewriterOptions(ui, lang);
 			const rewriter = await Rewriter.create(options);
@@ -51,14 +41,10 @@ export async function initAIRewriter(ui, updateCallback) {
 					}
 				}
 			}
-		} catch (err) { console.error(err); customAlert(ui, 'Rewriting failed.'); }
-		finally {
-			ui.activeAiStreams--;
-			ui.aiRewriterBtn.disabled = false;
-			ui.aiRewriterBtn.textContent = '✨';
+		}, () => {
 			ui.aiRewriterTone.value = 'as-is';
 			ui.aiRewriterLength.value = 'as-is';
 			updateCallback();
-		}
+		});
 	};
 }

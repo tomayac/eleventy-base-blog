@@ -19,9 +19,15 @@ const debouncedPreview = debounce((id, ui) => {
 	updatePreview(id, drafts, ui);
 }, 300);
 
-const sync = () => {
+let lastSyncedTitle = '';
+const sync = (e) => {
 	const id = localStorage.getItem('current-draft-id');
-	updateDraftData(id, ui); debouncedPreview(id, ui); renderList();
+	updateDraftData(id, ui);
+	debouncedPreview(id, ui);
+	if (ui.titleInput.value !== lastSyncedTitle) {
+		renderList();
+		lastSyncedTitle = ui.titleInput.value;
+	}
 };
 
 function renderList() {
@@ -44,6 +50,7 @@ function loadDraft(id) {
 	ui.titleInput.value = d.title || ''; ui.descInput.value = d.description || '';
 	ui.dateInput.value = d.date || ''; ui.tagsInput.value = d.tags || '';
 	ui.contentInput.value = d.content || '';
+	lastSyncedTitle = ui.titleInput.value;
 	tagEditor.renderPills(); updatePreview(id, drafts, ui); renderList();
 }
 
