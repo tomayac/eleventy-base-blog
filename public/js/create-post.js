@@ -1,5 +1,5 @@
 import { ui } from './ui-elements.js';
-import { drafts, createNewDraft, deleteDraft, updateDraftData } from './draft-manager.js';
+import { drafts, createNewDraft, deleteDraft, updateDraftData, performHousekeeping } from './draft-manager.js';
 import { updatePreview, handleFiles } from './editor-logic.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initAI } from './ai-features.js';
@@ -11,7 +11,6 @@ import { initAIToggle } from './ai-toggle.js';
 import { parseFrontmatter, populateUIFromMetadata } from './frontmatter-parser.js';
 import { customAlert } from './dialog-utils.js';
 import { initGitHubSync, createPR } from './github-integration.js';
-import { cleanupOrphanedImages } from './db-storage.js';
 import { debounce } from './debounce.js';
 
 const tagEditor = initTagEditor(ui, () => sync());
@@ -66,12 +65,12 @@ ui.copyBtn.onclick = () => {
 	}).catch(() => customAlert(ui, 'Failed to copy to clipboard.'));
 };
 ui.downloadBtn.onclick = async () => {
-	await cleanupOrphanedImages(drafts.map(d => d.id));
+	await performHousekeeping();
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	downloadZIP(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
 };
 ui.githubPrBtn.onclick = async () => {
-	await cleanupOrphanedImages(drafts.map(d => d.id));
+	await performHousekeeping();
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	createPR(ui, d);
 };
@@ -105,5 +104,5 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 		initAIWriter(ui, sync), initAIRewriter(ui, sync)
 	]);
 	initAIToggle(ui);
-	await cleanupOrphanedImages(drafts.map(d => d.id));
+	await performHousekeeping();
 })();

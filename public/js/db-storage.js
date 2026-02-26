@@ -38,7 +38,7 @@ export async function deleteImagesForDraft(draftId) {
 	};
 }
 
-export async function cleanupOrphanedImages(activeDraftIds) {
+export async function cleanupOrphanedImages(validImageIds) {
 	const db = await dbPromise;
 	const tx = db.transaction('images', 'readwrite');
 	const store = tx.objectStore('images');
@@ -46,8 +46,7 @@ export async function cleanupOrphanedImages(activeDraftIds) {
 	request.onsuccess = (event) => {
 		const cursor = event.target.result;
 		if (cursor) {
-			const ownerId = cursor.key.split(':')[0];
-			if (!activeDraftIds.includes(ownerId)) store.delete(cursor.key);
+			if (!validImageIds.includes(cursor.key)) store.delete(cursor.key);
 			cursor.continue();
 		}
 	};

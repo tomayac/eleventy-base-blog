@@ -22,6 +22,25 @@ export function createNewDraft(ui, loadDraftFn, renderListFn) {
 	renderListFn();
 }
 
+export async function performHousekeeping() {
+	const allValidImageIds = [];
+	drafts.forEach(draft => {
+		if (!draft.imageFiles) return;
+		// Find all ./image-name.ext references in the content
+		const referencedNames = new Set();
+		const matches = draft.content.matchAll(/\.\/([^)\s"'>]+)/g);
+		for (const match of matches) {
+			referencedNames.add(match[1]);
+		}
+		// Filter imageFiles to only those referenced in content
+		draft.imageFiles = draft.imageFiles.filter(img => referencedNames.has(img.name));
+		// Collect IDs for IDB cleanup
+		draft.imageFiles.forEach(img => allValidImageIds.push(img.id));
+	});
+	saveDrafts();
+	await cleanupOrphanedImages(allValidImageIds);
+}
+
 export async function deleteDraft(id, ui, createNewDraftFn, loadDraftFn, renderListFn) {
 	const confirmed = await customConfirm(ui, 'Are you sure you want to delete this draft?');
 	if (!confirmed) return;
@@ -29,8 +48,8 @@ export async function deleteDraft(id, ui, createNewDraftFn, loadDraftFn, renderL
 	drafts = drafts.filter(d => d.id !== id);
 	saveDrafts();
 	
-	// Comprehensive cleanup of any other orphaned images
-	await cleanupOrphanedImages(drafts.map(d => d.id));
+	// Comprehensive cleanup
+	await performHousekeeping();
 	
 	if (currentDraftId === id) {
 		if (drafts.length > 0) loadDraftFn(drafts[0].id);
