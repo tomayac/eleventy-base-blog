@@ -10,6 +10,8 @@ export function initAIToggle(ui) {
 			.some(btn => btn.getAttribute('data-ai-available') === 'true');
 		if (ui.aiWriterSection) ui.aiWriterSection.style.display = (enabled && isAiSupported) ? 'block' : 'none';
 		if (!enabled && ui.aiStatus) ui.aiStatus.style.display = 'none';
+		if (ui.aiOnlyExistingTagsToggle) ui.aiOnlyExistingTagsToggle.parentElement.style.display = enabled ? 'flex' : 'none';
+		
 		[ui.aiSuggestTitleBtn, ui.aiSuggestDescriptionBtn, ui.aiSuggestTagsBtn, ui.aiWriterBtn].forEach(btn => {
 			if (btn) {
 				const parent = btn.parentElement;
@@ -21,23 +23,32 @@ export function initAIToggle(ui) {
 		});
 	};
 
-	const savedPreference = localStorage.getItem('ai-features-enabled');
-	const isEnabled = savedPreference === null ? true : savedPreference === 'true';
-	ui.aiFeaturesToggle.checked = isEnabled;
+	const savedAiEnabled = localStorage.getItem('ai-features-enabled');
+	const aiEnabled = savedAiEnabled === null ? true : savedAiEnabled === 'true';
+	ui.aiFeaturesToggle.checked = aiEnabled;
+
+	const savedOnlyExisting = localStorage.getItem('ai-only-existing-tags');
+	const onlyExisting = savedOnlyExisting === 'true'; // false by default
+	ui.aiOnlyExistingTagsToggle.checked = onlyExisting;
+
 	setBtnAvailable();
-	updateVisibility(isEnabled);
+	updateVisibility(aiEnabled);
 
 	ui.aiFeaturesToggle.addEventListener('change', () => {
-		const enabled = ui.aiFeaturesToggle.checked;
-		localStorage.setItem('ai-features-enabled', enabled);
-		updateVisibility(enabled);
+		localStorage.setItem('ai-features-enabled', ui.aiFeaturesToggle.checked);
+		updateVisibility(ui.aiFeaturesToggle.checked);
+	});
+
+	ui.aiOnlyExistingTagsToggle.addEventListener('change', () => {
+		localStorage.setItem('ai-only-existing-tags', ui.aiOnlyExistingTagsToggle.checked);
 	});
 
 	window.addEventListener('storage', (e) => {
 		if (e.key === 'ai-features-enabled') {
-			const enabled = e.newValue === 'true';
-			ui.aiFeaturesToggle.checked = enabled;
-			updateVisibility(enabled);
+			ui.aiFeaturesToggle.checked = e.newValue === 'true';
+			updateVisibility(ui.aiFeaturesToggle.checked);
+		} else if (e.key === 'ai-only-existing-tags') {
+			ui.aiOnlyExistingTagsToggle.checked = e.newValue === 'true';
 		}
 	});
 }

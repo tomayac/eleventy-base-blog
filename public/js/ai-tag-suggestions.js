@@ -11,7 +11,6 @@ export async function initTagSuggestions(ui, updateCallback) {
 	};
 
 	try {
-		// Use a base options object for the initial availability check
 		const status = await LanguageModel.availability({
 			initialPrompts: [{ role: 'system', content: 'Suggest tags for this blog post.' }]
 		});
@@ -22,27 +21,57 @@ export async function initTagSuggestions(ui, updateCallback) {
 		const content = ui.contentInput.value;
 		if (!content || content.length < 20) return customAlert(ui, 'Please write some content first.');
 		ui.aiSuggestTagsBtn.disabled = true; ui.aiSuggestTagsBtn.textContent = '⏳';
-		let fullResponse = '';
+		
+		const onlyExisting = ui.aiOnlyExistingTagsToggle.checked;
+		const finalTags = new Map(); // lowercase -> original case
+		
+		const addTags = (tags) => {
+			if (!Array.isArray(tags)) return;
+			tags.forEach(t => {
+				const trimmed = t.trim();
+				const lower = trimmed.toLowerCase();
+				if (trimmed && !finalTags.has(lower)) {
+					finalTags.set(lower, trimmed);
+				}
+			});
+			ui.tagsInput.value = Array.from(finalTags.values()).join(', ');
+			updateCallback();
+		};
+
 		try {
 			const lang = await detectLanguage(content);
 			const schema = await fetchSchema();
-			const options = {
-				initialPrompts: [{ role: 'system', content: `Suggest tags for this blog post in ${lang}. Only use the tags provided in the schema.` }]
+			
+			const runRestricted = async () => {
+				const opts = { initialPrompts: [{ role: 'system', content: `Suggest tags for this blog post in ${lang}. Only use the tags provided in the schema.` }] };
+				const session = await LanguageModel.create(opts);
+				let full = '';
+				const stream = session.promptStreaming(`Content: ${content}`, { responseConstraint: schema });
+				for await (const chunk of stream) {
+					full += chunk;
+					try { addTags(JSON.parse(full).tags); } catch (e) {}
+				}
 			};
-			const status = await LanguageModel.availability(options);
-			if (status === 'unavailable') throw new Error('LanguageModel unavailable');
-			const session = await LanguageModel.create(options);
-			const stream = session.promptStreaming(`Content: ${content}`, { responseConstraint: schema });
-			for await (const chunk of stream) {
-				fullResponse += chunk;
-				try {
-					const suggestedTags = JSON.parse(fullResponse).tags;
-					if (suggestedTags && Array.isArray(suggestedTags)) {
-						ui.tagsInput.value = suggestedTags.join(', '); updateCallback();
-					}
-				} catch (e) { /* Partial JSON parsing fails */ }
-			}
-		} catch (err) { console.error(err); alert('Tag suggestion failed.'); }
-		finally { ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨'; }
+
+			const runFreeform = async () => {
+				const opts = { initialPrompts: [{ role: 'system', content: `Suggest 3-5 appropriate tags for this blog post in ${lang}. Return them as a JSON object: {"tags": ["tag1", "tag2"]}.` }] };
+				const session = await LanguageModel.create(opts);
+				let full = '';
+				const stream = session.promptStreaming(`Content: ${content}`, { responseConstraint: { type: "object", properties: { tags: { type: "array", items: { type: "string" } } } } });
+				for await (const chunk of stream) {
+					full += chunk;
+					try { addTags(JSON.parse(full).tags); } catch (e) {}
+				}
+			};
+
+			const tasks = [runRestricted()];
+			if (!onlyExisting) tasks.push(runFreeform());
+			
+			await Promise.all(tasks);
+		} catch (err) {
+			console.error(err); customAlert(ui, 'Tag suggestion failed.');
+		} finally {
+			ui.aiSuggestTagsBtn.disabled = false; ui.aiSuggestTagsBtn.textContent = '✨';
+		}
 	};
 }
