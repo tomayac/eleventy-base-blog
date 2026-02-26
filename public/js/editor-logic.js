@@ -1,5 +1,6 @@
 import { saveImage, getImage } from './db-storage.js';
 import { generateImageMetadata } from './ai-multimodal.js';
+import { saveDrafts } from './draft-manager.js';
 
 function formatPreviewDate(dateStr) {
 	if (!dateStr) return '';
@@ -77,6 +78,7 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 
 			await saveImage(id, buffer);
 			draft.imageFiles.push({ name: file.name, id, type: file.type });
+			saveDrafts();
 			
 			const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
 			const before = ui.contentInput.value.substring(0, start);

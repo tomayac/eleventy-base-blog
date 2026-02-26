@@ -8,6 +8,10 @@ export function saveDrafts() {
 	localStorage.setItem('blog-drafts', JSON.stringify(drafts));
 }
 
+export function saveCurrentDraft(id, ui) {
+	updateDraftData(id, ui);
+}
+
 export function createNewDraft(ui, loadDraftFn, renderListFn) {
 	const id = Date.now().toString();
 	const newDraft = {
