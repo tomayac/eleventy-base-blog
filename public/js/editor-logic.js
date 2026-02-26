@@ -35,7 +35,8 @@ export async function updatePreview(currentId, drafts, ui) {
 			if (!blobUrl) {
 				const data = await getImage(img.id);
 				if (data) {
-					blobUrl = URL.createObjectURL(new Blob([data]));
+					const type = img.type || (img.name.toLowerCase().endsWith('.svg') ? 'image/svg+xml' : 'image/jpeg');
+					blobUrl = URL.createObjectURL(new Blob([data], { type }));
 					blobCache.set(img.id, blobUrl);
 				}
 			}
@@ -67,7 +68,7 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 				const img = new Image();
 				img.onload = () => resolve({ width: img.width, height: img.height });
 				img.onerror = () => resolve({ width: '', height: '' });
-				img.src = URL.createObjectURL(new Blob([buffer]));
+				img.src = URL.createObjectURL(new Blob([buffer], { type: file.type }));
 			});
 
 			const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
@@ -75,7 +76,7 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 			const caption = aiMeta?.caption || "Caption here";
 
 			await saveImage(id, buffer);
-			draft.imageFiles.push({ name: file.name, id });
+			draft.imageFiles.push({ name: file.name, id, type: file.type });
 			
 			const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
 			const before = ui.contentInput.value.substring(0, start);

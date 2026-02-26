@@ -37,17 +37,52 @@ export async function generateImageMetadata(blob, ui) {
 		const session = await LanguageModel.create(options);
 		
 		// Prompt structure as per SKILL.md for multimodal content
-		const response = await session.prompt([
-			{
-				role: 'user',
-				content: [
-					{ type: 'text', value: "Describe this image for a blog post. Focus on a concise alt text for accessibility and a creative caption." },
-					{ type: 'image', value: blob }
-				]
+		let imageValue;
+		let shouldClose = false;
+		try {
+			if (blob.type === 'image/svg+xml') {
+				// SVGs must be drawn to a canvas to be rasterized for createImageBitmap
+				const url = URL.createObjectURL(blob);
+				try {
+					const img = new Image();
+					await new Promise((resolve, reject) => {
+						img.onload = resolve;
+						img.onerror = reject;
+						img.src = url;
+					});
+					const canvas = document.createElement('canvas');
+					canvas.width = img.width || 512;
+					canvas.height = img.height || 512;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+					imageValue = await createImageBitmap(canvas);
+				} finally {
+					URL.revokeObjectURL(url);
+				}
+			} else {
+				imageValue = await createImageBitmap(blob);
 			}
-		], { responseConstraint: imageMetadataSchema });
+			shouldClose = true;
+		} catch (e) {
+			console.warn("createImageBitmap failed, falling back to Blob", e);
+			imageValue = blob;
+		}
 
-		return JSON.parse(response);
+		try {
+			const response = await session.prompt([
+				{
+					role: 'user',
+					content: [
+						{ type: 'text', value: "Describe this image for a blog post. Focus on a concise alt text for accessibility and a creative caption." },
+						{ type: 'image', value: imageValue }
+					]
+				}
+			], { responseConstraint: imageMetadataSchema });
+
+			return JSON.parse(response);
+		} finally {
+			if (shouldClose && imageValue.close) imageValue.close();
+		}
 	} catch (e) {
 		console.warn("Multimodal AI metadata generation failed", e);
 		return null;

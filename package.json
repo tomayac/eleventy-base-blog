@@ -52,6 +52,6 @@
 		"built-in-ai-task-apis-polyfills": "^1.4.0",
 		"input-switch-polyfill": "^1.11.0",
 		"marked": "^17.0.3",
-		"prompt-api-polyfill": "^1.4.0"
+		"prompt-api-polyfill": "^1.10.0"
 	}
 }
