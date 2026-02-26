@@ -50,7 +50,7 @@ eleventyExcludeFromCollections: true
 				<label for="post-title">Title</label>
 				<div class="input-with-action">
 					<input type="text" id="post-title" required placeholder="My Awesome Post">
-					<button type="button" id="ai-suggest-title-btn" style="display: none;" title="Suggest title using AI">✨</button>
+					<button type="button" id="ai-suggest-title-btn" class="ai-button" style="display: none;" title="Suggest title using AI">✨</button>
 				</div>
 			</div>
 
@@ -58,7 +58,7 @@ eleventyExcludeFromCollections: true
 				<label for="post-description">Description</label>
 				<div class="input-with-action">
 					<input type="text" id="post-description" placeholder="A brief summary of the post">
-					<button type="button" id="ai-suggest-description-btn" style="display: none;" title="Suggest description using AI">✨</button>
+					<button type="button" id="ai-suggest-description-btn" class="ai-button" style="display: none;" title="Suggest description using AI">✨</button>
 				</div>
 			</div>
 
@@ -73,7 +73,7 @@ eleventyExcludeFromCollections: true
 					<div id="tag-pills" class="tag-pills"></div>
 					<div class="tag-input-wrapper">
 						<input type="text" id="tag-input" placeholder="Add tag and press Enter...">
-						<button type="button" id="ai-suggest-tags-btn" style="display: none;" title="Suggest tags using AI">✨</button>
+						<button type="button" id="ai-suggest-tags-btn" class="ai-button" style="display: none;" title="Suggest tags using AI">✨</button>
 					</div>
 				</div>
 				<input type="hidden" id="post-tags">
@@ -96,7 +96,31 @@ eleventyExcludeFromCollections: true
 				<p class="field-hint">💡 Enter a few bullet points or a teaser, and AI will expand it into a full post.</p>
 				<div class="input-with-action">
 					<textarea id="ai-writer-input" rows="3" placeholder="e.g., - My trip to Tokyo&#10;- Visited Tsukiji market&#10;- Amazing sushi at 5am"></textarea>
-					<button type="button" id="ai-writer-btn" style="display: none;" title="Expand into a full post">✨</button>
+					<button type="button" id="ai-writer-btn" class="ai-button" style="display: none;" title="Expand into a full post">✨</button>
+				</div>
+			</div>
+
+			<div class="form-group ai-rewriter-section" style="display: none;">
+				<label>Rewrite content</label>
+				<p class="field-hint">💡 Refine your post content with specific tone and length. (Markdown layout is preserved)</p>
+				<div class="rewriter-options">
+					<div class="rewriter-option-group">
+						<label for="ai-rewriter-tone">Tone</label>
+						<select id="ai-rewriter-tone">
+							<option value="as-is">As-is</option>
+							<option value="more-formal">More Formal</option>
+							<option value="more-casual">More Casual</option>
+						</select>
+					</div>
+					<div class="rewriter-option-group">
+						<label for="ai-rewriter-length">Length</label>
+						<select id="ai-rewriter-length">
+							<option value="as-is">As-is</option>
+							<option value="shorter">Shorter</option>
+							<option value="longer">Longer</option>
+						</select>
+					</div>
+					<button type="button" id="ai-rewriter-btn" class="ai-button" style="display: none;" title="Rewrite content">✨</button>
 				</div>
 				<div class="editor-footer-actions">
 					<div id="ai-status" style="font-size: 0.7rem; color: #666; display: none;">

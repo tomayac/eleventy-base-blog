@@ -23,14 +23,23 @@ function wrapText(text, limit) {
 	return lines.join('\n    ');
 }
 
+const blobCache = new Map();
+
 export async function updatePreview(currentId, drafts, ui) {
 	const draft = drafts.find(d => d.id === currentId);
 	if (!draft) return;
 	let content = ui.contentInput.value;
 	if (draft.imageFiles) {
 		for (const img of draft.imageFiles) {
-			const data = await getImage(img.id);
-			if (data) content = content.replaceAll(`./${img.name}`, URL.createObjectURL(new Blob([data])));
+			let blobUrl = blobCache.get(img.id);
+			if (!blobUrl) {
+				const data = await getImage(img.id);
+				if (data) {
+					blobUrl = URL.createObjectURL(new Blob([data]));
+					blobCache.set(img.id, blobUrl);
+				}
+			}
+			if (blobUrl) content = content.replaceAll(`./${img.name}`, blobUrl);
 		}
 	}
 	const tags = ui.tagsInput.value.split(',').map(t => t.trim()).filter(t => t && t !== 'posts');
@@ -72,9 +81,12 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 			const before = ui.contentInput.value.substring(0, start);
 			const after = ui.contentInput.value.substring(end);
 			const cleanBefore = before.replace(/\n+$/, '');
-			const needsNewlines = cleanBefore.length > 0;
+			const cleanAfter = after.replace(/^\n+/, '');
 			
-			const imgTag = `${needsNewlines ? '\n\n' : ''}<figure>
+			const needsNewlinesBefore = cleanBefore.length > 0;
+			const needsNewlinesAfter = cleanAfter.length > 0;
+			
+			const imgTag = `${needsNewlinesBefore ? '\n\n' : ''}<figure>
   <img
       src="./${file.name}"
       alt="${altText}"
@@ -83,9 +95,9 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
   <figcaption>
     ${wrapText(caption, 80)}
   </figcaption>
-</figure>\n`;
+</figure>${needsNewlinesAfter ? '\n\n' : '\n'}`;
 			
-			ui.contentInput.value = cleanBefore + imgTag + after;
+			ui.contentInput.value = cleanBefore + imgTag + cleanAfter;
 		}
 	} finally {
 		ui.uploadBtn.disabled = false;

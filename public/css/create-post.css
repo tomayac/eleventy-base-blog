@@ -169,7 +169,7 @@ body {
 	transform: scale(1.2);
 }
 
-.editor-header-actions button, .editor-actions button, .editor-footer-actions button, #github-pr-btn {
+.editor-header-actions button, .editor-actions button, .editor-footer-actions button, #github-pr-btn, .ai-button {
 	padding: 0.6rem 1.2rem;
 	cursor: pointer;
 	border: 1px solid #007bff;
@@ -184,16 +184,14 @@ body {
 	gap: 0.5rem;
 }
 
-.editor-header-actions button:hover, .editor-actions button:hover, .editor-footer-actions button:hover, #github-pr-btn:hover,
-#ai-suggest-title-btn:hover, #ai-suggest-description-btn:hover, #ai-suggest-tags-btn:hover, #ai-writer-btn:hover {
+.editor-header-actions button:hover, .editor-actions button:hover, .editor-footer-actions button:hover, #github-pr-btn:hover, .ai-button:hover {
 	background: #0056b3;
 	border-color: #0056b3;
 	transform: scale(1.05);
 	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.editor-header-actions button:disabled, .editor-actions button:disabled, .editor-footer-actions button:disabled, #github-pr-btn:disabled,
-#ai-suggest-title-btn:disabled, #ai-suggest-description-btn:disabled, #ai-suggest-tags-btn:disabled, #ai-writer-btn:disabled {
+.editor-header-actions button:disabled, .editor-actions button:disabled, .editor-footer-actions button:disabled, #github-pr-btn:disabled, .ai-button:disabled {
 	background: #6c757d;
 	border-color: #6c757d;
 	cursor: not-allowed;
@@ -201,37 +199,61 @@ body {
 	box-shadow: none;
 }
 
-#ai-suggest-title-btn, #ai-suggest-description-btn, #ai-suggest-tags-btn, #ai-writer-btn {
-	width: 40px;
-	height: 38px;
-	padding: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.ai-button {
+	width: 40px !important;
+	height: 38px !important;
+	padding: 0 !important;
+	justify-content: center !important;
 	flex-shrink: 0;
-	background: #007bff;
-	border: 1px solid #007bff;
-	color: white;
-	border-radius: 6px;
 	font-size: 1.1rem;
-	cursor: pointer;
-	transition: background 0.2s, transform 0.2s;
 }
 
-.ai-writer-section {
+.ai-writer-section, .ai-rewriter-section {
 	margin-top: 0;
 	padding-top: 1rem;
 	position: relative;
 }
 
-.ai-writer-section .input-with-action {
+.ai-writer-section .input-with-action, .rewriter-options {
 	display: flex;
-	align-items: flex-start;
+	align-items: flex-end;
 	gap: 0.5rem;
 }
 
-#ai-writer-btn {
-	margin-top: 0;
+.rewriter-option-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	flex-grow: 1;
+}
+
+.rewriter-option-group label {
+	font-size: 0.75rem;
+	font-weight: bold;
+	margin-bottom: 0 !important;
+}
+
+.rewriter-options {
+	flex-wrap: wrap;
+}
+
+.rewriter-options select {
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background: white;
+	color: #333;
+	font-family: inherit;
+	font-size: 0.85rem;
+	flex-grow: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+	.rewriter-options select {
+		background: #2c3e50;
+		color: #ecf0f1;
+		border-color: #444;
+	}
 }
 
 .field-hint {
