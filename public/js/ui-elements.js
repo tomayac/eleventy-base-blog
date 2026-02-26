@@ -28,7 +28,6 @@ export const ui = {
 	alertMessage: document.getElementById('alert-message'),
 	confirmDialog: document.getElementById('confirm-dialog'),
 	confirmMessage: document.getElementById('confirm-message'),
-	resetAppBtn: document.getElementById('reset-app-btn'),
 	ghTokenInput: document.getElementById('gh-token'),
 	ghOwnerInput: document.getElementById('gh-owner'),
 	ghRepoInput: document.getElementById('gh-repo'),
