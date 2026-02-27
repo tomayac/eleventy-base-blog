@@ -66,15 +66,15 @@ To use the polyfilled AI features, you need to provide a `.env.json` file in the
 Example `public/.env.json`:
 ```json
 {
-  "apiKey": "AIzaSyCI_e1wo0T-SUbjKJU0LzI1kGOYvEDTnSE",
-  "projectId": "vertexaiinfirebase-test",
-  "appId": "1:857620473716:web:8c803ada68ede9b2bb6e21",
-  "modelName": "gemini-2.5-flash-lite"
+  "apiKey": "AIzaSy...",
+  "projectId": "your-project-id",
+  "appId": "1:234567890:web:abcdef123456",
+  "modelName": "gemini-2.0-flash-exp"
 }
 ```
 
 > [!TIP]
-> Since the Admin Page gives write access to your repository (via GitHub Integration) and uses your local storage/AI keys, it is highly recommended to protect the `/blog/create/` directory with basic authentication, for example, through an `.htaccess` file.
+> Since the polyfilled AI features require your private AI keys to be accessible via the `.env.json` file, it is highly recommended to protect the `/blog/create/` directory with basic authentication, for example, through an `.htaccess` file.
 
 Available AI features:
 
