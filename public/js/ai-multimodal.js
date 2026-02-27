@@ -10,7 +10,7 @@ export const imageMetadataSchema = {
 	"additionalProperties": false
 };
 
-export async function generateImageMetadata(blob, ui) {
+export async function generateImageMetadata(imageSource, ui) {
 	const enabled = localStorage.getItem('ai-features-enabled') !== 'false';
 	if (!enabled) return null;
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
@@ -40,9 +40,9 @@ export async function generateImageMetadata(blob, ui) {
 		let imageValue;
 		let shouldClose = false;
 		try {
-			if (blob.type === 'image/svg+xml') {
+			if (imageSource instanceof Blob && imageSource.type === 'image/svg+xml') {
 				// SVGs must be drawn to a canvas to be rasterized for createImageBitmap
-				const url = URL.createObjectURL(blob);
+				const url = URL.createObjectURL(imageSource);
 				try {
 					const img = new Image();
 					await new Promise((resolve, reject) => {
@@ -60,12 +60,12 @@ export async function generateImageMetadata(blob, ui) {
 					URL.revokeObjectURL(url);
 				}
 			} else {
-				imageValue = await createImageBitmap(blob);
+				imageValue = await createImageBitmap(imageSource);
 			}
 			shouldClose = true;
 		} catch (e) {
-			console.warn("createImageBitmap failed, falling back to Blob", e);
-			imageValue = blob;
+			console.warn("createImageBitmap failed, falling back to Blob/Source", e);
+			imageValue = imageSource;
 		}
 
 		try {

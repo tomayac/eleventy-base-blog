@@ -8,7 +8,7 @@ function formatPreviewDate(dateStr) {
 	return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-function wrapText(text, limit) {
+export function wrapText(text, limit) {
 	const words = text.split(' ');
 	let lines = [];
 	let currentLine = '';
@@ -25,6 +25,47 @@ function wrapText(text, limit) {
 }
 
 const blobCache = new Map();
+
+export async function processImage(file, currentId, draft, ui) {
+	const id = `${currentId}:${Date.now()}:${file.name}`;
+	const buffer = await file.arrayBuffer();
+	const dimensions = await new Promise((resolve) => {
+		const img = new Image();
+		img.onload = () => resolve({ width: img.width, height: img.height });
+		img.onerror = () => resolve({ width: '', height: '' });
+		img.src = URL.createObjectURL(new Blob([buffer], { type: file.type }));
+	});
+
+	const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
+	const altText = aiMeta?.alt || "Alt text here";
+	const caption = aiMeta?.caption || "Caption here";
+
+	await saveImage(id, buffer);
+	if (!draft.imageFiles) draft.imageFiles = [];
+	draft.imageFiles.push({ name: file.name, id, type: file.type });
+	saveDrafts();
+
+	return {
+		name: file.name,
+		alt: altText,
+		caption: caption,
+		width: dimensions.width,
+		height: dimensions.height
+	};
+}
+
+export function getMarkdownForImage(imgInfo, needsNewlinesBefore = false, needsNewlinesAfter = false) {
+	return `${needsNewlinesBefore ? '\n\n' : ''}<figure>
+  <img
+      src="./${imgInfo.name}"
+      alt="${imgInfo.alt}"
+      width="${imgInfo.width}" height="${imgInfo.height}" loading="lazy" decoding="async"
+  >
+  <figcaption>
+    ${wrapText(imgInfo.caption, 80)}
+  </figcaption>
+</figure>${needsNewlinesAfter ? '\n\n' : '\n'}`;
+}
 
 export async function updatePreview(currentId, drafts, ui) {
 	const draft = drafts.find(d => d.id === currentId);
@@ -54,7 +95,6 @@ export async function updatePreview(currentId, drafts, ui) {
 export async function handleFiles(files, currentId, drafts, ui, updateCallback) {
 	const draft = drafts.find(d => d.id === currentId);
 	if (!draft || !files.length) return;
-	if (!draft.imageFiles) draft.imageFiles = [];
 
 	ui.uploadBtn.disabled = true;
 	const oldBtnText = ui.uploadBtn.textContent;
@@ -63,43 +103,15 @@ export async function handleFiles(files, currentId, drafts, ui, updateCallback) 
 
 	try {
 		for (const file of files) {
-			const id = `${currentId}:${Date.now()}:${file.name}`;
-			const buffer = await file.arrayBuffer();
-			const dimensions = await new Promise((resolve) => {
-				const img = new Image();
-				img.onload = () => resolve({ width: img.width, height: img.height });
-				img.onerror = () => resolve({ width: '', height: '' });
-				img.src = URL.createObjectURL(new Blob([buffer], { type: file.type }));
-			});
-
-			const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
-			const altText = aiMeta?.alt || "Alt text here";
-			const caption = aiMeta?.caption || "Caption here";
-
-			await saveImage(id, buffer);
-			draft.imageFiles.push({ name: file.name, id, type: file.type });
-			saveDrafts();
-			
 			const start = ui.contentInput.selectionStart, end = ui.contentInput.selectionEnd;
 			const before = ui.contentInput.value.substring(0, start);
 			const after = ui.contentInput.value.substring(end);
 			const cleanBefore = before.replace(/\n+$/, '');
 			const cleanAfter = after.replace(/^\n+/, '');
-			
-			const needsNewlinesBefore = cleanBefore.length > 0;
-			const needsNewlinesAfter = cleanAfter.length > 0;
-			
-			const imgTag = `${needsNewlinesBefore ? '\n\n' : ''}<figure>
-  <img
-      src="./${file.name}"
-      alt="${altText}"
-      width="${dimensions.width}" height="${dimensions.height}" loading="lazy" decoding="async"
-  >
-  <figcaption>
-    ${wrapText(caption, 80)}
-  </figcaption>
-</figure>${needsNewlinesAfter ? '\n\n' : '\n'}`;
-			
+
+			const imgInfo = await processImage(file, currentId, draft, ui);
+			const imgTag = getMarkdownForImage(imgInfo, cleanBefore.length > 0, cleanAfter.length > 0);
+
 			ui.contentInput.value = cleanBefore + imgTag + cleanAfter;
 		}
 	} finally {
