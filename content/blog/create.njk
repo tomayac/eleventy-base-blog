@@ -15,30 +15,108 @@ eleventyExcludeFromCollections: true
 			<details class="settings-details">
 				<summary>⚙️ Settings</summary>
 				<div class="settings-content">
-					<label class="ai-toggle-label">
-						✨ AI Features
-						<input type="checkbox" switch id="ai-features-toggle" checked>
-					</label>
-					<label class="ai-toggle-label">
-						🏷️ Only Existing Tags
-						<input type="checkbox" switch id="ai-only-existing-tags-toggle">
-					</label>
+					<section class="settings-section">
+						<h3>GitHub Settings</h3>
+						<div class="form-group">
+							<label for="gh-token">
+								GitHub Token
+								<a href="https://github.com/settings/personal-access-tokens/new?name=Core-loop+token&description=Write%20code%20and%20push%20it%20to%20main%21&contents=write&pull_requests=write" target="_blank" rel="noopener" class="help-icon" title="How to get a GitHub Token">ⓘ</a>
+							</label>
+							<input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+						</div>
+						<div class="form-group">
+							<label for="gh-owner">GitHub Username</label>
+							<input type="text" id="gh-owner" placeholder="username">
+						</div>
+						<div class="form-group">
+							<label for="gh-repo">Repository Name</label>
+							<input type="text" id="gh-repo" placeholder="my-blog">
+						</div>
+					</section>
+
 					<hr>
-					<div class="form-group">
-						<label for="gh-token">
-							GitHub Token
-							<a href="https://github.com/settings/personal-access-tokens/new?name=Core-loop+token&description=Write%20code%20and%20push%20it%20to%20main%21&contents=write&pull_requests=write" target="_blank" rel="noopener" class="help-icon" title="How to get a GitHub Token">ⓘ</a>
+
+					<section class="settings-section">
+						<h3>AI Features</h3>
+						<label class="ai-toggle-label">
+							✨ AI Features
+							<input type="checkbox" switch id="ai-features-toggle" checked>
 						</label>
-						<input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
-					</div>
-					<div class="form-group">
-						<label for="gh-owner">GitHub Username</label>
-						<input type="text" id="gh-owner" placeholder="username">
-					</div>
-					<div class="form-group">
-						<label for="gh-repo">Repository Name</label>
-						<input type="text" id="gh-repo" placeholder="my-blog">
-					</div>
+
+						<div id="ai-keys-section" style="display: none;">
+							<div class="form-group">
+								<label for="ai-backend">AI Backend</label>
+								<select id="ai-backend">
+									<option value="native">Native (Gemini Nano)</option>
+									<option value="gemini-api">Gemini API</option>
+									<option value="openai">OpenAI</option>
+									<option value="anthropic">Anthropic</option>
+									<option value="firebase">Vertex AI in Firebase</option>
+								</select>
+							</div>
+
+							<!-- Gemini API Fields -->
+							<div class="ai-backend-fields" data-backend="gemini-api" style="display: none;">
+								<div class="form-group">
+									<label for="gemini-api-key">Gemini API Key</label>
+									<input type="password" id="gemini-api-key" placeholder="AIzaSy...">
+								</div>
+								<div class="form-group">
+									<label for="gemini-model-name">Model Name</label>
+									<input type="text" id="gemini-model-name" placeholder="gemini-2.0-flash-exp">
+								</div>
+							</div>
+
+							<!-- OpenAI Fields -->
+							<div class="ai-backend-fields" data-backend="openai" style="display: none;">
+								<div class="form-group">
+									<label for="openai-api-key">OpenAI API Key</label>
+									<input type="password" id="openai-api-key" placeholder="sk-...">
+								</div>
+								<div class="form-group">
+									<label for="openai-model-name">Model Name</label>
+									<input type="text" id="openai-model-name" placeholder="gpt-4o">
+								</div>
+							</div>
+
+							<!-- Anthropic Fields -->
+							<div class="ai-backend-fields" data-backend="anthropic" style="display: none;">
+								<div class="form-group">
+									<label for="anthropic-api-key">Anthropic API Key</label>
+									<input type="password" id="anthropic-api-key" placeholder="sk-ant-...">
+								</div>
+								<div class="form-group">
+									<label for="anthropic-model-name">Model Name</label>
+									<input type="text" id="anthropic-model-name" placeholder="claude-3-5-sonnet-latest">
+								</div>
+							</div>
+
+							<!-- Firebase Fields -->
+							<div class="ai-backend-fields" data-backend="firebase" style="display: none;">
+								<div class="form-group">
+									<label for="ai-api-key">API Key</label>
+									<input type="password" id="ai-api-key" placeholder="AIzaSy...">
+								</div>
+								<div class="form-group">
+									<label for="ai-project-id">Project ID</label>
+									<input type="text" id="ai-project-id" placeholder="your-project-id">
+								</div>
+								<div class="form-group">
+									<label for="ai-app-id">App ID</label>
+									<input type="text" id="ai-app-id" placeholder="1:234567890:web:abcdef">
+								</div>
+								<div class="form-group">
+									<label for="ai-model-name">Model Name</label>
+									<input type="text" id="ai-model-name" placeholder="gemini-2.0-flash-exp">
+								</div>
+							</div>
+						</div>
+
+						<label class="ai-toggle-label">
+							🏷️ Only Existing Tags
+							<input type="checkbox" switch id="ai-only-existing-tags-toggle">
+						</label>
+					</section>
 				</div>
 			</details>
 		</div>

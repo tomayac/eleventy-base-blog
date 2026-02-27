@@ -61,20 +61,10 @@ This project includes a dedicated Admin Page at `/blog/create/` for composing ne
 
 The Admin Page offers several assistive features powered by the Built-in AI APIs. These APIs are also polyfilled to work in browsers that do not support them natively.
 
-To use the polyfilled AI features, you need to provide a `.env.json` file in the `public/` directory with your API keys. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
-
-Example `public/.env.json`:
-```json
-{
-  "apiKey": "AIzaSy...",
-  "projectId": "your-project-id",
-  "appId": "1:234567890:web:abcdef123456",
-  "modelName": "gemini-2.0-flash-exp"
-}
-```
+To use the polyfilled AI features, you need to provide your AI API keys in the **Settings** section of the Admin Page. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
 
 > [!TIP]
-> Since the polyfilled AI features require your private AI keys to be accessible via the `.env.json` file, it is highly recommended to protect the `/blog/create/` directory with basic authentication, for example, through an `.htaccess` file.
+> Since the polyfilled AI features require your private AI keys to be saved in your browser's local storage, it is highly recommended to protect the `/blog/create/` directory with basic authentication, for example, through an `.htaccess` file.
 
 Available AI features:
 
