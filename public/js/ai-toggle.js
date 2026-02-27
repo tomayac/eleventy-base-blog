@@ -8,7 +8,6 @@ export function initAIToggle(ui) {
 		if (ui.aiWriterSection) ui.aiWriterSection.style.display = (enabled && isAiSupported) ? 'block' : 'none';
 		if (ui.aiRewriterSection) ui.aiRewriterSection.style.display = (enabled && isAiSupported) ? 'block' : 'none';
 		if (!enabled && ui.aiStatus) ui.aiStatus.style.display = 'none';
-		if (ui.aiOnlyExistingTagsToggle) ui.aiOnlyExistingTagsToggle.parentElement.style.display = enabled ? 'flex' : 'none';
 		if (ui.aiKeysSection) ui.aiKeysSection.style.display = enabled ? 'block' : 'none';
 		aiButtons.forEach(btn => {
 			if (btn) {

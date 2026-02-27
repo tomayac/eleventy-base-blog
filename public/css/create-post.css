@@ -469,9 +469,17 @@ body {
 	margin-top: 1.5rem;
 }
 
-.ai-toggle-label, .ai-backend-group label {
-	font-size: 0.85rem !important;
-	font-weight: bold;
+.only-existing-tags-label {
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid #eee;
+	width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+	.only-existing-tags-label {
+		border-color: #444;
+	}
 }
 
 .editor-header-actions {

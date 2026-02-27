@@ -64,66 +64,7 @@ eleventyExcludeFromCollections: true
 							<div class="ai-backend-fields" data-backend="gemini-api openai firebase transformers-js" style="display: none;">
 								<div class="form-group">
 									<label for="ai-model-name">Model Name</label>
-									<input type="text" id="ai-model-name" placeholder="gemini-2.0-flash-exp / gpt-4o">
-								</div>
-							</div>
-
-							<!-- Firebase Specific Fields -->
-							<div class="ai-backend-fields" data-backend="firebase" style="display: none;">
-								<div class="form-group">
-									<label for="ai-project-id">Project ID</label>
-									<input type="text" id="ai-project-id" placeholder="your-project-id">
-								</div>
-								<div class="form-group">
-									<label for="ai-app-id">App ID</label>
-									<input type="text" id="ai-app-id" placeholder="1:234567890:web:abcdef">
-								</div>
-								<div class="form-group">
-									<label for="ai-gemini-api-provider">API Provider</label>
-									<select id="ai-gemini-api-provider">
-										<option value="developer">Developer</option>
-										<option value="vertex">Vertex</option>
-									</select>
-								</div>
-								<label class="ai-toggle-label">
-									🛡️ Use App Check
-									<input type="checkbox" switch id="ai-use-app-check">
-								</label>
-								<div id="ai-app-check-fields" style="display: none;">
-									<div class="form-group">
-										<label for="ai-recaptcha-site-key">reCaptcha Site Key</label>
-										<input type="text" id="ai-recaptcha-site-key" placeholder="6Lc...">
-									</div>
-									<label class="ai-toggle-label">
-										🎟️ Limited Use Tokens
-										<input type="checkbox" switch id="ai-use-limited-use-tokens">
-									</label>
-								</div>
-							</div>
-
-							<!-- Transformers.js Specific Fields -->
-							<div class="ai-backend-fields" data-backend="transformers-js" style="display: none;">
-								<div class="form-group">
-									<label for="ai-device">Device</label>
-									<select id="ai-device">
-										<option value="webgpu">WebGPU</option>
-										<option value="cpu">CPU</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="ai-dtype">Data Type</label>
-									<select id="ai-dtype">
-										<option value="q4f16">q4f16</option>
-										<option value="q8">q8</option>
-										<option value="f32">f32</option>
-									</select>
-								</div>
-							</div>
-							</div>
-							<div class="ai-backend-fields" data-backend="gemini-api openai firebase transformers-js" style="display: none;">
-								<div class="form-group">
-									<label for="ai-model-name">Model Name</label>
-									<input type="text" id="ai-model-name" placeholder="gemini-2.0-flash-exp / gpt-4o">
+									<input type="text" id="ai-model-name" placeholder="Optional: change this if you don't like the default model">
 								</div>
 							</div>
 
@@ -179,11 +120,6 @@ eleventyExcludeFromCollections: true
 								</div>
 							</div>
 						</div>
-
-						<label class="ai-toggle-label">
-							🏷️ Only Existing Tags
-							<input type="checkbox" switch id="ai-only-existing-tags-toggle">
-						</label>
 					</section>
 				</div>
 			</details>
@@ -221,6 +157,10 @@ eleventyExcludeFromCollections: true
 						<input type="text" id="tag-input" placeholder="Add tag and press Enter...">
 						<button type="button" id="ai-suggest-tags-btn" class="btn ai-button" style="display: none;" title="Suggest tags using AI">✨</button>
 					</div>
+					<label class="ai-toggle-label only-existing-tags-label">
+						🏷️ Only Existing Tags
+						<input type="checkbox" switch id="ai-only-existing-tags-toggle">
+					</label>
 				</div>
 				<input type="hidden" id="post-tags">
 			</div>
