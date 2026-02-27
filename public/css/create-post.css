@@ -466,6 +466,10 @@ body {
 	}
 }
 
+#ai-keys-section {
+	margin-top: 1rem;
+}
+
 .ai-backend-group {
 	margin-top: 1.5rem;
 }
