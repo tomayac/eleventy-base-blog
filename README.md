@@ -61,22 +61,26 @@ This project includes a dedicated Admin Page at `/blog/create/` for composing ne
 
 The Admin Page offers several assistive features powered by the Built-in AI APIs. These APIs are also polyfilled to work in browsers that do not support them natively.
 
-To use the polyfilled AI features, you need to provide a `.env.json` file in the `public/` directory with your API keys. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/tomayac/prompt-api-polyfill#readme).
+To use the polyfilled AI features, you need to provide a `.env.json` file in the `public/` directory with your API keys. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
 
 Example `public/.env.json`:
 ```json
 {
-  "openai_api_key": "YOUR_OPENAI_API_KEY",
-  "gemini_api_key": "YOUR_GEMINI_API_KEY",
-  "anthropic_api_key": "YOUR_ANTHROPIC_API_KEY"
+  "apiKey": "AIzaSyCI_e1wo0T-SUbjKJU0LzI1kGOYvEDTnSE",
+  "projectId": "vertexaiinfirebase-test",
+  "appId": "1:857620473716:web:8c803ada68ede9b2bb6e21",
+  "modelName": "gemini-2.5-flash-lite"
 }
 ```
+
+> [!TIP]
+> Since the Admin Page gives write access to your repository (via GitHub Integration) and uses your local storage/AI keys, it is highly recommended to protect the `/blog/create/` directory with basic authentication, for example, through an `.htaccess` file.
 
 Available AI features:
 
 - **AI Writing Assistant**: Expand bullet points into full paragraphs or rewrite existing content to adjust the tone.
-- **Smart Summarization**: Generate engaging blog post titles and meta descriptions from your content.
-- **Multimodal Alt-Text**: Automatically generate accessible alt-text and creative captions for uploaded or pasted images.
+- **Smart Summarization**: Generate suggestions for blog post titles and meta descriptions from your content that you can then refine.
+- **Multimodal Alt-Text**: Automatically generate suggestions for accessible alt-text and creative captions for uploaded or pasted images.
 - **Tag Suggestions**: Receive relevant tag recommendations based on the topics discussed in your post.
 
 _Note: These features are privacy-focused and run entirely locally on your device when using the built-in AI APIs. They can be **completely** turned off in the Admin Page settings._
