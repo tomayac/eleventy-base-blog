@@ -1,4 +1,4 @@
-# eleventy-base-blog v9
+# eleventy-base-blog v10
 
 A starter repository showing how to build a blog with the [Eleventy](https://www.11ty.dev/) site generator (using the [v3.0 release](https://github.com/11ty/eleventy/releases/tag/v3.0.0)).
 
@@ -42,6 +42,32 @@ npx @11ty/eleventy --serve
 ```
 
 Or you can run [debug mode](https://www.11ty.dev/docs/debugging/) to see all the internals.
+
+## Admin Page: Create Blog Posts
+
+This project includes a dedicated Admin Page at `/blog/create/` for composing new blog posts directly in the browser. It features a Markdown editor with a live preview and advanced asset handling.
+
+- **Draft Management**: Work on multiple drafts simultaneously. Drafts are saved automatically to your browser's local storage.
+- **Rich Asset Support**:
+    - Drag and drop or paste images directly into the editor.
+    - Images are stored locally in **IndexedDB** for persistent offline editing.
+    - Support for SVG rasterization for preview and processing.
+- **Intelligent Housekeeping**: Automatically identifies and removes unused images from storage when drafts are updated or deleted.
+- **Smart Pasting**: Paste rich text from other websites; the Admin Page automatically converts HTML to Markdown and attempts to download and localize external images.
+- **Export & Sync**:
+    - **Download as ZIP**: Export your finished post and its images as a structured ZIP file ready for manual deployment.
+    - **GitHub Integration**: Create a Pull Request directly from the UI. The Admin Page handles branch creation, image uploads, and Markdown submission to your repository.
+
+### Optional Built-in AI Features
+
+If you are using a browser with **Chrome Built-in AI** (Gemini Nano) enabled, the Admin Page offers several assistive features:
+
+- **AI Writing Assistant**: Expand bullet points into full paragraphs or rewrite existing content to adjust the tone.
+- **Smart Summarization**: Generate engaging blog post titles and meta descriptions from your content.
+- **Multimodal Alt-Text**: Automatically generate accessible alt-text and creative captions for uploaded or pasted images.
+- **Tag Suggestions**: Receive relevant tag recommendations based on the topics discussed in your post.
+
+_Note: These features are privacy-focused and run entirely locally on your device. They can be toggled off in the Admin Page settings._
 
 ## Features
 
