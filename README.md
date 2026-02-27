@@ -51,23 +51,35 @@ This project includes a dedicated Admin Page at `/blog/create/` for composing ne
 - **Rich Asset Support**:
     - Drag and drop or paste images directly into the editor.
     - Images are stored locally in **IndexedDB** for persistent offline editing.
-    - Support for SVG rasterization for preview and processing.
 - **Intelligent Housekeeping**: Automatically identifies and removes unused images from storage when drafts are updated or deleted.
-- **Smart Pasting**: Paste rich text from other websites; the Admin Page automatically converts HTML to Markdown and attempts to download and localize external images.
+- **Smart Pasting**: Paste rich text from other websites; the Admin Page automatically converts HTML to Markdown and attempts to download and locally host external images. If this isn't possible due to CORS, it falls back to the original remote URL.
 - **Export & Sync**:
-    - **Download as ZIP**: Export your finished post and its images as a structured ZIP file ready for manual deployment.
+    - **Download as `.zip`**: Export your finished post and its images as a structured `.zip` file ready for manual deployment.
     - **GitHub Integration**: Create a Pull Request directly from the UI. The Admin Page handles branch creation, image uploads, and Markdown submission to your repository.
 
 ### Optional Built-in AI Features
 
-If you are using a browser with **Chrome Built-in AI** (Gemini Nano) enabled, the Admin Page offers several assistive features:
+The Admin Page offers several assistive features powered by the Built-in AI APIs. These APIs are also polyfilled to work in browsers that do not support them natively.
+
+To use the polyfilled AI features, you need to provide a `.env.json` file in the `public/` directory with your API keys. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/tomayac/prompt-api-polyfill#readme).
+
+Example `public/.env.json`:
+```json
+{
+  "openai_api_key": "YOUR_OPENAI_API_KEY",
+  "gemini_api_key": "YOUR_GEMINI_API_KEY",
+  "anthropic_api_key": "YOUR_ANTHROPIC_API_KEY"
+}
+```
+
+Available AI features:
 
 - **AI Writing Assistant**: Expand bullet points into full paragraphs or rewrite existing content to adjust the tone.
 - **Smart Summarization**: Generate engaging blog post titles and meta descriptions from your content.
 - **Multimodal Alt-Text**: Automatically generate accessible alt-text and creative captions for uploaded or pasted images.
 - **Tag Suggestions**: Receive relevant tag recommendations based on the topics discussed in your post.
 
-_Note: These features are privacy-focused and run entirely locally on your device. They can be toggled off in the Admin Page settings._
+_Note: These features are privacy-focused and run entirely locally on your device when using the built-in AI APIs. They can be **completely** turned off in the Admin Page settings._
 
 ## Features
 
