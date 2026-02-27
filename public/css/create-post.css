@@ -372,6 +372,12 @@ body {
 	cursor: not-allowed;
 }
 
+#drop-zone.dragover textarea {
+	border-color: var(--primary-color);
+	border-style: dashed;
+	background-color: rgba(0, 123, 255, 0.05);
+}
+
 .tag-container {
 	border: 1px solid #ccc;
 	border-radius: 4px;

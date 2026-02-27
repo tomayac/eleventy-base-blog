@@ -84,13 +84,29 @@ ui.contentInput.onpaste = (e) => {
 	}
 };
 
-ui.dropZone.ondragover = e => { if (ui.dropZone.getAttribute('data-disabled') === 'true') return; e.preventDefault(); ui.dropZone.classList.add('dragover'); };
-ui.dropZone.ondragleave = () => ui.dropZone.classList.remove('dragover');
-ui.dropZone.ondrop = e => {
+let dragCounter = 0;
+window.addEventListener('dragenter', e => {
 	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
-	e.preventDefault(); ui.dropZone.classList.remove('dragover');
+	if (e.dataTransfer.types.includes('Files')) {
+		dragCounter++;
+		ui.dropZone.classList.add('dragover');
+	}
+});
+window.addEventListener('dragleave', () => {
+	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
+	dragCounter = Math.max(0, dragCounter - 1);
+	if (dragCounter === 0) ui.dropZone.classList.remove('dragover');
+});
+window.addEventListener('dragover', e => {
+	e.preventDefault();
+});
+window.addEventListener('drop', e => {
+	if (ui.dropZone.getAttribute('data-disabled') === 'true') return;
+	e.preventDefault();
+	dragCounter = 0;
+	ui.dropZone.classList.remove('dragover');
 	if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
-};
+});
 
 ui.uploadBtn.onclick = () => ui.fileInput.click();
 ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
