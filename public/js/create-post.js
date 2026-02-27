@@ -76,6 +76,11 @@ ui.githubPrBtn.onclick = async () => {
 };
 
 ui.contentInput.onpaste = (e) => {
+	if (e.clipboardData.files && e.clipboardData.files.length > 0) {
+		e.preventDefault();
+		handleFiles(e.clipboardData.files, localStorage.getItem('current-draft-id'), drafts, ui, sync);
+		return;
+	}
 	const text = e.clipboardData.getData('text');
 	const { metadata, content } = parseFrontmatter(text);
 	if (metadata && Object.keys(metadata).length > 0) {
