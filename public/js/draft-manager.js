@@ -4,6 +4,11 @@ import { customConfirm } from './dialog-utils.js';
 export let drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
 export let currentDraftId = localStorage.getItem('current-draft-id');
 
+export function setCurrentDraftId(id) {
+	currentDraftId = id;
+	localStorage.setItem('current-draft-id', id);
+}
+
 export function saveDrafts() {
 	localStorage.setItem('blog-drafts', JSON.stringify(drafts));
 }
@@ -15,12 +20,11 @@ export function saveCurrentDraft(id, ui) {
 export function createNewDraft(ui, loadDraftFn, renderListFn) {
 	const id = Date.now().toString();
 	const newDraft = {
-		id, title: '', description: '', date: new Date().toISOString().split('T')[0],
+		id, title: '', description: '', date: '',
 		tags: '', content: '', imageFiles: [], lastModified: Date.now()
 	};
 	drafts.unshift(newDraft);
-	currentDraftId = id;
-	localStorage.setItem('current-draft-id', id);
+	setCurrentDraftId(id);
 	saveDrafts();
 	loadDraftFn(id);
 	renderListFn();

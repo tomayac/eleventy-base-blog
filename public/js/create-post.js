@@ -1,5 +1,5 @@
 import { ui } from './ui-elements.js';
-import { drafts, createNewDraft, deleteDraft, updateDraftData, performHousekeeping } from './draft-manager.js';
+import { drafts, createNewDraft, deleteDraft, updateDraftData, performHousekeeping, setCurrentDraftId } from './draft-manager.js';
 import { updatePreview } from './editor-logic.js';
 import { handleFiles } from './image-handler.js';
 import { initPasteHandler } from './paste-handler.js';
@@ -45,10 +45,11 @@ function renderList() {
 
 function loadDraft(id) {
 	const d = drafts.find(draft => draft.id === id); if (!d) return;
-	localStorage.setItem('current-draft-id', id);
+	setCurrentDraftId(id);
 	ui.titleInput.value = d.title || ''; ui.descInput.value = d.description || '';
 	ui.dateInput.value = d.date || ''; ui.tagsInput.value = d.tags || '';
 	ui.contentInput.value = d.content || '';
+	ui.aiWriterInput.value = '';
 	lastSyncedTitle = ui.titleInput.value;
 	tagEditor.renderPills(); updatePreview(id, drafts, ui); renderList();
 }

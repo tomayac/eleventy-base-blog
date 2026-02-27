@@ -45,6 +45,14 @@ export async function updatePreview(currentId, drafts, ui) {
 	const tags = ui.getTags();
 	const tagsHtml = tags.map(t => `<li><a href="#" class="post-tag">${t}</a></li>`).join('');
 	const dateHtml = ui.dateInput.value ? `<time datetime="${ui.dateInput.value}">${formatPreviewDate(ui.dateInput.value)}</time>` : '';
-	ui.previewContent.innerHTML = `<h1>${ui.titleInput.value || 'Untitled'}</h1><ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>${marked.parse(content)}`;
+	const title = ui.titleInput.value;
+	const titleHtml = title ? `<h1>${title}</h1>` : '';
+	const metadataHtml = (dateHtml || tagsHtml) ? `<ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>` : '';
+	
+	if (!title && !dateHtml && !tagsHtml && !content) {
+		ui.previewContent.innerHTML = '';
+	} else {
+		ui.previewContent.innerHTML = `${titleHtml}${metadataHtml}${marked.parse(content)}`;
+	}
 	if (window.Prism) Prism.highlightAllUnder(ui.previewContent);
 }

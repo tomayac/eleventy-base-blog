@@ -1,5 +1,5 @@
 import { customAlert } from './dialog-utils.js';
-import { aiKeys, updateGlobalConfig, updateBackendFields } from './ai-config.js';
+import { aiKeys, updateGlobalConfig, updateBackendFields, getBackendConfigs, saveBackendConfigs } from './ai-config.js';
 
 export function refreshAIVisibility(ui) {
 	const enabled = ui.aiFeaturesToggle.checked;
@@ -31,33 +31,53 @@ export function initAIToggle(ui) {
 		'ai-device', 'ai-dtype'
 	];
 	
+	// Initialize values from localStorage
+	const configs = getBackendConfigs();
+	const backend = localStorage.getItem('ai-backend') || ui.aiBackendSelect.value;
+	ui.aiBackendSelect.value = backend;
+
+	const updateUIFields = () => {
+		const currentBackend = ui.aiBackendSelect.value;
+		const currentConfig = configs[currentBackend] || {};
+		aiKeys.forEach(id => {
+			if (id === 'ai-backend') return;
+			const key = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + (id.includes('toggle') ? '' : (id.includes('provider') || id.includes('backend') || id.includes('device') || id.includes('dtype') ? 'Select' : 'Input'));
+			const input = ui[key] || document.getElementById(id);
+			if (input) {
+				const val = currentConfig[id];
+				if (input.type === 'checkbox') input.checked = val === true;
+				else if (val !== undefined) input.value = val;
+				else input.value = '';
+			}
+		});
+	};
+
+	updateUIFields();
+
 	ui.aiBackendSelect.onchange = () => { 
 		localStorage.setItem('ai-backend', ui.aiBackendSelect.value); 
-		updateBackendFields(ui); 
-		refreshAIVisibility(ui); 
-		updateGlobalConfig(ui); 
+		updateUIFields();
+		updateBackendFields(ui); refreshAIVisibility(ui); updateGlobalConfig(ui); 
 	};
-	ui.aiUseAppCheckToggle.onchange = () => { 
-		localStorage.setItem('ai-use-app-check', ui.aiUseAppCheckToggle.checked); 
-		updateBackendFields(ui); 
-		updateGlobalConfig(ui); 
-	};
+	
 	aiKeys.forEach(id => {
+		if (id === 'ai-backend') return;
 		const key = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + (id.includes('toggle') ? '' : (id.includes('provider') || id.includes('backend') || id.includes('device') || id.includes('dtype') ? 'Select' : 'Input'));
 		const input = ui[key] || document.getElementById(id);
-		if (input && !input.onchange && !input.oninput) {
-			const isCheckbox = input.type === 'checkbox';
-			if (isCheckbox) input.checked = localStorage.getItem(id) === 'true';
-			else input.value = localStorage.getItem(id) || (input.tagName === 'SELECT' ? input.options[0].value : '');
-			input[isCheckbox ? 'onchange' : 'oninput'] = () => { 
-				localStorage.setItem(id, isCheckbox ? input.checked : input.value); 
+		if (input) {
+			input[input.type === 'checkbox' ? 'onchange' : 'oninput'] = () => { 
+				const currentBackend = ui.aiBackendSelect.value;
+				if (!configs[currentBackend]) configs[currentBackend] = {};
+				configs[currentBackend][id] = input.type === 'checkbox' ? input.checked : input.value;
+				saveBackendConfigs(configs);
 				updateGlobalConfig(ui); 
+				if (id === 'ai-use-app-check') updateBackendFields(ui);
 			};
 		}
 	});
+
 	updateBackendFields(ui); updateGlobalConfig(ui);
-	const savedAiEnabled = localStorage.getItem('ai-features-enabled');
-	ui.aiFeaturesToggle.checked = savedAiEnabled === null ? true : savedAiEnabled === 'true';
+	ui.aiFeaturesToggle.checked = localStorage.getItem('ai-features-enabled') !== 'false';
 	ui.aiOnlyExistingTagsToggle.checked = localStorage.getItem('ai-only-existing-tags') === 'true';
 	
 	refreshAIVisibility(ui);
@@ -70,13 +90,11 @@ export function initAIToggle(ui) {
 	});
 	window.addEventListener('storage', (e) => {
 		if (e.key === 'ai-features-enabled') { 
-			ui.aiFeaturesToggle.checked = e.newValue === 'true'; 
-			refreshAIVisibility(ui); 
+			ui.aiFeaturesToggle.checked = e.newValue === 'true'; refreshAIVisibility(ui); 
 		} else if (e.key === 'ai-only-existing-tags') { 
 			ui.aiOnlyExistingTagsToggle.checked = e.newValue === 'true'; 
 		} else if (aiKeys.includes(e.key)) { 
-			updateBackendFields(ui); 
-			updateGlobalConfig(ui); 
+			updateBackendFields(ui); updateGlobalConfig(ui); 
 		}
 	});
 }

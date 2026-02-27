@@ -3,11 +3,27 @@ import { generateMarkdown } from './zip-exporter.js';
 import { customAlert } from './dialog-utils.js';
 import { toBase64, bufferToBase64 } from './base64-utils.js';
 
+const GH_CONFIG_KEY = 'gh-config';
+
 export function initGitHubSync(ui) {
+	const config = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || '{}');
+	
 	['gh-token', 'gh-owner', 'gh-repo'].forEach(id => {
-		const input = ui[id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + 'Input'];
-		let value = localStorage.getItem(id) || (id === 'gh-token' ? window.FIREBASE_CONFIG?.github_pat : '');
-		if (input) { input.value = value || ''; input.oninput = () => localStorage.setItem(id, input.value); }
+		const key = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + 'Input';
+		const input = ui[key];
+		if (!input) return;
+
+		// Migration / Initial load
+		let value = config[id] || localStorage.getItem(id);
+		if (!value && id === 'gh-token') value = window.FIREBASE_CONFIG?.github_pat;
+		
+		input.value = value || '';
+		
+		input.oninput = () => {
+			const currentConfig = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || '{}');
+			currentConfig[id] = input.value;
+			localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(currentConfig));
+		};
 	});
 }
 
