@@ -29,17 +29,13 @@ export function createNewDraft(ui, loadDraftFn, renderListFn) {
 export async function performHousekeeping() {
 	const allValidImageIds = [];
 	drafts.forEach(draft => {
-		if (!draft.imageFiles) return;
-		// Find all ./image-name.ext references in the content
-		const referencedNames = new Set();
-		const matches = draft.content.matchAll(/\.\/([^)\s"'>]+)/g);
-		for (const match of matches) {
-			referencedNames.add(match[1]);
-		}
-		// Filter imageFiles to only those referenced in content
-		draft.imageFiles = draft.imageFiles.filter(img => referencedNames.has(img.name));
-		// Collect IDs for IDB cleanup
-		draft.imageFiles.forEach(img => allValidImageIds.push(img.id));
+		if (!draft.imageFiles || !draft.content) return;
+		// Filter imageFiles to only those actually referenced in the content string
+		draft.imageFiles = draft.imageFiles.filter(img => {
+			const isReferenced = draft.content.includes(`./${img.name}`);
+			if (isReferenced) allValidImageIds.push(img.id);
+			return isReferenced;
+		});
 	});
 	saveDrafts();
 	await cleanupOrphanedImages(allValidImageIds);
