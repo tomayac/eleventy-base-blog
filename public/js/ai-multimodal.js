@@ -1,4 +1,5 @@
 import { detectLanguage } from './ai-language-detection.js';
+import { checkAIKeys } from './ai-config.js';
 
 export const imageMetadataSchema = {
 	"type": "object",
@@ -12,7 +13,7 @@ export const imageMetadataSchema = {
 
 export async function generateImageMetadata(imageSource, ui) {
 	const enabled = localStorage.getItem('ai-features-enabled') !== 'false';
-	if (!enabled) return null;
+	if (!enabled || !checkAIKeys(ui)) return null;
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
 	if (typeof LanguageModel === 'undefined') return null;
 

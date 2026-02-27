@@ -1,5 +1,6 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
+import { checkAIKeys } from './ai-config.js';
 
 export const getMonitor = (ui, lang, modelName) => ({
 	monitor(m) {
@@ -13,6 +14,7 @@ export const getMonitor = (ui, lang, modelName) => ({
 });
 
 export async function runAIAction(ui, btn, actionFn, updateCallback) {
+	if (!checkAIKeys(ui)) return;
 	btn.disabled = true;
 	const oldText = btn.textContent;
 	btn.textContent = '⏳';

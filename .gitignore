@@ -6,7 +6,3 @@ node_modules/
 AGENTS.md
 SKILL.md
 
-# Secrets
-public/.env.json
-_site/.env.json
-

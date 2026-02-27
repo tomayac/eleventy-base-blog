@@ -40,9 +40,6 @@
 </noscript>
 
 <script type="module" eleventy:ignore>
-  const response = await fetch('/.env.json');
-  window.FIREBASE_CONFIG = await response.json();
-
   if (!('switch' in HTMLInputElement.prototype)) {
     await import('/js/input-switch-polyfill.js');
   } else {
