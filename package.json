@@ -49,9 +49,9 @@
 	},
 	"dependencies": {
 		"@zachleat/heading-anchors": "^1.0.5",
-		"built-in-ai-task-apis-polyfills": "^1.4.0",
+		"built-in-ai-task-apis-polyfills": "^1.5.0",
 		"input-switch-polyfill": "^1.11.0",
 		"marked": "^17.0.3",
-		"prompt-api-polyfill": "^1.10.0"
+		"prompt-api-polyfill": "^1.11.0"
 	}
 }
