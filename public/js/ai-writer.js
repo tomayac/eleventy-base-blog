@@ -1,6 +1,7 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert, customConfirm } from './dialog-utils.js';
 import { getMonitor, runAIAction } from './ai-features.js';
+import { refreshAIVisibility } from './ai-toggle.js';
 
 const getWriterOptions = (ui, lang) => ({
 	sharedContext: 'The user provides a few bullet points. Expand them into a detailed blog post.',
@@ -15,7 +16,11 @@ export async function initAIWriter(ui, updateCallback) {
 			const status = await Writer.availability({
 				sharedContext: 'The user provides a few bullet points. Expand them into a detailed blog post.'
 			});
-			if (status !== 'unavailable') ui.aiWriterBtn.style.display = 'flex';
+			if (status !== 'unavailable') {
+				ui.aiWriterSection.setAttribute('data-ai-available', 'true');
+				ui.aiWriterBtn.setAttribute('data-ai-available', 'true');
+				refreshAIVisibility(ui);
+			}
 		} catch (e) { console.warn("AI Writer availability check failed", e); }
 	}
 

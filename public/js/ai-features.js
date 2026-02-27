@@ -1,6 +1,7 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 import { checkAIKeys } from './ai-config.js';
+import { refreshAIVisibility } from './ai-toggle.js';
 
 export const getMonitor = (ui, lang, modelName) => ({
 	monitor(m) {
@@ -63,7 +64,9 @@ export async function initAI(ui, updateCallback) {
 		try {
 			const status = await Summarizer.availability({ type: 'teaser', format: 'plain-text' });
 			if (status !== 'unavailable') {
-				ui.aiSuggestTitleBtn.style.display = 'flex'; ui.aiSuggestDescriptionBtn.style.display = 'flex';
+				ui.aiSuggestTitleBtn.setAttribute('data-ai-available', 'true');
+				ui.aiSuggestDescriptionBtn.setAttribute('data-ai-available', 'true');
+				refreshAIVisibility(ui);
 			}
 			if (status === 'downloadable' || status === 'downloading') {
 				ui.aiStatus.style.display = 'flex'; ui.aiStatusText.textContent = 'AI model available (needs download)';

@@ -11,9 +11,7 @@ export function checkAIKeys(ui) {
 	const backend = localStorage.getItem('ai-backend') || 'gemini-api';
 	if (backend === 'transformers-js') return true;
 	
-	const apiKey = localStorage.getItem('ai-api-key') || 
-	               localStorage.getItem('gemini-api-key') || 
-	               localStorage.getItem('openai-api-key');
+	const apiKey = localStorage.getItem('ai-api-key');
 	
 	if (!apiKey) {
 		ui.settingsDetails.open = true;
@@ -25,7 +23,7 @@ export function checkAIKeys(ui) {
 
 export function updateGlobalConfig(ui) {
 	const backend = ui.aiBackendSelect.value;
-	delete window.FIREBASE_CONFIG; delete window.TRANSFORMERS_JS_CONFIG; delete window.OPENAI_CONFIG; delete window.GEMINI_API_CONFIG;
+	delete window.FIREBASE_CONFIG; delete window.TRANSFORMERS_CONFIG; delete window.OPENAI_CONFIG; delete window.GEMINI_CONFIG;
 
 	const apiKey = backend === 'transformers-js' ? 'dummy' : ui.aiApiKeyInput.value;
 	const modelName = backend === 'transformers-js' ? (ui.aiModelNameInput.value || 'gemma-3-1b-it-ONNX-GQA') : ui.aiModelNameInput.value;
@@ -38,9 +36,9 @@ export function updateGlobalConfig(ui) {
 			reCaptchaSiteKey: ui.aiRecaptchaSiteKeyInput.value, useLimitedUseAppCheckTokens: ui.aiUseLimitedUseTokensToggle.checked
 		};
 	} else if (backend === 'transformers-js') {
-		window.TRANSFORMERS_JS_CONFIG = { ...config, device: ui.aiDeviceSelect.value, dtype: ui.aiDtypeSelect.value };
+		window.TRANSFORMERS_CONFIG = { ...config, device: ui.aiDeviceSelect.value, dtype: ui.aiDtypeSelect.value };
 	} else if (backend === 'openai') { window.OPENAI_CONFIG = config; }
-	else if (backend === 'gemini-api') { window.GEMINI_API_CONFIG = config; }
+	else if (backend === 'gemini-api') { window.GEMINI_CONFIG = config; }
 	localStorage.setItem('prompt-api-backend', backend);
 }
 

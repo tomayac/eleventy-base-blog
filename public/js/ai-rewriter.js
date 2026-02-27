@@ -1,6 +1,7 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 import { getMonitor, runAIAction } from './ai-features.js';
+import { refreshAIVisibility } from './ai-toggle.js';
 
 const getRewriterOptions = (ui, lang) => ({
 	sharedContext: 'The user is rewriting a blog post.',
@@ -14,7 +15,11 @@ export async function initAIRewriter(ui, updateCallback) {
 	if (typeof Rewriter !== 'undefined') {
 		try {
 			const status = await Rewriter.availability({ sharedContext: 'Rewriting a blog post.' });
-			if (status !== 'unavailable') ui.aiRewriterBtn.style.display = 'flex';
+			if (status !== 'unavailable') {
+				ui.aiRewriterSection.setAttribute('data-ai-available', 'true');
+				ui.aiRewriterBtn.setAttribute('data-ai-available', 'true');
+				refreshAIVisibility(ui);
+			}
 		} catch (e) { console.warn("AI Rewriter availability check failed", e); }
 	}
 

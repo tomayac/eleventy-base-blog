@@ -1,6 +1,7 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from './dialog-utils.js';
 import { runAIAction } from './ai-features.js';
+import { refreshAIVisibility } from './ai-toggle.js';
 
 export async function initTagSuggestions(ui, updateCallback) {
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
@@ -13,7 +14,10 @@ export async function initTagSuggestions(ui, updateCallback) {
 		const status = await LanguageModel.availability({
 			initialPrompts: [{ role: 'system', content: 'Suggest tags for this blog post.' }]
 		});
-		if (status !== 'unavailable') ui.aiSuggestTagsBtn.style.display = 'flex';
+		if (status !== 'unavailable') {
+			ui.aiSuggestTagsBtn.setAttribute('data-ai-available', 'true');
+			refreshAIVisibility(ui);
+		}
 	} catch (e) { console.warn("AI LanguageModel availability check failed", e); }
 
 	ui.aiSuggestTagsBtn.onclick = async () => {

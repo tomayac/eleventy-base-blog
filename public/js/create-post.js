@@ -84,10 +84,10 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 	if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
 	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 	initGitHubSync(ui);
+	initAIToggle(ui);
 	await Promise.all([
 		initAI(ui, sync), initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
 		initAIWriter(ui, sync), initAIRewriter(ui, sync)
 	]);
-	initAIToggle(ui);
 	await performHousekeeping();
 })();
