@@ -317,12 +317,13 @@ body {
 	margin-bottom: 1rem;
 }
 
-.form-group label {
+.form-group label, .ai-toggle-label {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 0.25rem;
 	font-weight: bold;
+	font-size: 0.85rem;
 }
 
 .help-icon {
@@ -562,14 +563,7 @@ body {
 	}
 }
 
-.ai-toggle-label {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	font-size: 0.85rem;
-	font-weight: bold;
-}
-
+/* ✨ AI Features label style consolidated above */
 #ai-features-toggle {
 	accent-color: deeppink;
 }
