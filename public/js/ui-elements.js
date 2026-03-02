@@ -2,7 +2,6 @@ export const ui = {
 	draftsListEl: document.getElementById('drafts-list'),
 	newDraftBtn: document.getElementById('new-draft-btn'),
 	loadDraftBtn: document.getElementById('load-draft-btn'),
-	loadDraftInput: document.getElementById('load-draft-input'),
 	titleInput: document.getElementById('post-title'),
 	aiSuggestTitleBtn: document.getElementById('ai-suggest-title-btn'),
 	descInput: document.getElementById('post-description'),
