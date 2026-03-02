@@ -11,12 +11,6 @@
       "sizes": "400x400",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ],
   "scope": "/blog/create/"

@@ -23,7 +23,7 @@ export function refreshAIVisibility(ui) {
 	});
 }
 
-function updateUIFields(ui, configs, aiKeys) {
+export function updateUIFields(ui, configs, aiKeys) {
 	const currentBackend = ui.aiBackendSelect.value;
 	const currentConfig = configs[currentBackend] || {};
 	aiKeys.forEach(id => {

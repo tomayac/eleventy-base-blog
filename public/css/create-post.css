@@ -575,6 +575,18 @@ body {
 	margin: 0;
 }
 
+.settings-file-actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+
+.settings-file-actions .btn {
+	flex: 1;
+	font-size: 0.75rem;
+	padding: 0.4rem 0.5rem;
+}
+
 @media (prefers-color-scheme: dark) {
 	.settings-content hr {
 		border-color: #444;

@@ -6,6 +6,7 @@ import { initPasteHandler } from './paste-handler.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
 import { initTagEditor } from './tag-editor.js';
 import { initAIToggle } from './ai-toggle.js';
+import { initSettingsFileHandler } from './settings-file-handler.js';
 import { initGitHubSync, createPR } from './github-integration.js';
 import { debounce } from './debounce.js';
 import { openAndLoadDraft } from './load-draft.js';
@@ -85,6 +86,7 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 	initGitHubSync(ui);
 	initAIToggle(ui);
+	initSettingsFileHandler(ui);
 	if (ui.aiFeaturesToggle.checked) {
 		const { initAIFeatures } = await import('./ai-init.js');
 		await initAIFeatures(ui, sync, tagEditor);
