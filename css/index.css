@@ -238,15 +238,24 @@ header {
 	border-radius: 4px;
 	font-weight: 600;
 	font-size: 0.85rem;
+	text-decoration: none;
+	color: white !important;
+	transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	gap: 0.5rem;
 	white-space: nowrap;
 }
 
 .btn:hover {
+	text-decoration: none;
+	color: white !important;
 	background: #0056b3;
 	border-color: #0056b3;
+	transform: scale(1.05);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 /* Posts list */
@@ -291,6 +300,10 @@ header {
 }
 .postlist-item-active .postlist-link {
 	font-weight: bold;
+}
+
+.edit-post-link {
+	margin-left: 1rem;
 }
 
 /* Tags */
