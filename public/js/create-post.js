@@ -27,32 +27,6 @@ const sync = (e) => {
 
 const tagEditor = initTagEditor(ui, () => sync());
 
-let aiInitialized = false;
-async function initAIFeatures() {
-	if (aiInitialized) return;
-	aiInitialized = true;
-	const link = document.createElement('link');
-	link.rel = 'modulepreload';
-	link.href = '/js/ai-multimodal.js';
-	document.head.appendChild(link);
-	const [{ initAI }, { initTagSuggestions }, { initAIWriter }, { initAIRewriter }] = await Promise.all([
-		import('./ai-features.js'),
-		import('./ai-tag-suggestions.js'),
-		import('./ai-writer.js'),
-		import('./ai-rewriter.js')
-	]);
-	await Promise.all([
-		initAI(ui, sync),
-		initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
-		initAIWriter(ui, sync),
-		initAIRewriter(ui, sync)
-	]);
-}
-
-window.addEventListener('ai-features-toggled', (e) => {
-	if (e.detail) initAIFeatures();
-});
-
 function renderList() {
 	ui.draftsListEl.innerHTML = '';
 	const currentId = localStorage.getItem('current-draft-id');
@@ -112,7 +86,9 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 	initGitHubSync(ui);
 	initAIToggle(ui);
 	if (ui.aiFeaturesToggle.checked) {
-		await initAIFeatures();
+		const { initAIFeatures } = await import('./ai-init.js');
+		await initAIFeatures(ui, sync, tagEditor);
 	}
 	await performHousekeeping();
 })();
+export { loadDraft, renderList, sync };

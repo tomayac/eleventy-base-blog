@@ -23,43 +23,37 @@ export function refreshAIVisibility(ui) {
 	});
 }
 
+function updateUIFields(ui, configs, aiKeys) {
+	const currentBackend = ui.aiBackendSelect.value;
+	const currentConfig = configs[currentBackend] || {};
+	aiKeys.forEach(id => {
+		if (id === 'ai-backend') return;
+		const key = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + (id.includes('toggle') ? '' : (id.includes('provider') || id.includes('backend') || id.includes('device') || id.includes('dtype') ? 'Select' : 'Input'));
+		const input = ui[key] || document.getElementById(id);
+		if (input) {
+			const val = currentConfig[id];
+			if (input.type === 'checkbox') input.checked = val === true;
+			else if (val !== undefined) input.value = val;
+			else input.value = '';
+		}
+	});
+}
+
 export function initAIToggle(ui) {
 	const aiKeys = [
-		'ai-backend', 'ai-api-key', 'ai-model-name',
-		'ai-project-id', 'ai-app-id', 'ai-gemini-api-provider',
-		'ai-use-app-check', 'ai-recaptcha-site-key', 'ai-use-limited-use-tokens',
-		'ai-device', 'ai-dtype'
+		'ai-backend', 'ai-api-key', 'ai-model-name', 'ai-project-id', 'ai-app-id', 
+		'ai-gemini-api-provider', 'ai-use-app-check', 'ai-recaptcha-site-key', 
+		'ai-use-limited-use-tokens', 'ai-device', 'ai-dtype'
 	];
-	
-	// Initialize values from localStorage
 	const configs = getBackendConfigs();
 	const backend = localStorage.getItem('ai-backend') || ui.aiBackendSelect.value;
 	ui.aiBackendSelect.value = backend;
-
-	const updateUIFields = () => {
-		const currentBackend = ui.aiBackendSelect.value;
-		const currentConfig = configs[currentBackend] || {};
-		aiKeys.forEach(id => {
-			if (id === 'ai-backend') return;
-			const key = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + (id.includes('toggle') ? '' : (id.includes('provider') || id.includes('backend') || id.includes('device') || id.includes('dtype') ? 'Select' : 'Input'));
-			const input = ui[key] || document.getElementById(id);
-			if (input) {
-				const val = currentConfig[id];
-				if (input.type === 'checkbox') input.checked = val === true;
-				else if (val !== undefined) input.value = val;
-				else input.value = '';
-			}
-		});
-	};
-
-	updateUIFields();
-
+	updateUIFields(ui, configs, aiKeys);
 	ui.aiBackendSelect.onchange = () => { 
 		localStorage.setItem('ai-backend', ui.aiBackendSelect.value); 
-		updateUIFields();
+		updateUIFields(ui, configs, aiKeys);
 		updateBackendFields(ui); refreshAIVisibility(ui); updateGlobalConfig(ui); 
 	};
-	
 	aiKeys.forEach(id => {
 		if (id === 'ai-backend') return;
 		const key = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + (id.includes('toggle') ? '' : (id.includes('provider') || id.includes('backend') || id.includes('device') || id.includes('dtype') ? 'Select' : 'Input'));
@@ -75,11 +69,9 @@ export function initAIToggle(ui) {
 			};
 		}
 	});
-
 	updateBackendFields(ui); updateGlobalConfig(ui);
 	ui.aiFeaturesToggle.checked = localStorage.getItem('ai-features-enabled') === 'true';
 	ui.aiOnlyExistingTagsToggle.checked = localStorage.getItem('ai-only-existing-tags') === 'true';
-	
 	refreshAIVisibility(ui);
 	ui.aiFeaturesToggle.addEventListener('change', () => { 
 		localStorage.setItem('ai-features-enabled', ui.aiFeaturesToggle.checked); 
@@ -88,14 +80,5 @@ export function initAIToggle(ui) {
 	});
 	ui.aiOnlyExistingTagsToggle.addEventListener('change', () => { 
 		localStorage.setItem('ai-only-existing-tags', ui.aiOnlyExistingTagsToggle.checked); 
-	});
-	window.addEventListener('storage', (e) => {
-		if (e.key === 'ai-features-enabled') { 
-			ui.aiFeaturesToggle.checked = e.newValue === 'true'; refreshAIVisibility(ui); 
-		} else if (e.key === 'ai-only-existing-tags') { 
-			ui.aiOnlyExistingTagsToggle.checked = e.newValue === 'true'; 
-		} else if (aiKeys.includes(e.key)) { 
-			updateBackendFields(ui); updateGlobalConfig(ui); 
-		}
 	});
 }
