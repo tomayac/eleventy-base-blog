@@ -94,7 +94,6 @@
   let deferredPrompt;
 
   window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('beforeinstallprompt fired');
     e.preventDefault();
     deferredPrompt = e;
     const item = document.getElementById('install-item');
@@ -107,11 +106,9 @@
     const installBtn = document.getElementById('install-button');
     if (installBtn) {
       installBtn.addEventListener('click', async () => {
-        console.log('Install button clicked', deferredPrompt);
         if (!deferredPrompt) return;
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        console.log('Install outcome:', outcome);
         if (outcome === 'accepted') {
           deferredPrompt = null;
           const item = document.getElementById('install-item');
@@ -121,7 +118,6 @@
     }
 
     window.addEventListener('appinstalled', async () => {
-      console.log('App was installed');
       const item = document.getElementById('install-item');
       if (item) {
         item.style.display = 'none';
