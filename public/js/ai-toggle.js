@@ -77,13 +77,14 @@ export function initAIToggle(ui) {
 	});
 
 	updateBackendFields(ui); updateGlobalConfig(ui);
-	ui.aiFeaturesToggle.checked = localStorage.getItem('ai-features-enabled') !== 'false';
+	ui.aiFeaturesToggle.checked = localStorage.getItem('ai-features-enabled') === 'true';
 	ui.aiOnlyExistingTagsToggle.checked = localStorage.getItem('ai-only-existing-tags') === 'true';
 	
 	refreshAIVisibility(ui);
 	ui.aiFeaturesToggle.addEventListener('change', () => { 
 		localStorage.setItem('ai-features-enabled', ui.aiFeaturesToggle.checked); 
 		refreshAIVisibility(ui); 
+		window.dispatchEvent(new CustomEvent('ai-features-toggled', { detail: ui.aiFeaturesToggle.checked }));
 	});
 	ui.aiOnlyExistingTagsToggle.addEventListener('change', () => { 
 		localStorage.setItem('ai-only-existing-tags', ui.aiOnlyExistingTagsToggle.checked); 

@@ -12,7 +12,7 @@ export const imageMetadataSchema = {
 };
 
 export async function generateImageMetadata(imageSource, ui) {
-	const enabled = localStorage.getItem('ai-features-enabled') !== 'false';
+	const enabled = localStorage.getItem('ai-features-enabled') === 'true';
 	if (!enabled || !checkAIKeys(ui)) return null;
 	if (!('LanguageModel' in self)) await import('/js/prompt-api-polyfill.js');
 	if (typeof LanguageModel === 'undefined') return null;

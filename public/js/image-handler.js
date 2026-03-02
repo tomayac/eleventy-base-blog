@@ -1,5 +1,4 @@
 import { saveImage } from './db-storage.js';
-import { generateImageMetadata } from './ai-multimodal.js';
 import { saveDrafts } from './draft-manager.js';
 import { wrapText } from './editor-logic.js';
 
@@ -13,7 +12,12 @@ export async function processImage(file, currentId, draft, ui) {
 		img.src = URL.createObjectURL(new Blob([buffer], { type: file.type }));
 	});
 
-	const aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
+	const isAiEnabled = localStorage.getItem('ai-features-enabled') === 'true';
+	let aiMeta = null;
+	if (isAiEnabled) {
+		const { generateImageMetadata } = await import('./ai-multimodal.js');
+		aiMeta = await generateImageMetadata(new Blob([buffer], { type: file.type }), ui);
+	}
 	const altText = aiMeta?.alt || "Alt text here";
 	const caption = aiMeta?.caption || "Caption here";
 

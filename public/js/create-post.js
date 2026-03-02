@@ -4,16 +4,11 @@ import { updatePreview } from './editor-logic.js';
 import { handleFiles } from './image-handler.js';
 import { initPasteHandler } from './paste-handler.js';
 import { generateMarkdown, downloadZIP } from './zip-exporter.js';
-import { initAI } from './ai-features.js';
-import { initTagSuggestions } from './ai-tag-suggestions.js';
-import { initAIWriter } from './ai-writer.js';
-import { initAIRewriter } from './ai-rewriter.js';
 import { initTagEditor } from './tag-editor.js';
 import { initAIToggle } from './ai-toggle.js';
 import { initGitHubSync, createPR } from './github-integration.js';
 import { debounce } from './debounce.js';
 
-const tagEditor = initTagEditor(ui, () => sync());
 const debouncedPreview = debounce((id, ui) => {
 	updatePreview(id, drafts, ui);
 }, 300);
@@ -28,6 +23,34 @@ const sync = (e) => {
 		lastSyncedTitle = ui.titleInput.value;
 	}
 };
+
+const tagEditor = initTagEditor(ui, () => sync());
+
+let aiInitialized = false;
+async function initAIFeatures() {
+	if (aiInitialized) return;
+	aiInitialized = true;
+	const link = document.createElement('link');
+	link.rel = 'modulepreload';
+	link.href = '/js/ai-multimodal.js';
+	document.head.appendChild(link);
+	const [{ initAI }, { initTagSuggestions }, { initAIWriter }, { initAIRewriter }] = await Promise.all([
+		import('./ai-features.js'),
+		import('./ai-tag-suggestions.js'),
+		import('./ai-writer.js'),
+		import('./ai-rewriter.js')
+	]);
+	await Promise.all([
+		initAI(ui, sync),
+		initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
+		initAIWriter(ui, sync),
+		initAIRewriter(ui, sync)
+	]);
+}
+
+window.addEventListener('ai-features-toggled', (e) => {
+	if (e.detail) initAIFeatures();
+});
 
 function renderList() {
 	ui.draftsListEl.innerHTML = '';
@@ -86,9 +109,8 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 	initGitHubSync(ui);
 	initAIToggle(ui);
-	await Promise.all([
-		initAI(ui, sync), initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
-		initAIWriter(ui, sync), initAIRewriter(ui, sync)
-	]);
+	if (ui.aiFeaturesToggle.checked) {
+		await initAIFeatures();
+	}
 	await performHousekeeping();
 })();
