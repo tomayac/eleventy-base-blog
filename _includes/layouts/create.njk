@@ -1,5 +1,9 @@
 {% extends "layouts/base.njk" %}
 
+{% block extra_nav %}
+<li class="nav-item admin-only" id="install-item" style="display: none;"><button id="install-button" class="btn">Install</button></li>
+{% endblock %}
+
 {% block head %}
 <script type="importmap" eleventy:ignore>
 {
@@ -88,33 +92,45 @@
   })();
 
   let deferredPrompt;
-  const installItem = document.getElementById('install-item');
-  const installButton = document.getElementById('install-button');
 
-  if (installButton) {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installItem.style.display = 'initial';
-    });
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('beforeinstallprompt fired');
+    e.preventDefault();
+    deferredPrompt = e;
+    const item = document.getElementById('install-item');
+    if (item) {
+      item.style.display = 'initial';
+    }
+  });
 
-    installButton.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        deferredPrompt = null;
-        installItem.style.display = 'none';
-      }
-    });
+  window.addEventListener('DOMContentLoaded', () => {
+    const installBtn = document.getElementById('install-button');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        console.log('Install button clicked', deferredPrompt);
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('Install outcome:', outcome);
+        if (outcome === 'accepted') {
+          deferredPrompt = null;
+          const item = document.getElementById('install-item');
+          if (item) item.style.display = 'none';
+        }
+      });
+    }
 
     window.addEventListener('appinstalled', async () => {
-      installItem.style.display = 'none';
+      console.log('App was installed');
+      const item = document.getElementById('install-item');
+      if (item) {
+        item.style.display = 'none';
+      }
       if ('storage' in navigator && 'persist' in navigator.storage) {
         const persisted = await navigator.storage.persist();
         console.log(`Storage persisted: ${persisted}`);
       }
     });
-  }
+  });
 </script>
 {% endblock %}
