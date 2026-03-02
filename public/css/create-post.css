@@ -40,6 +40,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	gap: 0.5rem;
+	white-space: nowrap;
 }
 
 .btn:hover {
@@ -227,13 +228,13 @@ body {
 .sidebar-actions {
 	padding: 0.5rem 1rem;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	gap: 0.5rem;
 	border-top: 1px solid var(--border-color);
+	flex-wrap: wrap;
 }
 
 #load-draft-btn {
-	width: 100%;
 	font-size: 0.9rem;
 	padding: 0.5rem;
 }
@@ -518,8 +519,9 @@ body {
 
 .editor-actions {
 	display: flex;
-	gap: 4rem;
+	gap: 1rem;
 	margin-top: 1rem;
+	flex-wrap: wrap;
 }
 
 .editor-preview {

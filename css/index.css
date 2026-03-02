@@ -217,6 +217,7 @@ header {
 	margin: 0;
 	list-style: none;
 	align-items: center;
+	flex-wrap: wrap;
 }
 .nav-item {
 	display: inline-block;
@@ -240,6 +241,7 @@ header {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	white-space: nowrap;
 }
 
 .btn:hover {
