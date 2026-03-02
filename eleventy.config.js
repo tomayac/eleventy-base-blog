@@ -34,6 +34,7 @@ export default async function(eleventyConfig) {
 			"./node_modules/input-switch-polyfill/input-switch-polyfill.js": "/js/input-switch-polyfill.js",
 			"./node_modules/input-switch-polyfill/input-switch-polyfill.css": "/js/input-switch-polyfill.css",
 			"./node_modules/jszip/dist/jszip.js": "/js/jszip.js",
+			"./node_modules/browser-fs-access/dist/index.modern.js": "/js/browser-fs-access.js",
 			"node_modules/turndown/dist/turndown.js": "/js/turndown.js",
 			"./node_modules/firebase/firebase-app.js": "/js/firebase-app.js",
 			"./node_modules/firebase/firebase-ai.js": "/js/firebase-ai.js",
