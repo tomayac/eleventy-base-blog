@@ -221,6 +221,20 @@ body {
 	flex-shrink: 0;
 }
 
+.sidebar-actions {
+	padding: 0.5rem 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	border-top: 1px solid var(--border-color);
+}
+
+#load-draft-btn {
+	width: 100%;
+	font-size: 0.9rem;
+	padding: 0.5rem;
+}
+
 .delete-draft-btn {
 	margin-left: auto;
 	background: transparent !important;

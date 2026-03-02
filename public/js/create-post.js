@@ -8,6 +8,7 @@ import { initTagEditor } from './tag-editor.js';
 import { initAIToggle } from './ai-toggle.js';
 import { initGitHubSync, createPR } from './github-integration.js';
 import { debounce } from './debounce.js';
+import { handleLoadDraft } from './load-draft.js';
 
 const debouncedPreview = debounce((id, ui) => {
 	updatePreview(id, drafts, ui);
@@ -80,6 +81,13 @@ function loadDraft(id) {
 ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync; ui.contentInput.oninput = sync;
 
 ui.newDraftBtn.onclick = () => createNewDraft(ui, loadDraft, renderList);
+ui.loadDraftBtn.onclick = () => ui.loadDraftInput.click();
+ui.loadDraftInput.onchange = (e) => {
+	if (e.target.files.length > 0) {
+		handleLoadDraft(e.target.files[0], ui, loadDraft, renderList);
+		e.target.value = ''; // Reset for same file re-selection
+	}
+};
 ui.copyBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
 	const md = generateMarkdown(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
