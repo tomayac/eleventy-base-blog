@@ -73,8 +73,12 @@ export function initAIToggle(ui) {
 	ui.aiFeaturesToggle.checked = localStorage.getItem('ai-features-enabled') === 'true';
 	ui.aiOnlyExistingTagsToggle.checked = localStorage.getItem('ai-only-existing-tags') === 'true';
 	refreshAIVisibility(ui);
-	ui.aiFeaturesToggle.addEventListener('change', () => { 
+	ui.aiFeaturesToggle.addEventListener('change', async () => { 
 		localStorage.setItem('ai-features-enabled', ui.aiFeaturesToggle.checked); 
+		if (ui.aiFeaturesToggle.checked) {
+			const { initAIFeatures } = await import('./ai-init.js');
+			await initAIFeatures(ui, () => import('./create-post.js').then(m => m.sync()), { renderPills: () => import('./tag-editor.js').then(m => m.renderPills()) });
+		}
 		refreshAIVisibility(ui); 
 		window.dispatchEvent(new CustomEvent('ai-features-toggled', { detail: ui.aiFeaturesToggle.checked }));
 	});

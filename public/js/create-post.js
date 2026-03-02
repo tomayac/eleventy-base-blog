@@ -91,4 +91,4 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 	}
 	await performHousekeeping();
 })();
-export { loadDraft, renderList, sync };
+export { loadDraft, renderList, sync, tagEditor };

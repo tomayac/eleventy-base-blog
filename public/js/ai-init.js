@@ -1,4 +1,6 @@
 export async function initAIFeatures(ui, sync, tagEditor) {
+	if (window.aiFeaturesInitialized) return;
+	window.aiFeaturesInitialized = true;
 	const link = document.createElement('link');
 	link.rel = 'modulepreload';
 	link.href = '/js/ai-multimodal.js';
@@ -11,16 +13,27 @@ export async function initAIFeatures(ui, sync, tagEditor) {
 	]);
 	await Promise.all([
 		initAI(ui, sync),
-		initTagSuggestions(ui, () => { tagEditor.renderPills(); sync(); }),
+		initTagSuggestions(ui, async () => { 
+			if (tagEditor && typeof tagEditor.renderPills === 'function') {
+				tagEditor.renderPills(); 
+			} else {
+				const { tagEditor: activeTagEditor } = await import('./create-post.js');
+				if (activeTagEditor) activeTagEditor.renderPills();
+			}
+			sync(); 
+		}),
 		initAIWriter(ui, sync),
 		initAIRewriter(ui, sync)
 	]);
 }
 
-window.addEventListener('ai-features-toggled', async (e) => {
-	if (e.detail) {
-		const { sync, tagEditor } = await import('./create-post.js');
-		const { ui } = await import('./ui-elements.js');
-		await initAIFeatures(ui, sync, tagEditor);
-	}
-});
+if (!window.aiFeaturesListenerAdded) {
+	window.aiFeaturesListenerAdded = true;
+	window.addEventListener('ai-features-toggled', async (e) => {
+		if (e.detail) {
+			const { sync, tagEditor } = await import('./create-post.js');
+			const { ui } = await import('./ui-elements.js');
+			await initAIFeatures(ui, sync, tagEditor);
+		}
+	});
+}
