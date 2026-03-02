@@ -230,7 +230,6 @@ body {
 	display: flex;
 	flex-direction: row;
 	gap: 0.5rem;
-	border-top: 1px solid var(--border-color);
 	flex-wrap: wrap;
 }
 
