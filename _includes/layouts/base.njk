@@ -55,6 +55,7 @@
 					<li class="nav-item"><a href="{{ entry.url }}"{% if entry.url == page.url %} aria-current="page"{% endif %}>{{ entry.title }}</a></li>
 				{%- endfor %}
 					<li class="nav-item admin-only" style="display: none;"><a href="/blog/create/"{% if page.url == '/blog/create/' %} aria-current="page"{% endif %}>Create</a></li>
+					<li class="nav-item" id="install-item" style="display: none;"><button id="install-button" class="btn">Install</button></li>
 				</ul>
 			</nav>
 		</header>

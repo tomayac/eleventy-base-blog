@@ -52,6 +52,7 @@ This project includes a dedicated Admin Page at `/blog/create/` for composing ne
     - Drag and drop or paste images directly into the editor.
     - Images are stored locally in **IndexedDB** for persistent offline editing.
 - **Intelligent Housekeeping**: Automatically identifies and removes unused images from storage when drafts are updated or deleted.
+- **PWA Support**: The Admin Page is installable as a Progressive Web App (PWA). Once installed, it requests **persistent storage**, making it significantly less likely that your drafts and images will be evicted by the browser under disk pressure.
 - **Smart Pasting**: Paste rich text from other websites; the Admin Page automatically converts HTML to Markdown and attempts to download and locally host external images. If this isn't possible due to CORS, it falls back to the original remote URL.
 - **Export & Sync**:
     - **Download as `.zip`**: Export your finished post and its images as a structured `.zip` file ready for manual deployment.

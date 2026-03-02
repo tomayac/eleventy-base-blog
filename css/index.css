@@ -227,6 +227,25 @@ header {
 	text-decoration: underline;
 }
 
+.btn {
+	padding: 0.4rem 0.8rem;
+	cursor: pointer;
+	border: 1px solid #007bff;
+	background: #007bff;
+	color: white;
+	border-radius: 4px;
+	font-weight: 600;
+	font-size: 0.85rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn:hover {
+	background: #0056b3;
+	border-color: #0056b3;
+}
+
 /* Posts list */
 .postlist {
 	counter-reset: start-from var(--postlist-index);

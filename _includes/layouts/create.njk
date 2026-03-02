@@ -1,22 +1,26 @@
 {% extends "layouts/base.njk" %}
 
 {% block head %}
-<script eleventy:ignore>
-  if (!('switch' in HTMLInputElement.prototype)) {
-    const js = document.createElement('link');
-    js.rel = 'modulepreload';
-    js.href = '/js/input-switch-polyfill.js';
-    document.head.appendChild(js);
-
-    const css = document.createElement('link');
-    css.rel = 'preload';
-    css.as = 'style';
-    css.href = '/js/input-switch-polyfill.css';
-    document.head.appendChild(css);
+<script type="importmap" eleventy:ignore>
+{
+  "imports": {
+    "prompt-api-polyfill": "/js/prompt-api-polyfill.js",
+    "firebase/app": "/js/firebase/firebase-app.js",
+    "firebase/ai": "/js/firebase/firebase-ai.js",
+    "browser-fs-access": "/js/browser-fs-access.js",
+    "@google/genai": "/js/google-genai.js",
+    "openai": "/js/openai/index.mjs",
+    "@huggingface/transformers": "/js/huggingface-transformers/transformers.web.min.js",
+    "p-retry": "/js/helpers/p-retry-esm.js",
+    "onnxruntime-common": "/js/onnxruntime-web/ort.all.min.mjs",
+    "onnxruntime-web": "/js/onnxruntime-web/ort.all.min.mjs",
+    "onnxruntime-web/": "/js/onnxruntime-web/",
+    "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js": "/js/firebase/firebase-app.js"
   }
+}
 </script>
 
-<style>
+<style eleventy:ignore>
   @keyframes hideBriefly {
     0%,
     100% {
@@ -31,7 +35,7 @@
 </style>
 
 <noscript>
-  <style>
+  <style eleventy:ignore>
     label:has(input[switch]),
     input[switch] {
       animation: none;
@@ -41,6 +45,11 @@
 
 <script type="module" eleventy:ignore>
   if (!('switch' in HTMLInputElement.prototype)) {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = '/js/input-switch-polyfill.css';
+    document.head.appendChild(css);
+
     await import('/js/input-switch-polyfill.js');
   } else {
     document.head.insertAdjacentHTML(
@@ -50,27 +59,62 @@
   }
 </script>
 
-<link rel="stylesheet" href="/js/input-switch-polyfill.css">
 <link rel="stylesheet" href="/css/create-post.css">
 <link rel="stylesheet" href="/css/prism-okaidia.css">
+<link rel="manifest" href="/blog/create/manifest.json">
 
 <script src="/js/marked.js"></script>
 <script src="/js/prism.js"></script>
 <script src="/js/turndown.js"></script>
 <script src="/js/jszip.js"></script>
-<script type="importmap" eleventy:ignore>
-{
-  "imports": {
-    "prompt-api-polyfill": "/js/prompt-api-polyfill.js",
-    "firebase/app": "/js/firebase-app.js",
-    "firebase/ai": "/js/firebase-ai.js",
-    "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js": "/js/firebase-app.js",
-    "browser-fs-access": "/js/browser-fs-access.js",
-    "@google/genai": "https://esm.run/@google/genai",
-    "openai": "https://esm.run/openai",
-    "@huggingface/transformers": "https://esm.run/@huggingface/transformers"
-  }
-}
-</script>
+
 <script type="module" src="/js/create-post.js" eleventy:ignore></script>
+
+<script eleventy:ignore>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/blog/create/sw.js', { scope: '/blog/create/' });
+    });
+  }
+
+  (async () => {
+    if (
+      ('storage' in navigator && 'persist' in navigator.storage) &&
+      (matchMedia('(display-mode: standalone)').matches || navigator.standalone)
+    ) {
+      const persisted = await navigator.storage.persist();
+      console.log(`Storage persisted: ${persisted}`);
+    }
+  })();
+
+  let deferredPrompt;
+  const installItem = document.getElementById('install-item');
+  const installButton = document.getElementById('install-button');
+
+  if (installButton) {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installItem.style.display = 'initial';
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        deferredPrompt = null;
+        installItem.style.display = 'none';
+      }
+    });
+
+    window.addEventListener('appinstalled', async () => {
+      installItem.style.display = 'none';
+      if ('storage' in navigator && 'persist' in navigator.storage) {
+        const persisted = await navigator.storage.persist();
+        console.log(`Storage persisted: ${persisted}`);
+      }
+    });
+  }
+</script>
 {% endblock %}

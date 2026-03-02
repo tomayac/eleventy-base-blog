@@ -38,7 +38,12 @@ export default async function(eleventyConfig) {
 			"node_modules/turndown/dist/turndown.js": "/js/turndown.js",
 			"./node_modules/firebase/firebase-app.js": "/js/firebase-app.js",
 			"./node_modules/firebase/firebase-ai.js": "/js/firebase-ai.js",
-			"./node_modules/prompt-api-polyfill/dot_env.json": "/dot_env.json"
+			"./node_modules/prompt-api-polyfill/dot_env.json": "/dot_env.json",
+			"./node_modules/@google/genai/dist/web/index.mjs": "/js/google-genai.js",
+			"./node_modules/openai/": "/js/openai/",
+			"./node_modules/@huggingface/transformers/dist/": "/js/huggingface-transformers/",
+			"./node_modules/onnxruntime-web/dist/": "/js/onnxruntime-web/",
+			"./node_modules/firebase/": "/js/firebase/"
 		})
 		.addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
 
