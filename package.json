@@ -43,6 +43,8 @@
 		"built-in-ai-skills-md-agent-md": "^1.3.0",
 		"cross-env": "^7.0.3",
 		"luxon": "^3.6.1",
+		"node-addon-api": "^8.6.0",
+		"node-gyp": "^12.2.0",
 		"prismjs": "^1.30.0",
 		"zod": "^3.25.67",
 		"zod-validation-error": "^3.5.2"

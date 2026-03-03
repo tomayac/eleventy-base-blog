@@ -55,17 +55,14 @@ This project includes a dedicated Admin Page at `/blog/create/` for composing ne
 - **PWA Support**: The Admin Page is installable as a Progressive Web App (PWA). Once installed, it requests **persistent storage**, making it significantly less likely that your drafts and images will be evicted by the browser under disk pressure.
 - **Smart Pasting**: Paste rich text from other websites; the Admin Page automatically converts HTML to Markdown and attempts to download and locally host external images. If this isn't possible due to CORS, it falls back to the original remote URL.
 - **Export & Sync**:
-    - **Download as `.zip`**: Export your finished post and its images as a structured `.zip` file ready for manual deployment.
+    - **Save as `.zip`**: Export your finished post and its images as a structured `.zip` file ready for manual deployment.
     - **GitHub Integration**: Create a Pull Request directly from the UI. The Admin Page handles branch creation, image uploads, and Markdown submission to your repository.
 
 ### Optional Built-in AI Features
 
 The Admin Page offers several assistive features powered by the Built-in AI APIs. These APIs are also polyfilled to work in browsers that do not support them natively.
 
-To use the polyfilled AI features, you need to provide your AI API keys in the **Settings** section of the Admin Page. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
-
-> [!TIP]
-> Since the polyfilled AI features require your private AI keys to be saved in your browser's local storage, it is highly recommended to protect the `/blog/create/` directory with basic authentication, for example, through an `.htaccess` file.
+To use the polyfilled AI features with cloud AI providers, you need to provide your AI API keys in the **Settings** section of the Admin Page. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
 
 Available AI features:
 
@@ -73,6 +70,7 @@ Available AI features:
 - **Smart Summarization**: Generate suggestions for blog post titles and meta descriptions from your content that you can then refine.
 - **Multimodal Alt-Text**: Automatically generate suggestions for accessible alt-text and creative captions for uploaded or pasted images.
 - **Tag Suggestions**: Receive relevant tag recommendations based on the topics discussed in your post.
+- **Advertising Categories**: Generate suggestions for advertising categories based on the topics discussed in your post.
 
 _Note: These features are privacy-focused and run entirely locally on your device when using the built-in AI APIs. They can be **completely** turned off in the Admin Page settings._
 
