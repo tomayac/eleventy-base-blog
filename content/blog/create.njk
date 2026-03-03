@@ -200,7 +200,7 @@ eleventyExcludeFromCollections: true
 			</div>
 
 			<div class="form-group ai-rewriter-section" style="display: none;">
-				<label>Rewrite content</label>
+				<label for="post-content">Rewrite content</label>
 				<p class="field-hint">💡 Refine your post content with specific tone and length. (Markdown layout is preserved)</p>
 				<div class="rewriter-options">
 					<div class="rewriter-option-group">
@@ -221,11 +221,20 @@ eleventyExcludeFromCollections: true
 					</div>
 					<button type="button" id="ai-rewriter-btn" class="btn ai-button" style="display: none;" title="Rewrite content">✨</button>
 				</div>
-				<div class="editor-footer-actions">
-					<div id="ai-status" style="font-size: 0.7rem; color: #666; display: none;">
-						<progress id="ai-download-progress" value="0" max="100" style="width: 100px;"></progress>
-						<span id="ai-status-text">Ready</span>
-					</div>
+			</div>
+
+			<div class="form-group ai-classifier-section" style="display: none;">
+				<label>Advertising categories</label>
+				<p class="field-hint">💡 Advertising categories for this blog post.</p>
+				<div class="classifier-actions">
+					<button type="button" id="ai-classifier-btn" class="btn ai-button" style="display: none;" title="Classify content">✨</button>
+				</div>
+				<div id="ai-classifier-results" style="margin-top: 1rem;"></div>
+			</div>
+			<div class="editor-footer-actions">
+				<div id="ai-status" style="font-size: 0.7rem; color: #666; display: none;">
+					<progress id="ai-download-progress" value="0" max="100" style="width: 100px;"></progress>
+					<span id="ai-status-text">Ready</span>
 				</div>
 			</div>
 		</form>

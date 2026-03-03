@@ -10,7 +10,7 @@ function escapeYamlValue(val) {
 	return val;
 }
 
-export function generateMarkdown(draft, title, description, date, tagsValue, content) {
+export function generateMarkdown(draft, title, description, date, tagsValue, content, classifierIds = []) {
 	const tags = tagsValue.split(',').map(t => t.trim()).filter(t => t);
 	const escapedTags = tags.map(t => `"${t.replace(/"/g, '\\"')}"`);
 	const tagsYaml = escapedTags.length > 0 ? `tags: [${escapedTags.join(', ')}]` : 'tags: []';
@@ -28,9 +28,9 @@ export function generateMarkdown(draft, title, description, date, tagsValue, con
 	return frontmatter + content;
 }
 
-export async function downloadZIP(draft, title, description, date, tagsValue, content) {
+export async function downloadZIP(draft, title, description, date, tagsValue, content, classifierIds = []) {
 	const slug = (title || 'untitled').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-	const md = generateMarkdown(draft, title, description, date, tagsValue, content);
+	const md = generateMarkdown(draft, title, description, date, tagsValue, content, classifierIds);
 	
 	const zip = new JSZip();
 	const folder = zip.folder(slug);

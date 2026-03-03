@@ -8,6 +8,7 @@ export function refreshAIVisibility(ui) {
 
 	if (ui.aiWriterSection) ui.aiWriterSection.style.display = (enabled && isAiSupported) ? 'block' : 'none';
 	if (ui.aiRewriterSection) ui.aiRewriterSection.style.display = (enabled && isAiSupported) ? 'block' : 'none';
+	if (ui.aiClassifierSection) ui.aiClassifierSection.style.display = (enabled && isAiSupported) ? 'block' : 'none';
 	if (!enabled && ui.aiStatus) ui.aiStatus.style.display = 'none';
 	if (ui.aiKeysSection) ui.aiKeysSection.style.display = enabled ? 'block' : 'none';
 	
@@ -66,6 +67,13 @@ export function initAIToggle(ui) {
 				saveBackendConfigs(configs);
 				updateGlobalConfig(ui); 
 				if (id === 'ai-use-app-check') updateBackendFields(ui);
+				
+				// Re-init if enabled and changed settings might make it available
+				if (ui.aiFeaturesToggle.checked) {
+					import('./ai-init.js').then(({ initAIFeatures }) => {
+						initAIFeatures(ui, () => import('./create-post.js').then(m => m.sync()), { renderPills: () => import('./tag-editor.js').then(m => m.renderPills()) });
+					});
+				}
 			};
 		}
 	});

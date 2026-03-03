@@ -5,11 +5,12 @@ export async function initAIFeatures(ui, sync, tagEditor) {
 	link.rel = 'modulepreload';
 	link.href = '/js/ai-multimodal.js';
 	document.head.appendChild(link);
-	const [{ initAI }, { initTagSuggestions }, { initAIWriter }, { initAIRewriter }] = await Promise.all([
+	const [{ initAI }, { initTagSuggestions }, { initAIWriter }, { initAIRewriter }, { initAIClassifier }] = await Promise.all([
 		import('./ai-features.js'),
 		import('./ai-tag-suggestions.js'),
 		import('./ai-writer.js'),
-		import('./ai-rewriter.js')
+		import('./ai-rewriter.js'),
+		import('./ai-classifier.js')
 	]);
 	await Promise.all([
 		initAI(ui, sync),
@@ -23,7 +24,8 @@ export async function initAIFeatures(ui, sync, tagEditor) {
 			sync(); 
 		}),
 		initAIWriter(ui, sync),
-		initAIRewriter(ui, sync)
+		initAIRewriter(ui, sync),
+		initAIClassifier(ui, sync)
 	]);
 }
 

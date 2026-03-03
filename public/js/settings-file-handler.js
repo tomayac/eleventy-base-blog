@@ -77,6 +77,8 @@ export function initSettingsFileHandler(ui) {
 			updateGlobalConfig(ui);
 			
 			if (ui.aiFeaturesToggle.checked) {
+				const { initAIFeatures } = await import('./ai-init.js');
+				await initAIFeatures(ui, () => import('./create-post.js').then(m => m.sync()), { renderPills: () => import('./tag-editor.js').then(m => m.renderPills()) });
 				window.dispatchEvent(new CustomEvent('ai-features-toggled', { detail: true }));
 			}
 

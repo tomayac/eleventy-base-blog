@@ -38,7 +38,7 @@ async function handleLoadDraft(file, ui, loadDraftFn, renderListFn) {
 		drafts.unshift(newDraft);
 		setCurrentDraftId(id);
 		saveDrafts();
-		loadDraftFn(id);
+		await loadDraftFn(id);
 		renderListFn();
 	} else if (file.name.endsWith('.zip')) {
 		const zip = await JSZip.loadAsync(file);
@@ -81,7 +81,7 @@ async function handleLoadDraft(file, ui, loadDraftFn, renderListFn) {
 		drafts.unshift(newDraft);
 		setCurrentDraftId(id);
 		saveDrafts();
-		loadDraftFn(id);
+		await loadDraftFn(id);
 		renderListFn();
 	}
 }

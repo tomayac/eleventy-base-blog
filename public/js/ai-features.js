@@ -29,7 +29,7 @@ export async function runAIAction(ui, btn, actionFn, updateCallback) {
 		ui.activeAiStreams--;
 		btn.disabled = false;
 		btn.textContent = oldText === '⏳' ? '✨' : oldText;
-		updateCallback();
+		if (typeof updateCallback === 'function') updateCallback();
 	}
 }
 

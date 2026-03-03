@@ -44,7 +44,8 @@ export async function createPR(ui, draft) {
 	try {
 		const slug = ui.getSlug(ui.titleInput.value);
 		const branchName = `post-${slug}-${Date.now()}`;
-		const md = generateMarkdown(draft, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
+		const classifierIds = window.getSelectedClassifierIds ? window.getSelectedClassifierIds() : [];
+		const md = generateMarkdown(draft, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value, classifierIds);
 
 		const repoInfo = await ghFetch(ui, '');
 		const defaultBranch = repoInfo.default_branch;

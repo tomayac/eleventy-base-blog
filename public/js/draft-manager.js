@@ -17,7 +17,7 @@ export function saveCurrentDraft(id, ui) {
 	updateDraftData(id, ui);
 }
 
-export function createNewDraft(ui, loadDraftFn, renderListFn) {
+export async function createNewDraft(ui, loadDraftFn, renderListFn) {
 	const id = Date.now().toString();
 	const newDraft = {
 		id, title: '', description: '', date: '',
@@ -26,7 +26,7 @@ export function createNewDraft(ui, loadDraftFn, renderListFn) {
 	drafts.unshift(newDraft);
 	setCurrentDraftId(id);
 	saveDrafts();
-	loadDraftFn(id);
+	await loadDraftFn(id);
 	renderListFn();
 }
 
@@ -71,6 +71,12 @@ export function updateDraftData(id, ui) {
 	draft.date = ui.dateInput.value;
 	draft.tags = ui.tagsInput.value;
 	draft.content = ui.contentInput.value;
+	
+	// Get classifier IDs from UI if possible
+	if (window.getSelectedClassifierIds) {
+		draft.classifierIds = window.getSelectedClassifierIds();
+	}
+	
 	draft.lastModified = Date.now();
 	saveDrafts();
 }

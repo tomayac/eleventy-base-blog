@@ -45,24 +45,51 @@ function renderList() {
 	});
 }
 
-function loadDraft(id) {
+async function loadDraft(id) {
 	const d = drafts.find(draft => draft.id === id); if (!d) return;
 	setCurrentDraftId(id);
 	ui.titleInput.value = d.title || ''; ui.descInput.value = d.description || '';
 	ui.dateInput.value = d.date || ''; ui.tagsInput.value = d.tags || '';
-	ui.contentInput.value = d.content || '';
+	
+	let content = d.content || '';
+	let classifierResults = [];
+	
+	// Try to parse from content
+	const match = content.match(/IAB_CONTENT_(?:2_2|3_1): \{ values: (\[.*?\]) \},\s*confidences: (\[.*?\])/) || content.match(/IAB_CONTENT_(?:2_2|3_1): \{ values: (\[.*?\]) \}/);
+	if (match) {
+		try {
+			const parsedIds = JSON.parse(match[1]);
+			const parsedConfidences = match[2] ? JSON.parse(match[2]) : [];
+			if (parsedIds.length > 0) {
+				classifierResults = parsedIds.map((id, i) => ({
+					id,
+					confidence: parsedConfidences[i] !== undefined ? parsedConfidences[i] : null
+				}));
+			}
+		} catch (e) { console.warn("Failed to parse categories from content", e); }
+	}
+	
+	ui.contentInput.value = content;
 	ui.aiWriterInput.value = '';
 	lastSyncedTitle = ui.titleInput.value;
-	tagEditor.renderPills(); updatePreview(id, drafts, ui); renderList();
+	tagEditor.renderPills(); 
+	
+	if (window.renderClassifierResults) {
+		await window.renderClassifierResults(ui, classifierResults, () => sync());
+	}
+	
+	updatePreview(id, drafts, ui); renderList();
 }
 
 ui.titleInput.oninput = sync; ui.descInput.oninput = sync; ui.dateInput.oninput = sync; ui.contentInput.oninput = sync;
+window.addEventListener('classifier-updated', sync);
 
-ui.newDraftBtn.onclick = () => createNewDraft(ui, loadDraft, renderList);
+ui.newDraftBtn.onclick = async () => await createNewDraft(ui, loadDraft, renderList);
 ui.loadDraftBtn.onclick = () => openAndLoadDraft(ui, loadDraft, renderList);
 ui.copyBtn.onclick = () => {
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
-	const md = generateMarkdown(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
+	const classifierIds = window.getSelectedClassifierIds ? window.getSelectedClassifierIds() : [];
+	const md = generateMarkdown(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value, classifierIds);
 	navigator.clipboard.writeText(md).then(() => {
 		const oldText = ui.copyBtn.textContent; ui.copyBtn.textContent = '✅ Copied!';
 		setTimeout(() => ui.copyBtn.textContent = oldText, 2000);
@@ -71,7 +98,8 @@ ui.copyBtn.onclick = () => {
 ui.downloadBtn.onclick = async () => {
 	await performHousekeeping();
 	const id = localStorage.getItem('current-draft-id'); const d = drafts.find(draft => draft.id === id);
-	downloadZIP(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value);
+	const classifierIds = window.getSelectedClassifierIds ? window.getSelectedClassifierIds() : [];
+	downloadZIP(d, ui.titleInput.value, ui.descInput.value, ui.dateInput.value, ui.tagsInput.value, ui.contentInput.value, classifierIds);
 };
 ui.githubPrBtn.onclick = async () => {
 	await performHousekeeping();
@@ -145,8 +173,8 @@ ui.fileInput.onchange = () => handleFiles(ui.fileInput.files, localStorage.getIt
 		}
 	}
 
-	if (drafts.length === 0) createNewDraft(ui, loadDraft, renderList);
-	else loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
+	if (drafts.length === 0) await createNewDraft(ui, loadDraft, renderList);
+	else await loadDraft(localStorage.getItem('current-draft-id') || drafts[0].id);
 	
 	initAIToggle(ui);
 	initSettingsFileHandler(ui);

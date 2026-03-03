@@ -269,13 +269,48 @@ body {
 	font-size: 1.1rem;
 }
 
-.ai-writer-section, .ai-rewriter-section {
+.ai-writer-section, .ai-rewriter-section, .ai-classifier-section {
 	margin-top: 0;
 	padding-top: 1rem;
 	position: relative;
 }
 
-.ai-writer-section .input-with-action, .rewriter-options {
+#ai-classifier-results table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.8rem;
+	margin-top: 0.5rem;
+}
+
+#ai-classifier-results th, #ai-classifier-results td {
+	border: 1px solid var(--border-color);
+	padding: 0.4rem;
+	text-align: left;
+}
+
+#ai-classifier-results th {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.classifier-pill {
+	display: inline-flex !important;
+	margin: 0 !important;
+	white-space: normal !important;
+	text-align: left !important;
+	background: var(--secondary-color) !important;
+}
+
+.classifier-pill .remove-tag {
+	margin-left: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+	#ai-classifier-results th {
+		background: rgba(255, 255, 255, 0.05);
+	}
+}
+
+.ai-writer-section .input-with-action, .rewriter-options, .classifier-actions {
 	display: flex;
 	align-items: flex-end;
 	gap: 0.5rem;
