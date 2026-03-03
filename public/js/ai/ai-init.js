@@ -3,7 +3,7 @@ export async function initAIFeatures(ui, sync, tagEditor) {
   window.aiFeaturesInitialized = true;
   const link = document.createElement("link");
   link.rel = "modulepreload";
-  link.href = "/js/ai-multimodal.js";
+  link.href = "/js/ai/ai-multimodal.js";
   document.head.appendChild(link);
   const [
     { initAI },
@@ -24,7 +24,8 @@ export async function initAIFeatures(ui, sync, tagEditor) {
       if (tagEditor && typeof tagEditor.renderPills === "function") {
         tagEditor.renderPills();
       } else {
-        const { tagEditor: activeTagEditor } = await import("./create-post.js");
+        const { tagEditor: activeTagEditor } =
+          await import("../editor/create-post.js");
         if (activeTagEditor) activeTagEditor.renderPills();
       }
       sync();
@@ -39,8 +40,8 @@ if (!window.aiFeaturesListenerAdded) {
   window.aiFeaturesListenerAdded = true;
   window.addEventListener("ai-features-toggled", async (e) => {
     if (e.detail) {
-      const { sync, tagEditor } = await import("./create-post.js");
-      const { ui } = await import("./ui-elements.js");
+      const { sync, tagEditor } = await import("../editor/create-post.js");
+      const { ui } = await import("../editor/ui-elements.js");
       await initAIFeatures(ui, sync, tagEditor);
     }
   });

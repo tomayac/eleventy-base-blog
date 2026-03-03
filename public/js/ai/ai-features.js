@@ -1,39 +1,8 @@
 import { detectLanguage } from "./ai-language-detection.js";
-import { customAlert } from "./dialog-utils.js";
-import { checkAIKeys } from "./ai-config.js";
+import { customAlert } from "../utils/dialog-utils.js";
 import { refreshAIVisibility } from "./ai-toggle.js";
-
-export const getMonitor = (ui, lang, modelName) => ({
-  monitor(m) {
-    m.addEventListener("downloadprogress", (e) => {
-      ui.aiStatus.style.display = "flex";
-      ui.aiDownloadProgress.value = e.loaded;
-      ui.aiDownloadProgress.max = e.total;
-      ui.aiStatusText.textContent = `Downloading ${modelName} (${lang}): ${Math.round((e.loaded / e.total) * 100)}%`;
-      if (e.loaded === e.total)
-        setTimeout(() => (ui.aiStatus.style.display = "none"), 2000);
-    });
-  },
-});
-
-export async function runAIAction(ui, btn, actionFn, updateCallback) {
-  if (!checkAIKeys(ui)) return;
-  btn.disabled = true;
-  const oldText = btn.textContent;
-  btn.textContent = "⏳";
-  ui.activeAiStreams++;
-  try {
-    await actionFn();
-  } catch (err) {
-    console.error(err);
-    customAlert(ui, "AI Action failed.");
-  } finally {
-    ui.activeAiStreams--;
-    btn.disabled = false;
-    btn.textContent = oldText === "⏳" ? "✨" : oldText;
-    if (typeof updateCallback === "function") updateCallback();
-  }
-}
+import { getMonitor, runAIAction } from "./ai-ui-utils.js";
+export { getMonitor, runAIAction };
 
 const getSummarizerOptions = (ui, lang, type) => ({
   type,

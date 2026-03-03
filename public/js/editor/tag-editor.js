@@ -37,7 +37,9 @@ export function initTagEditor(ui, onUpdate) {
           const existingTags = schema.properties.tags.items.enum;
           if (!existingTags.includes(val)) {
             const msg = `Only existing tags are allowed: ${existingTags.join(", ")}`;
-            import("./dialog-utils.js").then((m) => m.customAlert(ui, msg));
+            import("../utils/dialog-utils.js").then((m) =>
+              m.customAlert(ui, msg),
+            );
             return;
           }
         }

@@ -1,8 +1,8 @@
 import { fileOpen } from "browser-fs-access";
-import { parseFrontmatter } from "./frontmatter-parser.js";
+import { parseFrontmatter } from "../editor/frontmatter-parser.js";
 import { drafts, saveDrafts, setCurrentDraftId } from "./draft-manager.js";
-import { saveImage } from "./db-storage.js";
-import { customAlert } from "./dialog-utils.js";
+import { saveImage } from "../utils/db-storage.js";
+import { customAlert } from "../utils/dialog-utils.js";
 
 export async function openAndLoadDraft(ui, loadDraftFn, renderListFn) {
   try {

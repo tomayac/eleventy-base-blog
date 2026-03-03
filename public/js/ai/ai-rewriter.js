@@ -1,5 +1,5 @@
 import { detectLanguage } from "./ai-language-detection.js";
-import { customAlert } from "./dialog-utils.js";
+import { customAlert } from "../utils/dialog-utils.js";
 import { getMonitor, runAIAction } from "./ai-features.js";
 import { refreshAIVisibility } from "./ai-toggle.js";
 

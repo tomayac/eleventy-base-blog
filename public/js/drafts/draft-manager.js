@@ -1,5 +1,8 @@
-import { deleteImagesForDraft, cleanupOrphanedImages } from "./db-storage.js";
-import { customConfirm } from "./dialog-utils.js";
+import {
+  deleteImagesForDraft,
+  cleanupOrphanedImages,
+} from "../utils/db-storage.js";
+import { customConfirm } from "../utils/dialog-utils.js";
 
 export let drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
 export let currentDraftId = localStorage.getItem("current-draft-id");

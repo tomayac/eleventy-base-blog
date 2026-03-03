@@ -1,5 +1,5 @@
 import { fileSave } from "browser-fs-access";
-import { getImage } from "./db-storage.js";
+import { getImage } from "../utils/db-storage.js";
 
 function escapeYamlValue(val) {
   if (typeof val !== "string") return val;

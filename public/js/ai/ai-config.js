@@ -1,38 +1,7 @@
-import { customAlert } from "./dialog-utils.js";
+import { customAlert } from "../utils/dialog-utils.js";
+import { DEFAULT_CONFIGS } from "./ai-constants.js";
 
-export const aiKeys = [
-  "ai-backend",
-  "ai-api-key",
-  "ai-model-name",
-  "ai-project-id",
-  "ai-app-id",
-  "ai-gemini-api-provider",
-  "ai-use-app-check",
-  "ai-recaptcha-site-key",
-  "ai-use-limited-use-tokens",
-  "ai-device",
-  "ai-dtype",
-];
-
-const DEFAULT_CONFIGS = {
-  "gemini-api": { "ai-api-key": "", "ai-model-name": "" },
-  openai: { "ai-api-key": "", "ai-model-name": "" },
-  firebase: {
-    "ai-api-key": "",
-    "ai-model-name": "",
-    "ai-project-id": "",
-    "ai-app-id": "",
-    "ai-gemini-api-provider": "developer",
-    "ai-use-app-check": false,
-    "ai-recaptcha-site-key": "",
-    "ai-use-limited-use-tokens": false,
-  },
-  "transformers-js": {
-    "ai-model-name": "",
-    "ai-device": "webgpu",
-    "ai-dtype": "q4f16",
-  },
-};
+export { aiKeys } from "./ai-constants.js";
 
 export function getBackendConfigs() {
   return JSON.parse(
@@ -65,18 +34,18 @@ export function checkAIKeys(ui) {
 
 export function updateGlobalConfig(ui) {
   const backend = ui.aiBackendSelect.value;
-  delete window.FIREBASE_CONFIG;
-  delete window.TRANSFORMERS_CONFIG;
-  delete window.OPENAI_CONFIG;
-  delete window.GEMINI_CONFIG;
+  [
+    "FIREBASE_CONFIG",
+    "TRANSFORMERS_CONFIG",
+    "OPENAI_CONFIG",
+    "GEMINI_CONFIG",
+  ].forEach((k) => delete window[k]);
 
   const configs = getBackendConfigs();
   const current = configs[backend] || {};
-
   const apiKey =
     current["ai-api-key"] || (backend === "transformers-js" ? "dummy" : "");
-  const modelName = current["ai-model-name"] || "";
-  const config = { apiKey, modelName };
+  const config = { apiKey, modelName: current["ai-model-name"] || "" };
 
   if (backend === "firebase") {
     window.FIREBASE_CONFIG = {
@@ -94,11 +63,9 @@ export function updateGlobalConfig(ui) {
       device: current["ai-device"],
       dtype: current["ai-dtype"],
     };
-  } else if (backend === "openai") {
-    window.OPENAI_CONFIG = config;
-  } else if (backend === "gemini-api") {
-    window.GEMINI_CONFIG = config;
-  }
+  } else if (backend === "openai") window.OPENAI_CONFIG = config;
+  else if (backend === "gemini-api") window.GEMINI_CONFIG = config;
+
   localStorage.setItem("prompt-api-backend", backend);
 }
 
