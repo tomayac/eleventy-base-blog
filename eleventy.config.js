@@ -24,6 +24,7 @@ export default async function(eleventyConfig) {
 	eleventyConfig
 		.addPassthroughCopy({
 			"./public/": "/",
+			"./node_modules/dompurify/dist/purify.min.js": "/js/purify.min.js",
 			"./node_modules/marked/lib/marked.umd.js": "/js/marked.js",
 			"./node_modules/prompt-api-polyfill/dist/prompt-api-polyfill.js": "/js/prompt-api-polyfill.js",
 			"./node_modules/prompt-api-polyfill/dist/backends/": "/js/backends/",

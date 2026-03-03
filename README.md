@@ -57,12 +57,17 @@ This project includes a dedicated Admin Page at `/blog/create/` for composing ne
 - **Export & Sync**:
     - **Save as `.zip`**: Export your finished post and its images as a structured `.zip` file ready for manual deployment.
     - **GitHub Integration**: Create a Pull Request directly from the UI. The Admin Page handles branch creation, image uploads, and Markdown submission to your repository.
+    - **Edit Existing Blog Posts**: Directly load and update existing posts from your GitHub repository by clicking the "Edit" button in the Archive or the Home page.
 
 ### Optional Built-in AI Features
 
 The Admin Page offers several assistive features powered by the Built-in AI APIs. These APIs are also polyfilled to work in browsers that do not support them natively.
 
-To use the polyfilled AI features with cloud AI providers, you need to provide your AI API keys in the **Settings** section of the Admin Page. For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
+To use the polyfilled AI features with cloud AI providers, you need to provide your AI API keys in the **Settings** section of the Admin Page. The following backends are supported:
+- **Local**: Transformers.js.
+- **Cloud**: Firebase AI Logic (Developer/Vertex), OpenAI, Gemini API.
+
+For more information on supported backends and configuration, see the [Prompt API Polyfill README](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill#configuring-dot_envjson--envjson).
 
 Available AI features:
 

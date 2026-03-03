@@ -24,6 +24,64 @@ export function wrapText(text, limit) {
 
 const blobCache = new Map();
 
+let domPurifyPromise = null;
+
+async function sanitizeHTML(container, html) {
+	const config = {
+		// Allow blob: URLs for local images and relative paths
+		ADD_ATTR: ['loading', 'decoding'],
+		ADD_TAGS: ['figure', 'figcaption'],
+		// Ensure src is allowed for blob and relative paths
+		// See: https://github.com/cure53/dompurify/blob/main/demos/README.md#how-can-i-allow-blob-urls
+		ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel|ftp|blob|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i
+	};
+
+	// Native Sanitizer API (Experimental)
+	if ('setHTML' in container) {
+		try {
+			// Try to use native Sanitizer if it handles blob URLs
+			container.setHTML(html);
+			// Check if src was stripped (crude check)
+			if (html.includes('src=') && !container.querySelector('[src]')) {
+				throw new Error('Native Sanitizer stripped src');
+			}
+			return;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	// Fallback to DOMPurify
+	if (!window.DOMPurify && !domPurifyPromise) {
+		const link = document.createElement('link');
+		link.rel = 'modulepreload';
+		link.href = '/js/purify.min.js';
+		document.head.appendChild(link);
+
+		domPurifyPromise = (async () => {
+			try {
+				await import('/js/purify.min.js');
+				return window.DOMPurify;
+			} catch (e) {
+				return new Promise((resolve, reject) => {
+					const script = document.createElement('script');
+					script.src = '/js/purify.min.js';
+					script.onload = () => resolve(window.DOMPurify);
+					script.onerror = reject;
+					document.head.appendChild(script);
+				});
+			}
+		})();
+	}
+
+	const purify = window.DOMPurify || (await domPurifyPromise);
+	if (purify && purify.sanitize) {
+		container.innerHTML = purify.sanitize(html, config);
+	} else {
+		container.innerHTML = html;
+	}
+}
+
 export async function updatePreview(currentId, drafts, ui) {
 	const draft = drafts.find(d => d.id === currentId);
 	if (!draft) return;
@@ -52,7 +110,7 @@ export async function updatePreview(currentId, drafts, ui) {
 	if (!title && !dateHtml && !tagsHtml && !content) {
 		ui.previewContent.innerHTML = '';
 	} else {
-		ui.previewContent.innerHTML = `${titleHtml}${metadataHtml}${marked.parse(content)}`;
+		await sanitizeHTML(ui.previewContent, `${titleHtml}${metadataHtml}${marked.parse(content)}`);
 	}
 	if (window.Prism) Prism.highlightAllUnder(ui.previewContent);
 }
