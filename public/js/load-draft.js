@@ -1,87 +1,95 @@
-import { fileOpen } from 'browser-fs-access';
-import { parseFrontmatter } from './frontmatter-parser.js';
-import { drafts, saveDrafts, setCurrentDraftId } from './draft-manager.js';
-import { saveImage } from './db-storage.js';
-import { customAlert } from './dialog-utils.js';
+import { fileOpen } from "browser-fs-access";
+import { parseFrontmatter } from "./frontmatter-parser.js";
+import { drafts, saveDrafts, setCurrentDraftId } from "./draft-manager.js";
+import { saveImage } from "./db-storage.js";
+import { customAlert } from "./dialog-utils.js";
 
 export async function openAndLoadDraft(ui, loadDraftFn, renderListFn) {
-	try {
-		const blob = await fileOpen({
-			mimeTypes: ['text/markdown', 'application/zip'],
-			extensions: ['.md', '.zip'],
-			description: 'Blog Drafts',
-		});
-		await handleLoadDraft(blob, ui, loadDraftFn, renderListFn);
-	} catch (err) {
-		if (err.name !== 'AbortError') {
-			console.error(err);
-			customAlert(ui, 'Failed to open file.');
-		}
-	}
+  try {
+    const blob = await fileOpen({
+      mimeTypes: ["text/markdown", "application/zip"],
+      extensions: [".md", ".zip"],
+      description: "Blog Drafts",
+    });
+    await handleLoadDraft(blob, ui, loadDraftFn, renderListFn);
+  } catch (err) {
+    if (err.name !== "AbortError") {
+      console.error(err);
+      customAlert(ui, "Failed to open file.");
+    }
+  }
 }
 
 async function handleLoadDraft(file, ui, loadDraftFn, renderListFn) {
-	if (file.name.endsWith('.md')) {
-		const text = await file.text();
-		const { metadata, content } = parseFrontmatter(text);
-		const id = Date.now().toString();
-		const newDraft = {
-			id,
-			title: metadata.title || '',
-			description: metadata.description || '',
-			date: metadata.date || '',
-			tags: Array.isArray(metadata.tags) ? metadata.tags.join(', ') : (metadata.tags || ''),
-			content: content || '',
-			imageFiles: [],
-			lastModified: Date.now()
-		};
-		drafts.unshift(newDraft);
-		setCurrentDraftId(id);
-		saveDrafts();
-		await loadDraftFn(id);
-		renderListFn();
-	} else if (file.name.endsWith('.zip')) {
-		const zip = await JSZip.loadAsync(file);
-		const mdFile = Object.values(zip.files).find(f => f.name.endsWith('.md'));
-		if (!mdFile) {
-			customAlert(ui, 'No .md file found in the ZIP archive.');
-			return;
-		}
+  if (file.name.endsWith(".md")) {
+    const text = await file.text();
+    const { metadata, content } = parseFrontmatter(text);
+    const id = Date.now().toString();
+    const newDraft = {
+      id,
+      title: metadata.title || "",
+      description: metadata.description || "",
+      date: metadata.date || "",
+      tags: Array.isArray(metadata.tags)
+        ? metadata.tags.join(", ")
+        : metadata.tags || "",
+      content: content || "",
+      imageFiles: [],
+      lastModified: Date.now(),
+    };
+    drafts.unshift(newDraft);
+    setCurrentDraftId(id);
+    saveDrafts();
+    await loadDraftFn(id);
+    renderListFn();
+  } else if (file.name.endsWith(".zip")) {
+    const zip = await JSZip.loadAsync(file);
+    const mdFile = Object.values(zip.files).find((f) => f.name.endsWith(".md"));
+    if (!mdFile) {
+      customAlert(ui, "No .md file found in the ZIP archive.");
+      return;
+    }
 
-		const text = await mdFile.async('text');
-		const { metadata, content } = parseFrontmatter(text);
-		const id = Date.now().toString();
-		const newDraft = {
-			id,
-			title: metadata.title || '',
-			description: metadata.description || '',
-			date: metadata.date || '',
-			tags: Array.isArray(metadata.tags) ? metadata.tags.join(', ') : (metadata.tags || ''),
-			content: content || '',
-			imageFiles: [],
-			lastModified: Date.now()
-		};
+    const text = await mdFile.async("text");
+    const { metadata, content } = parseFrontmatter(text);
+    const id = Date.now().toString();
+    const newDraft = {
+      id,
+      title: metadata.title || "",
+      description: metadata.description || "",
+      date: metadata.date || "",
+      tags: Array.isArray(metadata.tags)
+        ? metadata.tags.join(", ")
+        : metadata.tags || "",
+      content: content || "",
+      imageFiles: [],
+      lastModified: Date.now(),
+    };
 
-		// Extract images
-		for (const [filename, zipEntry] of Object.entries(zip.files)) {
-			if (zipEntry.dir || filename === mdFile.name) continue;
-			
-			// Basic image extension check
-			if (/\.(png|jpe?g|gif|webp|svg|avif)$/i.test(filename)) {
-				const buffer = await zipEntry.async('arrayBuffer');
-				const simpleName = filename.split('/').pop();
-				const imageId = `${id}:${Date.now()}:${simpleName}`;
-				const type = `image/${simpleName.split('.').pop().toLowerCase()}`.replace('jpg', 'jpeg');
-				
-				await saveImage(imageId, buffer);
-				newDraft.imageFiles.push({ name: simpleName, id: imageId, type });
-			}
-		}
+    // Extract images
+    for (const [filename, zipEntry] of Object.entries(zip.files)) {
+      if (zipEntry.dir || filename === mdFile.name) continue;
 
-		drafts.unshift(newDraft);
-		setCurrentDraftId(id);
-		saveDrafts();
-		await loadDraftFn(id);
-		renderListFn();
-	}
+      // Basic image extension check
+      if (/\.(png|jpe?g|gif|webp|svg|avif)$/i.test(filename)) {
+        const buffer = await zipEntry.async("arrayBuffer");
+        const simpleName = filename.split("/").pop();
+        const imageId = `${id}:${Date.now()}:${simpleName}`;
+        const type =
+          `image/${simpleName.split(".").pop().toLowerCase()}`.replace(
+            "jpg",
+            "jpeg",
+          );
+
+        await saveImage(imageId, buffer);
+        newDraft.imageFiles.push({ name: simpleName, id: imageId, type });
+      }
+    }
+
+    drafts.unshift(newDraft);
+    setCurrentDraftId(id);
+    saveDrafts();
+    await loadDraftFn(id);
+    renderListFn();
+  }
 }
