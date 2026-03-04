@@ -60,6 +60,9 @@ export async function downloadZIP(
   content,
   classifierResults = [],
 ) {
+  if (!draft) {
+    throw new Error("No draft data provided for ZIP export.");
+  }
   const slug = (title || "untitled")
     .toLowerCase()
     .replace(/\s+/g, "-")

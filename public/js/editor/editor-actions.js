@@ -1,12 +1,16 @@
-import { performHousekeeping } from "../drafts/draft-manager.js";
+import { performHousekeeping, drafts } from "../drafts/draft-manager.js";
 import { generateMarkdown, downloadZIP } from "../export/zip-exporter.js";
 import { createPR } from "../github/github-integration.js";
 import { customAlert } from "../utils/dialog-utils.js";
 
-export function initEditorActions(ui, drafts) {
+export function initEditorActions(ui) {
   ui.copyBtn.onclick = () => {
     const id = localStorage.getItem("current-draft-id");
     const d = drafts.find((draft) => draft.id === id);
+    if (!d) {
+      customAlert(ui, "Please select or create a draft first.");
+      return;
+    }
     const classifierResults = window.getSelectedClassifierResults
       ? window.getSelectedClassifierResults()
       : [];
@@ -33,10 +37,14 @@ export function initEditorActions(ui, drafts) {
     await performHousekeeping();
     const id = localStorage.getItem("current-draft-id");
     const d = drafts.find((draft) => draft.id === id);
+    if (!d) {
+      customAlert(ui, "Please select or create a draft first.");
+      return;
+    }
     const classifierResults = window.getSelectedClassifierResults
       ? window.getSelectedClassifierResults()
       : [];
-    downloadZIP(
+    await downloadZIP(
       d,
       ui.titleInput.value,
       ui.descInput.value,
@@ -51,6 +59,10 @@ export function initEditorActions(ui, drafts) {
     await performHousekeeping();
     const id = localStorage.getItem("current-draft-id");
     const d = drafts.find((draft) => draft.id === id);
+    if (!d) {
+      customAlert(ui, "Please select or create a draft first.");
+      return;
+    }
     createPR(ui, d);
   };
 }

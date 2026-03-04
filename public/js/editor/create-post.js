@@ -34,7 +34,7 @@ ui.newDraftBtn.onclick = () =>
 ui.loadDraftBtn.onclick = () =>
   openAndLoadDraft(ui, doLoadDraft, () => renderList(ui, doLoadDraft));
 
-initEditorActions(ui, drafts);
+initEditorActions(ui);
 initPasteHandler(ui, drafts, tagEditor, doSync);
 
 ui.uploadBtn.onclick = () => ui.fileInput.click();
