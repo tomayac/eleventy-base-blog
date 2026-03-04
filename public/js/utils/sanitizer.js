@@ -1,6 +1,9 @@
 /** @type {Promise<Object>|null} */
 let domPurifyPromise = null;
 
+/** @type {Sanitizer|null} */
+let sanitizer = null;
+
 /**
  * Sanitizes HTML content and injects it into a container element.
  * Tries to use the native Sanitizer API if available, otherwise falls back to DOMPurify.
@@ -10,6 +13,9 @@ let domPurifyPromise = null;
  */
 export async function sanitizeHTML(container, html) {
   const config = {
+    // Native Sanitizer API
+    allowProtocols: ['https', 'blob'],
+    // DOMPurify
     ADD_ATTR: ['loading', 'decoding'],
     ADD_TAGS: ['figure', 'figcaption'],
     ALLOWED_URI_REGEXP:
@@ -18,7 +24,8 @@ export async function sanitizeHTML(container, html) {
 
   if ('setHTML' in container) {
     try {
-      container.setHTML(html);
+      sanitizer = sanitizer || new Sanitizer(config);
+      container.setHTML(html, { sanitizer });
       return;
     } catch (e) {
       console.error(e);
