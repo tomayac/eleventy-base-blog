@@ -45,7 +45,16 @@ Or you can run [debug mode](https://www.11ty.dev/docs/debugging/) to see all the
 
 ## Admin Page: Create Blog Posts
 
-This project includes a dedicated Admin Page at `/blog/create/` for composing new blog posts directly in the browser. It features a Markdown editor with a live preview and advanced asset handling.
+This project includes a dedicated Admin Page at `/blog/create/?admin=true` for composing new blog posts directly in the browser. It features a Markdown editor with a live preview and advanced asset handling.
+
+### Usage
+
+- Load your blog's admin page at `/blog/create/?admin=true`.
+- Open the Settings pane and link the editor with your blog's GitHub repository to enable publishing to GitHub.
+- Optionally enable AI features and provide your AI API keys in the **Settings** section of the admin Page.
+- Create new blog posts, or edit existing ones by clicking the "Edit" button in the Archive or on the Home page.
+
+### Features
 
 - **Draft Management**: Work on multiple drafts simultaneously. Drafts are saved automatically to your browser's local storage.
 - **Rich Asset Support**:
