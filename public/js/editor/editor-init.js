@@ -46,6 +46,8 @@ export async function initEditor(ui, loadDraft, renderList, sync, tagEditor) {
         date: postData.date || "",
         tags: postData.tags || "",
         content: postData.content || "",
+        ad_categories: postData.ad_categories,
+        ad_confidences: postData.ad_confidences,
         imageFiles,
         path: postData.path,
         sha: postData.sha,

@@ -17,7 +17,7 @@ export function generateMarkdown(
   date,
   tagsValue,
   content,
-  classifierIds = [],
+  classifierResults = [],
 ) {
   const tags = tagsValue
     .split(",")
@@ -27,17 +27,28 @@ export function generateMarkdown(
   const tagsYaml =
     escapedTags.length > 0 ? `tags: [${escapedTags.join(", ")}]` : "tags: []";
 
+  const classifierIds = classifierResults.map((r) => r.id);
+  const classifierConfidences = classifierResults.map((r) => r.confidence);
+
   const frontmatter = [
     "---",
     `title: ${escapeYamlValue(title)}`,
     `description: ${escapeYamlValue(description)}`,
     `date: ${date}`,
     tagsYaml,
+    classifierIds.length > 0
+      ? `ad_categories: ${JSON.stringify(classifierIds)}`
+      : "",
+    classifierConfidences.length > 0
+      ? `ad_confidences: ${JSON.stringify(classifierConfidences)}`
+      : "",
     "---",
     "",
-  ].join("\n");
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
 
-  return frontmatter + content;
+  return frontmatter + "\n\n" + content;
 }
 
 export async function downloadZIP(
@@ -47,7 +58,7 @@ export async function downloadZIP(
   date,
   tagsValue,
   content,
-  classifierIds = [],
+  classifierResults = [],
 ) {
   const slug = (title || "untitled")
     .toLowerCase()
@@ -60,7 +71,7 @@ export async function downloadZIP(
     date,
     tagsValue,
     content,
-    classifierIds,
+    classifierResults,
   );
 
   const zip = new JSZip();

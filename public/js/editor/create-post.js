@@ -17,6 +17,7 @@ const debouncedPreview = debounce(
 
 const doSync = () =>
   sync(ui, debouncedPreview, () => renderList(ui, doLoadDraft));
+window.sync = doSync;
 const doLoadDraft = (id) =>
   loadDraft(id, ui, () => renderList(ui, doLoadDraft), tagEditor);
 

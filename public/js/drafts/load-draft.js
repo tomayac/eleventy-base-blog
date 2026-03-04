@@ -33,6 +33,8 @@ async function handleLoadDraft(file, ui, loadDraftFn, renderListFn) {
       tags: Array.isArray(metadata.tags)
         ? metadata.tags.join(", ")
         : metadata.tags || "",
+      ad_categories: metadata.ad_categories,
+      ad_confidences: metadata.ad_confidences,
       content: content || "",
       imageFiles: [],
       lastModified: Date.now(),
@@ -61,6 +63,8 @@ async function handleLoadDraft(file, ui, loadDraftFn, renderListFn) {
       tags: Array.isArray(metadata.tags)
         ? metadata.tags.join(", ")
         : metadata.tags || "",
+      ad_categories: metadata.ad_categories,
+      ad_confidences: metadata.ad_confidences,
       content: content || "",
       imageFiles: [],
       lastModified: Date.now(),

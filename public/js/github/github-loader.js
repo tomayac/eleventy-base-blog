@@ -58,6 +58,8 @@ export async function loadPostFromGitHub(ui, path) {
       description: data.description,
       date: data.date,
       tags: Array.isArray(data.tags) ? data.tags.join(", ") : data.tags,
+      ad_categories: data.ad_categories,
+      ad_confidences: data.ad_confidences,
       content: body.trim(),
       sha,
       path: cleanPath,

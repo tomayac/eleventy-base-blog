@@ -24,7 +24,7 @@ export function initPasteHandler(ui, drafts, tagEditor, sync) {
     );
     if (metadata && Object.keys(metadata).length > 0) {
       e.preventDefault();
-      populateUIFromMetadata(metadata, ui, tagEditor);
+      await populateUIFromMetadata(metadata, ui, tagEditor);
       ui.contentInput.value = content;
       sync();
     }

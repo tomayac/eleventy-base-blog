@@ -90,9 +90,9 @@ export function updateDraftData(id, ui) {
   draft.tags = ui.tagsInput.value;
   draft.content = ui.contentInput.value;
 
-  // Get classifier IDs from UI if possible
-  if (window.getSelectedClassifierIds) {
-    draft.classifierIds = window.getSelectedClassifierIds();
+  // Get classifier results from UI if possible
+  if (window.getSelectedClassifierResults) {
+    draft.classifierResults = window.getSelectedClassifierResults();
   }
 
   draft.lastModified = Date.now();

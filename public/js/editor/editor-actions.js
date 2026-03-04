@@ -7,8 +7,8 @@ export function initEditorActions(ui, drafts) {
   ui.copyBtn.onclick = () => {
     const id = localStorage.getItem("current-draft-id");
     const d = drafts.find((draft) => draft.id === id);
-    const classifierIds = window.getSelectedClassifierIds
-      ? window.getSelectedClassifierIds()
+    const classifierResults = window.getSelectedClassifierResults
+      ? window.getSelectedClassifierResults()
       : [];
     const md = generateMarkdown(
       d,
@@ -17,7 +17,7 @@ export function initEditorActions(ui, drafts) {
       ui.dateInput.value,
       ui.tagsInput.value,
       ui.contentInput.value,
-      classifierIds,
+      classifierResults,
     );
     navigator.clipboard
       .writeText(md)
@@ -33,8 +33,8 @@ export function initEditorActions(ui, drafts) {
     await performHousekeeping();
     const id = localStorage.getItem("current-draft-id");
     const d = drafts.find((draft) => draft.id === id);
-    const classifierIds = window.getSelectedClassifierIds
-      ? window.getSelectedClassifierIds()
+    const classifierResults = window.getSelectedClassifierResults
+      ? window.getSelectedClassifierResults()
       : [];
     downloadZIP(
       d,
@@ -43,7 +43,7 @@ export function initEditorActions(ui, drafts) {
       ui.dateInput.value,
       ui.tagsInput.value,
       ui.contentInput.value,
-      classifierIds,
+      classifierResults,
     );
   };
 

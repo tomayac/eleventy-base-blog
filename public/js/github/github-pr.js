@@ -13,8 +13,8 @@ export async function createPR(ui, draft) {
   try {
     const slug = ui.getSlug(ui.titleInput.value);
     const branchName = `post-${slug}-${Date.now()}`;
-    const classifierIds = window.getSelectedClassifierIds
-      ? window.getSelectedClassifierIds()
+    const classifierResults = window.getSelectedClassifierResults
+      ? window.getSelectedClassifierResults()
       : [];
     const md = generateMarkdown(
       draft,
@@ -23,7 +23,7 @@ export async function createPR(ui, draft) {
       ui.dateInput.value,
       ui.tagsInput.value,
       ui.contentInput.value,
-      classifierIds,
+      classifierResults,
     );
 
     const repoInfo = await ghFetch(ui, "");

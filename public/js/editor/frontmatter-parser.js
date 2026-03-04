@@ -29,7 +29,7 @@ export function parseFrontmatter(text) {
   return { metadata, content };
 }
 
-export function populateUIFromMetadata(metadata, ui, tagEditor) {
+export async function populateUIFromMetadata(metadata, ui, tagEditor) {
   if (metadata.title) ui.titleInput.value = metadata.title;
   if (metadata.description) ui.descInput.value = metadata.description;
   if (metadata.date) ui.dateInput.value = metadata.date;
@@ -39,5 +39,25 @@ export function populateUIFromMetadata(metadata, ui, tagEditor) {
       : metadata.tags;
     ui.tagsInput.value = tags;
     tagEditor.renderPills();
+  }
+
+  if (metadata.ad_categories && window.renderClassifierResults) {
+    const categories = Array.isArray(metadata.ad_categories)
+      ? metadata.ad_categories
+      : [metadata.ad_categories];
+    const confidences = Array.isArray(metadata.ad_confidences)
+      ? metadata.ad_confidences
+      : [metadata.ad_confidences];
+
+    const results = categories.map((id, i) => ({
+      id,
+      confidence: confidences[i] ? parseFloat(confidences[i]) : null,
+    }));
+
+    await window.renderClassifierResults(ui, results, () => {
+      if (window.sync) {
+        window.sync();
+      }
+    });
   }
 }
