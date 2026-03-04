@@ -370,7 +370,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .rewriter-options select {
-    background: #2c3e50;
+    background-color: #2c3e50;
     color: #ecf0f1;
     border-color: #444;
   }
@@ -534,7 +534,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   #tag-input {
-    background: #2c3e50;
+    background-color: #2c3e50;
     color: #ecf0f1;
     border-color: #444;
   }
@@ -572,7 +572,7 @@ body {
   .form-group input,
   .form-group textarea,
   .form-group select {
-    background: #2c3e50;
+    background-color: #2c3e50;
     color: #ecf0f1;
     border-color: #444;
   }
@@ -722,7 +722,7 @@ dialog::backdrop {
 
 @media (prefers-color-scheme: dark) {
   dialog {
-    background: #2c3e50;
+    background-color: #2c3e50;
     color: #ecf0f1;
   }
 }
