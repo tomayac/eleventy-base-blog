@@ -11,7 +11,13 @@ import { runTagGeneration } from './ai-tag-generator.js';
  * @return {Promise<void>}
  */
 export async function initTagSuggestions(ui, updateCallback) {
-  if (!('LanguageModel' in self)) {
+  if (
+    !('LanguageModel' in self) ||
+    (await self.LanguageModel.availability({
+      expectedInputs: [{ type: 'text', languages: ['en'] }],
+      expectedOutputs: [{ type: 'text', languages: ['en'] }],
+    }).catch(() => 'unavailable')) === 'unavailable'
+  ) {
     await import('/js/prompt-api-polyfill.js');
   }
   let tagsSchema = null;

@@ -23,7 +23,13 @@ export async function generateImageMetadata(imageSource, ui) {
   if (!enabled || !checkAIKeys(ui)) {
     return null;
   }
-  if (!('LanguageModel' in self)) {
+  if (
+    !('LanguageModel' in self) ||
+    (await self.LanguageModel.availability({
+      expectedInputs: [{ type: 'text', languages: ['en'] }, { type: 'image' }],
+      expectedOutputs: [{ type: 'text', languages: ['en'] }],
+    }).catch(() => 'unavailable')) === 'unavailable'
+  ) {
     await import('/js/prompt-api-polyfill.js');
   }
   if (typeof LanguageModel === 'undefined') {

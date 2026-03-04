@@ -4,7 +4,12 @@
  * @return {Promise<string>} The detected language code (defaults to 'en').
  */
 export async function detectLanguage(text) {
-  if (!('LanguageDetector' in self)) {
+  if (
+    !('LanguageDetector' in self) ||
+    (await self.LanguageDetector.availability({
+      expectedInputLanguages: ['en'],
+    }).catch(() => 'unavailable')) === 'unavailable'
+  ) {
     await import('/js/task-apis/language-detector.js');
   }
 

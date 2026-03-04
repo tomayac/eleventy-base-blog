@@ -24,7 +24,13 @@ const getWriterOptions = (ui, lang) => ({
  * @return {Promise<void>}
  */
 export async function initAIWriter(ui, updateCallback) {
-  if (!('Writer' in self)) {
+  if (
+    !('Writer' in self) ||
+    (await self.Writer.availability({
+      expectedInputLanguages: ['en'],
+      outputLanguage: 'en',
+    }).catch(() => 'unavailable')) === 'unavailable'
+  ) {
     await import('/js/task-apis/writer.js');
   }
   if (typeof Writer !== 'undefined') {

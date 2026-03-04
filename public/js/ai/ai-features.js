@@ -68,7 +68,13 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
  * @return {Promise<void>}
  */
 export async function initAI(ui, updateCallback) {
-  if (!('Summarizer' in self)) {
+  if (
+    !('Summarizer' in self) ||
+    (await self.Summarizer.availability({
+      expectedInputLanguages: ['en'],
+      outputLanguage: 'en',
+    }).catch(() => 'unavailable')) === 'unavailable'
+  ) {
     await import('/js/task-apis/summarizer.js');
   }
   if (typeof Summarizer !== 'undefined') {

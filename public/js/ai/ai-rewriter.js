@@ -26,7 +26,13 @@ const getRewriterOptions = (ui, lang) => ({
  * @return {Promise<void>}
  */
 export async function initAIRewriter(ui, updateCallback) {
-  if (!('Rewriter' in self)) {
+  if (
+    !('Rewriter' in self) ||
+    (await self.Rewriter.availability({
+      expectedInputLanguages: ['en'],
+      outputLanguage: 'en',
+    }).catch(() => 'unavailable')) === 'unavailable'
+  ) {
     await import('/js/task-apis/rewriter.js');
   }
   if (typeof Rewriter !== 'undefined') {
