@@ -449,7 +449,7 @@ body {
   tab-size: 2;
 }
 
-#drop-zone[data-disabled="true"] {
+#drop-zone[data-disabled='true'] {
   opacity: 0.7;
   cursor: not-allowed;
 }

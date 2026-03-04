@@ -1,5 +1,5 @@
-import { getImage } from "../utils/db-storage.js";
-import { sanitizeHTML } from "../utils/sanitizer.js";
+import { getImage } from '../utils/db-storage.js';
+import { sanitizeHTML } from '../utils/sanitizer.js';
 
 /**
  * Formats a date string for the preview.
@@ -8,13 +8,13 @@ import { sanitizeHTML } from "../utils/sanitizer.js";
  */
 function formatPreviewDate(dateStr) {
   if (!dateStr) {
-    return "";
+    return '';
   }
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+  return date.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
   });
 }
 
@@ -44,9 +44,9 @@ export async function updatePreview(currentId, drafts, ui) {
         if (data) {
           const type =
             img.type ||
-            (img.name.toLowerCase().endsWith(".svg")
-              ? "image/svg+xml"
-              : "image/jpeg");
+            (img.name.toLowerCase().endsWith('.svg')
+              ? 'image/svg+xml'
+              : 'image/jpeg');
           blobUrl = URL.createObjectURL(new Blob([data], { type }));
           blobCache.set(img.id, blobUrl);
         }
@@ -59,20 +59,20 @@ export async function updatePreview(currentId, drafts, ui) {
   const tagsHtml = ui
     .getTags()
     .map((t) => `<li><a href="#" class="post-tag">${t}</a></li>`)
-    .join("");
+    .join('');
   const dateHtml = ui.dateInput.value
     ? `<time datetime="${ui.dateInput.value}">${formatPreviewDate(ui.dateInput.value)}</time>`
-    : "";
+    : '';
   const titleHtml = ui.titleInput.value
     ? `<h1>${ui.titleInput.value}</h1>`
-    : "";
+    : '';
   const metadataHtml =
     dateHtml || tagsHtml
       ? `<ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>`
-      : "";
+      : '';
 
   if (!ui.titleInput.value && !dateHtml && !tagsHtml && !content) {
-    ui.previewContent.innerHTML = "";
+    ui.previewContent.innerHTML = '';
   } else {
     await sanitizeHTML(
       ui.previewContent,
@@ -84,4 +84,4 @@ export async function updatePreview(currentId, drafts, ui) {
   }
 }
 
-export { wrapText } from "../utils/text-utils.js";
+export { wrapText } from '../utils/text-utils.js';

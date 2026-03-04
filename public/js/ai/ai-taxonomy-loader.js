@@ -12,14 +12,14 @@ export async function getTaxonomy() {
 
   try {
     const TSV_URL =
-      "https://raw.githubusercontent.com/InteractiveAdvertisingBureau/Taxonomies/develop/Content%20Taxonomies/Content%20Taxonomy%203.1.tsv";
+      'https://raw.githubusercontent.com/InteractiveAdvertisingBureau/Taxonomies/develop/Content%20Taxonomies/Content%20Taxonomy%203.1.tsv';
     const response = await fetch(TSV_URL);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const text = await response.text();
 
-    const lines = text.split("\n");
+    const lines = text.split('\n');
     const taxonomy = {};
 
     for (let i = 1; i < lines.length; i++) {
@@ -27,7 +27,7 @@ export async function getTaxonomy() {
       if (!line) {
         continue;
       }
-      const parts = line.split("\t");
+      const parts = line.split('\t');
       if (parts.length < 3) {
         continue;
       }
@@ -36,7 +36,7 @@ export async function getTaxonomy() {
         .slice(3, 7)
         .map((t) => t.trim())
         .filter(Boolean);
-      const name = tiers.join(" > ");
+      const name = tiers.join(' > ');
       if (id && name) {
         taxonomy[id] = name;
       }
@@ -46,7 +46,7 @@ export async function getTaxonomy() {
     return cachedTaxonomy;
   } catch (e) {
     console.warn(
-      "Failed to fetch taxonomy from GitHub, falling back to basic resolution",
+      'Failed to fetch taxonomy from GitHub, falling back to basic resolution',
       e,
     );
     return {};

@@ -13,7 +13,7 @@ export function toBase64(str) {
  * @return {string} The decoded string.
  */
 export function fromBase64(base64) {
-  return decodeURIComponent(escape(atob(base64.replace(/\s/g, ""))));
+  return decodeURIComponent(escape(atob(base64.replace(/\s/g, ''))));
 }
 
 /**
@@ -25,7 +25,7 @@ export async function bufferToBase64(buffer) {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = () => {
-      resolve(reader.result.split(",")[1]);
+      resolve(reader.result.split(',')[1]);
     };
     reader.readAsDataURL(new Blob([buffer]));
   });

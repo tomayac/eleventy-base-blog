@@ -1,8 +1,8 @@
-import { detectLanguage } from "./ai-language-detection.js";
-import { customAlert } from "../utils/dialog-utils.js";
-import { runAIAction } from "./ai-features.js";
-import { refreshAIVisibility } from "./ai-toggle.js";
-import { runTagGeneration } from "./ai-tag-generator.js";
+import { detectLanguage } from './ai-language-detection.js';
+import { customAlert } from '../utils/dialog-utils.js';
+import { runAIAction } from './ai-features.js';
+import { refreshAIVisibility } from './ai-toggle.js';
+import { runTagGeneration } from './ai-tag-generator.js';
 
 /**
  * Initializes the AI tag suggestions feature.
@@ -11,8 +11,8 @@ import { runTagGeneration } from "./ai-tag-generator.js";
  * @return {Promise<void>}
  */
 export async function initTagSuggestions(ui, updateCallback) {
-  if (!("LanguageModel" in self)) {
-    await import("/js/prompt-api-polyfill.js");
+  if (!('LanguageModel' in self)) {
+    await import('/js/prompt-api-polyfill.js');
   }
   let tagsSchema = null;
   /**
@@ -21,26 +21,26 @@ export async function initTagSuggestions(ui, updateCallback) {
    */
   const fetchSchema = async () =>
     tagsSchema ||
-    (tagsSchema = await (await fetch("/tags-schema.json")).json());
+    (tagsSchema = await (await fetch('/tags-schema.json')).json());
 
   try {
     const status = await LanguageModel.availability({
       initialPrompts: [
-        { role: "system", content: "Suggest tags for this blog post." },
+        { role: 'system', content: 'Suggest tags for this blog post.' },
       ],
     });
-    if (status !== "unavailable") {
-      ui.aiSuggestTagsBtn.setAttribute("data-ai-available", "true");
+    if (status !== 'unavailable') {
+      ui.aiSuggestTagsBtn.setAttribute('data-ai-available', 'true');
       refreshAIVisibility(ui);
     }
   } catch (e) {
-    console.warn("AI LanguageModel availability check failed", e);
+    console.warn('AI LanguageModel availability check failed', e);
   }
 
   ui.aiSuggestTagsBtn.onclick = async () => {
     const content = ui.contentInput.value;
     if (!content || content.length < 20) {
-      return customAlert(ui, "Please write some content first.");
+      return customAlert(ui, 'Please write some content first.');
     }
 
     await runAIAction(
@@ -64,7 +64,7 @@ export async function initTagSuggestions(ui, updateCallback) {
               finalTags.set(lower, trimmed);
             }
           });
-          ui.tagsInput.value = Array.from(finalTags.values()).join(", ");
+          ui.tagsInput.value = Array.from(finalTags.values()).join(', ');
           updateCallback();
         };
 
@@ -75,7 +75,7 @@ export async function initTagSuggestions(ui, updateCallback) {
           LanguageModel.create({
             initialPrompts: [
               {
-                role: "system",
+                role: 'system',
                 content: `Suggest tags for this blog post in ${lang}. Only use the tags provided in the schema.`,
               },
             ],
@@ -87,7 +87,7 @@ export async function initTagSuggestions(ui, updateCallback) {
             LanguageModel.create({
               initialPrompts: [
                 {
-                  role: "system",
+                  role: 'system',
                   content: `Suggest 3-5 tags for this blog post in ${lang}. Return JSON: {"tags": ["tag1", "tag2"]}.`,
                 },
               ],

@@ -1,7 +1,7 @@
-import { performHousekeeping, drafts } from "../drafts/draft-manager.js";
-import { generateMarkdown, downloadZIP } from "../export/zip-exporter.js";
-import { createPR } from "../github/github-integration.js";
-import { customAlert } from "../utils/dialog-utils.js";
+import { performHousekeeping, drafts } from '../drafts/draft-manager.js';
+import { generateMarkdown, downloadZIP } from '../export/zip-exporter.js';
+import { createPR } from '../github/github-integration.js';
+import { customAlert } from '../utils/dialog-utils.js';
 
 /**
  * Initializes editor actions like copy, download, and GitHub PR creation.
@@ -9,10 +9,10 @@ import { customAlert } from "../utils/dialog-utils.js";
  */
 export function initEditorActions(ui) {
   ui.copyBtn.onclick = () => {
-    const id = localStorage.getItem("current-draft-id");
+    const id = localStorage.getItem('current-draft-id');
     const d = drafts.find((draft) => draft.id === id);
     if (!d) {
-      customAlert(ui, "Please select or create a draft first.");
+      customAlert(ui, 'Please select or create a draft first.');
       return;
     }
     const classifierResults = window.getSelectedClassifierResults
@@ -31,22 +31,22 @@ export function initEditorActions(ui) {
       .writeText(md)
       .then(() => {
         const oldText = ui.copyBtn.textContent;
-        ui.copyBtn.textContent = "✅ Copied!";
+        ui.copyBtn.textContent = '✅ Copied!';
         setTimeout(() => {
           ui.copyBtn.textContent = oldText;
         }, 2000);
       })
       .catch(() => {
-        customAlert(ui, "Failed to copy to clipboard.");
+        customAlert(ui, 'Failed to copy to clipboard.');
       });
   };
 
   ui.downloadBtn.onclick = async () => {
     await performHousekeeping();
-    const id = localStorage.getItem("current-draft-id");
+    const id = localStorage.getItem('current-draft-id');
     const d = drafts.find((draft) => draft.id === id);
     if (!d) {
-      customAlert(ui, "Please select or create a draft first.");
+      customAlert(ui, 'Please select or create a draft first.');
       return;
     }
     const classifierResults = window.getSelectedClassifierResults
@@ -65,10 +65,10 @@ export function initEditorActions(ui) {
 
   ui.githubPrBtn.onclick = async () => {
     await performHousekeeping();
-    const id = localStorage.getItem("current-draft-id");
+    const id = localStorage.getItem('current-draft-id');
     const d = drafts.find((draft) => draft.id === id);
     if (!d) {
-      customAlert(ui, "Please select or create a draft first.");
+      customAlert(ui, 'Please select or create a draft first.');
       return;
     }
     createPR(ui, d);

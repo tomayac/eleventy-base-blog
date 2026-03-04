@@ -1,5 +1,5 @@
 /** @type {string} */
-export const GH_CONFIG_KEY = "gh-config";
+export const GH_CONFIG_KEY = 'gh-config';
 
 /**
  * Performs a fetch request to the GitHub API.
@@ -10,14 +10,14 @@ export const GH_CONFIG_KEY = "gh-config";
  * @throws {Error} If the response is not OK.
  */
 export async function ghFetch(ui, path, options = {}) {
-  const url = path.startsWith("https://")
+  const url = path.startsWith('https://')
     ? path
     : `https://api.github.com/repos/${ui.ghOwnerInput.value}/${ui.ghRepoInput.value}${path}`;
   const res = await fetch(url, {
     ...options,
     headers: {
       Authorization: `token ${ui.ghTokenInput.value}`,
-      Accept: "application/vnd.github.v3+json",
+      Accept: 'application/vnd.github.v3+json',
       ...options.headers,
     },
   });

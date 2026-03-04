@@ -8,7 +8,7 @@ export async function customAlert(ui, message) {
   ui.alertMessage.textContent = message;
   ui.alertDialog.showModal();
   return new Promise((resolve) => {
-    ui.alertDialog.addEventListener("close", () => resolve(), { once: true });
+    ui.alertDialog.addEventListener('close', () => resolve(), { once: true });
   });
 }
 
@@ -39,7 +39,7 @@ export async function customConfirm(ui, message, options = {}) {
   ui.confirmDialog.showModal();
   return new Promise((resolve) => {
     ui.confirmDialog.addEventListener(
-      "close",
+      'close',
       () => {
         const result = ui.confirmDialog.returnValue;
         confirmBtn.textContent = originalConfirmText;

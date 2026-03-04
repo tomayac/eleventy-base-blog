@@ -1,5 +1,5 @@
-import { fileSave } from "browser-fs-access";
-import { getImage } from "../utils/db-storage.js";
+import { fileSave } from 'browser-fs-access';
+import { getImage } from '../utils/db-storage.js';
 
 /**
  * Escapes a string value for safe use in YAML frontmatter.
@@ -7,11 +7,11 @@ import { getImage } from "../utils/db-storage.js";
  * @return {string|any} The escaped value.
  */
 function escapeYamlValue(val) {
-  if (typeof val !== "string") {
+  if (typeof val !== 'string') {
     return val;
   }
   // Wrap in quotes if it contains YAML-special characters
-  if (/[#:[\]{}>|&*?%@`']/.test(val) || val.includes(": ")) {
+  if (/[#:[\]{}>|&*?%@`']/.test(val) || val.includes(': ')) {
     return `"${val.replace(/"/g, '\\"')}"`;
   }
   return val;
@@ -38,35 +38,35 @@ export function generateMarkdown(
   classifierResults = [],
 ) {
   const tags = tagsValue
-    .split(",")
+    .split(',')
     .map((t) => t.trim())
     .filter((t) => t);
   const escapedTags = tags.map((t) => `"${t.replace(/"/g, '\\"')}"`);
   const tagsYaml =
-    escapedTags.length > 0 ? `tags: [${escapedTags.join(", ")}]` : "tags: []";
+    escapedTags.length > 0 ? `tags: [${escapedTags.join(', ')}]` : 'tags: []';
 
   const classifierIds = classifierResults.map((r) => r.id);
   const classifierConfidences = classifierResults.map((r) => r.confidence);
 
   const frontmatter = [
-    "---",
+    '---',
     `title: ${escapeYamlValue(title)}`,
     `description: ${escapeYamlValue(description)}`,
     `date: ${date}`,
     tagsYaml,
     classifierIds.length > 0
       ? `ad_categories: ${JSON.stringify(classifierIds)}`
-      : "",
+      : '',
     classifierConfidences.length > 0
       ? `ad_confidences: ${JSON.stringify(classifierConfidences)}`
-      : "",
-    "---",
-    "",
+      : '',
+    '---',
+    '',
   ]
-    .filter((line) => line !== "")
-    .join("\n");
+    .filter((line) => line !== '')
+    .join('\n');
 
-  return frontmatter + "\n\n" + content;
+  return frontmatter + '\n\n' + content;
 }
 
 /**
@@ -90,12 +90,12 @@ export async function downloadZIP(
   classifierResults = [],
 ) {
   if (!draft) {
-    throw new Error("No draft data provided for ZIP export.");
+    throw new Error('No draft data provided for ZIP export.');
   }
-  const slug = (title || "untitled")
+  const slug = (title || 'untitled')
     .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "");
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]/g, '');
   const md = generateMarkdown(
     draft,
     title,
@@ -120,10 +120,10 @@ export async function downloadZIP(
     }
   }
 
-  const blob = await zip.generateAsync({ type: "blob" });
+  const blob = await zip.generateAsync({ type: 'blob' });
   await fileSave(blob, {
     fileName: `${slug}.zip`,
-    extensions: [".zip"],
-    description: "Blog ZIP Archive",
+    extensions: ['.zip'],
+    description: 'Blog ZIP Archive',
   });
 }

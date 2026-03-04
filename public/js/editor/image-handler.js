@@ -1,6 +1,6 @@
-import { saveImage } from "../utils/db-storage.js";
-import { saveDrafts } from "../drafts/draft-manager.js";
-import { wrapText } from "./editor-logic.js";
+import { saveImage } from '../utils/db-storage.js';
+import { saveDrafts } from '../drafts/draft-manager.js';
+import { wrapText } from './editor-logic.js';
 
 /**
  * Processes an image file, generates metadata (using AI if enabled), saves it to DB, and updates the draft.
@@ -19,22 +19,22 @@ export async function processImage(file, currentId, draft, ui) {
       resolve({ width: img.width, height: img.height });
     };
     img.onerror = () => {
-      resolve({ width: "", height: "" });
+      resolve({ width: '', height: '' });
     };
     img.src = URL.createObjectURL(new Blob([buffer], { type: file.type }));
   });
 
-  const isAiEnabled = localStorage.getItem("ai-features-enabled") === "true";
+  const isAiEnabled = localStorage.getItem('ai-features-enabled') === 'true';
   let aiMeta = null;
   if (isAiEnabled) {
-    const { generateImageMetadata } = await import("../ai/ai-multimodal.js");
+    const { generateImageMetadata } = await import('../ai/ai-multimodal.js');
     aiMeta = await generateImageMetadata(
       new Blob([buffer], { type: file.type }),
       ui,
     );
   }
-  const altText = aiMeta?.alt || "Alt text here";
-  const caption = aiMeta?.caption || "Caption here";
+  const altText = aiMeta?.alt || 'Alt text here';
+  const caption = aiMeta?.caption || 'Caption here';
 
   await saveImage(id, buffer);
   if (!draft.imageFiles) {
@@ -64,7 +64,7 @@ export function getMarkdownForImage(
   needsNewlinesBefore = false,
   needsNewlinesAfter = false,
 ) {
-  return `${needsNewlinesBefore ? "\n\n" : ""}<figure>
+  return `${needsNewlinesBefore ? '\n\n' : ''}<figure>
   <img
       src="./${imgInfo.name}"
       alt="${imgInfo.alt}"
@@ -73,7 +73,7 @@ export function getMarkdownForImage(
   <figcaption>
     ${wrapText(imgInfo.caption, 80)}
   </figcaption>
-</figure>${needsNewlinesAfter ? "\n\n" : "\n"}`;
+</figure>${needsNewlinesAfter ? '\n\n' : '\n'}`;
 }
 
 /**
@@ -99,8 +99,8 @@ export async function handleFiles(
 
   ui.uploadBtn.disabled = true;
   const oldBtnText = ui.uploadBtn.textContent;
-  ui.uploadBtn.textContent = "⏳ Processing...";
-  ui.dropZone.setAttribute("data-disabled", "true");
+  ui.uploadBtn.textContent = '⏳ Processing...';
+  ui.dropZone.setAttribute('data-disabled', 'true');
 
   try {
     for (const file of files) {
@@ -108,8 +108,8 @@ export async function handleFiles(
       const end = ui.contentInput.selectionEnd;
       const before = ui.contentInput.value.substring(0, start);
       const after = ui.contentInput.value.substring(end);
-      const cleanBefore = before.replace(/\n+$/, "");
-      const cleanAfter = after.replace(/^\n+/, "");
+      const cleanBefore = before.replace(/\n+$/, '');
+      const cleanAfter = after.replace(/^\n+/, '');
 
       const imgInfo = await processImage(file, currentId, draft, ui);
       const imgTag = getMarkdownForImage(
@@ -123,7 +123,7 @@ export async function handleFiles(
   } finally {
     ui.uploadBtn.disabled = false;
     ui.uploadBtn.textContent = oldBtnText;
-    ui.dropZone.removeAttribute("data-disabled");
+    ui.dropZone.removeAttribute('data-disabled');
   }
   updateCallback();
 }

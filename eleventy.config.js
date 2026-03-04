@@ -2,23 +2,23 @@ import {
   IdAttributePlugin,
   InputPathToUrlTransformPlugin,
   HtmlBasePlugin,
-} from "@11ty/eleventy";
-import { feedPlugin } from "@11ty/eleventy-plugin-rss";
-import pluginSyntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
-import pluginNavigation from "@11ty/eleventy-navigation";
-import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
+} from '@11ty/eleventy';
+import { feedPlugin } from '@11ty/eleventy-plugin-rss';
+import pluginSyntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
+import pluginNavigation from '@11ty/eleventy-navigation';
+import { eleventyImageTransformPlugin } from '@11ty/eleventy-img';
 
-import pluginFilters from "./_config/filters.js";
+import pluginFilters from './_config/filters.js';
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function (eleventyConfig) {
   // Drafts, see also _data/eleventyDataSchema.js
-  eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
+  eleventyConfig.addPreprocessor('drafts', '*', (data, content) => {
     if (data.draft) {
       data.title = `${data.title} (draft)`;
     }
 
-    if (data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
+    if (data.draft && process.env.ELEVENTY_RUN_MODE === 'build') {
       return false;
     }
   });
@@ -27,60 +27,60 @@ export default async function (eleventyConfig) {
   // For example, `./public/css/` ends up in `_site/css/`
   eleventyConfig
     .addPassthroughCopy({
-      "./public/": "/",
-      "./node_modules/@google/genai/dist/web/index.mjs": "/js/google-genai.js",
-      "./node_modules/@huggingface/transformers/dist/":
-        "/js/huggingface-transformers/",
-      "./node_modules/browser-fs-access/dist/index.modern.js":
-        "/js/browser-fs-access.js",
-      "./node_modules/built-in-ai-task-apis-polyfills/dist/": "/js/task-apis/",
-      "./node_modules/dompurify/dist/purify.min.js": "/js/purify.min.js",
-      "./node_modules/firebase/": "/js/firebase/",
-      "./node_modules/firebase/firebase-ai.js": "/js/firebase-ai.js",
-      "./node_modules/firebase/firebase-app.js": "/js/firebase-app.js",
-      "./node_modules/input-switch-polyfill/input-switch-polyfill.css":
-        "/js/input-switch-polyfill.css",
-      "./node_modules/input-switch-polyfill/input-switch-polyfill.js":
-        "/js/input-switch-polyfill.js",
-      "./node_modules/jszip/dist/jszip.js": "/js/jszip.js",
-      "./node_modules/marked/lib/marked.umd.js": "/js/marked.js",
-      "./node_modules/onnxruntime-web/dist/": "/js/onnxruntime-web/",
-      "./node_modules/openai/": "/js/openai/",
-      "./node_modules/prismjs/prism.js": "/js/prism.js",
-      "./node_modules/prismjs/themes/prism-okaidia.css":
-        "/css/prism-okaidia.css",
-      "./node_modules/prompt-api-polyfill/dist/backends/": "/js/backends/",
-      "./node_modules/prompt-api-polyfill/dist/chunks/": "/js/chunks/",
-      "./node_modules/prompt-api-polyfill/dist/prompt-api-polyfill.js":
-        "/js/prompt-api-polyfill.js",
-      "./node_modules/prompt-api-polyfill/dot_env.json": "/dot_env.json",
-      "./node_modules/turndown/dist/turndown.js": "/js/turndown.js",
+      './public/': '/',
+      './node_modules/@google/genai/dist/web/index.mjs': '/js/google-genai.js',
+      './node_modules/@huggingface/transformers/dist/':
+        '/js/huggingface-transformers/',
+      './node_modules/browser-fs-access/dist/index.modern.js':
+        '/js/browser-fs-access.js',
+      './node_modules/built-in-ai-task-apis-polyfills/dist/': '/js/task-apis/',
+      './node_modules/dompurify/dist/purify.min.js': '/js/purify.min.js',
+      './node_modules/firebase/': '/js/firebase/',
+      './node_modules/firebase/firebase-ai.js': '/js/firebase-ai.js',
+      './node_modules/firebase/firebase-app.js': '/js/firebase-app.js',
+      './node_modules/input-switch-polyfill/input-switch-polyfill.css':
+        '/js/input-switch-polyfill.css',
+      './node_modules/input-switch-polyfill/input-switch-polyfill.js':
+        '/js/input-switch-polyfill.js',
+      './node_modules/jszip/dist/jszip.js': '/js/jszip.js',
+      './node_modules/marked/lib/marked.umd.js': '/js/marked.js',
+      './node_modules/onnxruntime-web/dist/': '/js/onnxruntime-web/',
+      './node_modules/openai/': '/js/openai/',
+      './node_modules/prismjs/prism.js': '/js/prism.js',
+      './node_modules/prismjs/themes/prism-okaidia.css':
+        '/css/prism-okaidia.css',
+      './node_modules/prompt-api-polyfill/dist/backends/': '/js/backends/',
+      './node_modules/prompt-api-polyfill/dist/chunks/': '/js/chunks/',
+      './node_modules/prompt-api-polyfill/dist/prompt-api-polyfill.js':
+        '/js/prompt-api-polyfill.js',
+      './node_modules/prompt-api-polyfill/dot_env.json': '/dot_env.json',
+      './node_modules/turndown/dist/turndown.js': '/js/turndown.js',
     })
-    .addPassthroughCopy("./content/feed/pretty-atom-feed.xsl");
+    .addPassthroughCopy('./content/feed/pretty-atom-feed.xsl');
 
   // Run Eleventy when these files change:
   // https://www.11ty.dev/docs/watch-serve/#add-your-own-watch-targets
 
   // Watch CSS files
-  eleventyConfig.addWatchTarget("css/**/*.css");
+  eleventyConfig.addWatchTarget('css/**/*.css');
   // Watch images for the image pipeline.
-  eleventyConfig.addWatchTarget("content/**/*.{svg,webp,png,jpg,jpeg,gif}");
+  eleventyConfig.addWatchTarget('content/**/*.{svg,webp,png,jpg,jpeg,gif}');
 
   // Per-page bundles, see https://github.com/11ty/eleventy-plugin-bundle
   // Bundle <style> content and adds a {% css %} paired shortcode
-  eleventyConfig.addBundle("css", {
-    toFileDirectory: "dist",
+  eleventyConfig.addBundle('css', {
+    toFileDirectory: 'dist',
     // Add all <style> content to `css` bundle (use <style eleventy:ignore> to opt-out)
     // Supported selectors: https://www.npmjs.com/package/posthtml-match-helper
-    bundleHtmlContentFromSelector: "style",
+    bundleHtmlContentFromSelector: 'style',
   });
 
   // Bundle <script> content and adds a {% js %} paired shortcode
-  eleventyConfig.addBundle("js", {
-    toFileDirectory: "dist",
+  eleventyConfig.addBundle('js', {
+    toFileDirectory: 'dist',
     // Add all <script> content to the `js` bundle (use <script eleventy:ignore> to opt-out)
     // Supported selectors: https://www.npmjs.com/package/posthtml-match-helper
-    bundleHtmlContentFromSelector: "script",
+    bundleHtmlContentFromSelector: 'script',
   });
 
   // Official plugins
@@ -92,26 +92,26 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPlugin(InputPathToUrlTransformPlugin);
 
   eleventyConfig.addPlugin(feedPlugin, {
-    type: "atom", // or "rss", "json"
-    outputPath: "/feed/feed.xml",
-    stylesheet: "pretty-atom-feed.xsl",
+    type: 'atom', // or "rss", "json"
+    outputPath: '/feed/feed.xml',
+    stylesheet: 'pretty-atom-feed.xsl',
     templateData: {
       eleventyNavigation: {
-        key: "Feed",
+        key: 'Feed',
         order: 4,
       },
     },
     collection: {
-      name: "posts",
+      name: 'posts',
       limit: 10,
     },
     metadata: {
-      language: "en",
-      title: "Blog Title",
-      subtitle: "This is a longer description about your blog.",
-      base: "https://example.com/",
+      language: 'en',
+      title: 'Blog Title',
+      subtitle: 'This is a longer description about your blog.',
+      base: 'https://example.com/',
       author: {
-        name: "Your Name",
+        name: 'Your Name',
       },
     },
   });
@@ -119,7 +119,7 @@ export default async function (eleventyConfig) {
   // Image optimization: https://www.11ty.dev/docs/plugins/image/#eleventy-transform
   eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
     // Output formats for each image.
-    formats: ["avif", "webp", "auto"],
+    formats: ['avif', 'webp', 'auto'],
 
     // widths: ["auto"],
 
@@ -127,8 +127,8 @@ export default async function (eleventyConfig) {
     htmlOptions: {
       imgAttributes: {
         // e.g. <img loading decoding> assigned on the HTML tag will override these values.
-        loading: "lazy",
-        decoding: "async",
+        loading: 'lazy',
+        decoding: 'async',
       },
     },
 
@@ -146,7 +146,7 @@ export default async function (eleventyConfig) {
     // selector: "h1,h2,h3,h4,h5,h6", // default
   });
 
-  eleventyConfig.addShortcode("currentBuildDate", () => {
+  eleventyConfig.addShortcode('currentBuildDate', () => {
     return new Date().toISOString();
   });
 
@@ -162,20 +162,20 @@ export default async function (eleventyConfig) {
 export const config = {
   // Control which files Eleventy will process
   // e.g.: *.md, *.njk, *.html, *.liquid
-  templateFormats: ["md", "njk", "html", "liquid", "11ty.js"],
+  templateFormats: ['md', 'njk', 'html', 'liquid', '11ty.js'],
 
   // Pre-process *.md files with: (default: `liquid`)
-  markdownTemplateEngine: "njk",
+  markdownTemplateEngine: 'njk',
 
   // Pre-process *.html files with: (default: `liquid`)
-  htmlTemplateEngine: "njk",
+  htmlTemplateEngine: 'njk',
 
   // These are all optional:
   dir: {
-    input: "content", // default: "."
-    includes: "../_includes", // default: "_includes" (`input` relative)
-    data: "../_data", // default: "_data" (`input` relative)
-    output: "_site",
+    input: 'content', // default: "."
+    includes: '../_includes', // default: "_includes" (`input` relative)
+    data: '../_data', // default: "_data" (`input` relative)
+    output: '_site',
   },
 
   // -----------------------------------------------------------------
