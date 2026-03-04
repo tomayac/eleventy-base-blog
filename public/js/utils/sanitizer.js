@@ -19,9 +19,6 @@ export async function sanitizeHTML(container, html) {
   if ('setHTML' in container) {
     try {
       container.setHTML(html);
-      if (html.includes('src=') && !container.querySelector('[src]')) {
-        throw new Error('Native Sanitizer stripped src');
-      }
       return;
     } catch (e) {
       console.error(e);
