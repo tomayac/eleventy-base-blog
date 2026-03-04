@@ -1,3 +1,5 @@
+import { cleanupOrphanedImages } from '../utils/db-storage.js';
+
 /**
  * Performs housekeeping on drafts by cleaning up orphaned images and
  * ensuring only referenced images are kept in the draft metadata.
