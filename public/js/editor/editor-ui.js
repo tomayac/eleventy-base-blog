@@ -69,28 +69,6 @@ export async function loadDraft(id, ui, renderList, tagEditor) {
         id,
         confidence: confidences[i] ? parseFloat(confidences[i]) : null,
       }));
-    } else {
-      const match =
-        content.match(
-          /IAB_CONTENT_(?:2_2|3_1): \{ values: (\[.*?\]) \},\s*confidences: (\[.*?\])/,
-        ) || content.match(/IAB_CONTENT_(?:2_2|3_1): \{ values: (\[.*?\]) \}/);
-      if (match) {
-        try {
-          const parsedIds = JSON.parse(match[1]);
-          const parsedConfidences = match[2] ? JSON.parse(match[2]) : [];
-          if (parsedIds.length > 0) {
-            classifierResults = parsedIds.map((id, i) => ({
-              id,
-              confidence:
-                parsedConfidences[i] !== undefined
-                  ? parsedConfidences[i]
-                  : null,
-            }));
-          }
-        } catch (e) {
-          console.warn('Failed to parse categories from content', e);
-        }
-      }
     }
     await window.renderClassifierResults(ui, classifierResults, () =>
       sync(ui, (id, ui) => updatePreview(id, drafts, ui), renderList),
