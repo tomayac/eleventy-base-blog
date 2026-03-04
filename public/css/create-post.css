@@ -331,6 +331,15 @@ body {
   gap: 0.5rem;
 }
 
+.classifier-actions {
+  align-items: center; /* Specific alignment for classifier */
+}
+
+.classifier-actions p {
+  flex-grow: 1;
+  margin: 0;
+}
+
 .rewriter-option-group {
   display: flex;
   flex-direction: column;
