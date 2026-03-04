@@ -1,4 +1,4 @@
-import { getTaxonomy } from './ai-taxonomy-loader.js';
+import { getTaxonomy } from "./ai-taxonomy-loader.js";
 
 /**
  * Removes existing script tags related to Google Ad categories from the content.
@@ -10,13 +10,13 @@ export function updateScriptTagInContent(ui) {
   content = content
     .replace(
       /\n*<script>[\s\S]*?googletag\.setConfig\(\{[\s\S]*?\}\);[\s\S]*?<\/script>/g,
-      '',
+      "",
     )
     .trimEnd();
 
   if (ui.contentInput.value !== content) {
     ui.contentInput.value = content;
-    ui.contentInput.dispatchEvent(new Event('input', { bubbles: true }));
+    ui.contentInput.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }
 
@@ -25,8 +25,8 @@ export function updateScriptTagInContent(ui) {
  * @return {string[]} Array of category IDs.
  */
 export function getSelectedClassifierIds() {
-  return Array.from(document.querySelectorAll('.classifier-result-row')).map(
-    (row) => row.getAttribute('data-category-id'),
+  return Array.from(document.querySelectorAll(".classifier-result-row")).map(
+    (row) => row.getAttribute("data-category-id"),
   );
 }
 
@@ -35,11 +35,11 @@ export function getSelectedClassifierIds() {
  * @return {Array<{id: string, confidence: number}>} Array of results.
  */
 export function getSelectedClassifierResults() {
-  return Array.from(document.querySelectorAll('.classifier-result-row')).map(
+  return Array.from(document.querySelectorAll(".classifier-result-row")).map(
     (row) => ({
-      id: row.getAttribute('data-category-id'),
+      id: row.getAttribute("data-category-id"),
       confidence:
-        parseFloat(row.querySelector('td:last-child').textContent) / 100,
+        parseFloat(row.querySelector("td:last-child").textContent) / 100,
     }),
   );
 }
@@ -53,13 +53,13 @@ export function getSelectedClassifierResults() {
  */
 export async function renderClassifierResults(ui, results, updateCallback) {
   if (!results || results.length === 0) {
-    ui.aiClassifierResults.innerHTML = '';
+    ui.aiClassifierResults.innerHTML = "";
     return;
   }
 
   const taxonomy = await getTaxonomy();
   let html =
-    '<table><thead><tr><th>Category</th><th>Confidence</th></tr></thead><tbody>';
+    "<table><thead><tr><th>Category</th><th>Confidence</th></tr></thead><tbody>";
   for (const res of results) {
     const categoryName = taxonomy[res.id] || res.id;
     html += `
@@ -70,10 +70,10 @@ export async function renderClassifierResults(ui, results, updateCallback) {
       <button type="button" class="remove-tag" title="Remove category" onclick="this.closest('tr').remove(); window.dispatchEvent(new CustomEvent('classifier-updated'))">×</button>
     </span>
   </td>
-  <td>${res.confidence ? Math.round(res.confidence * 100) + '%' : '-'}</td>
+  <td>${res.confidence ? Math.round(res.confidence * 100) + "%" : "-"}</td>
 </tr>`;
   }
-  html += '</tbody></table>';
+  html += "</tbody></table>";
   ui.aiClassifierResults.innerHTML = html;
 }
 

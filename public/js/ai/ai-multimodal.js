@@ -1,14 +1,14 @@
-import { detectLanguage } from './ai-language-detection.js';
-import { checkAIKeys } from './ai-config.js';
+import { detectLanguage } from "./ai-language-detection.js";
+import { checkAIKeys } from "./ai-config.js";
 
 /** @type {Object} */
 export const imageMetadataSchema = {
-  type: 'object',
+  type: "object",
   properties: {
-    alt: { type: 'string' },
-    caption: { type: 'string' },
+    alt: { type: "string" },
+    caption: { type: "string" },
   },
-  required: ['alt', 'caption'],
+  required: ["alt", "caption"],
   additionalProperties: false,
 };
 
@@ -19,25 +19,25 @@ export const imageMetadataSchema = {
  * @return {Promise<Object|null>} The generated metadata or null if generation fails.
  */
 export async function generateImageMetadata(imageSource, ui) {
-  const enabled = localStorage.getItem('ai-features-enabled') === 'true';
+  const enabled = localStorage.getItem("ai-features-enabled") === "true";
   if (!enabled || !checkAIKeys(ui)) {
     return null;
   }
-  if (!('LanguageModel' in self)) {
-    await import('/js/prompt-api-polyfill.js');
+  if (!("LanguageModel" in self)) {
+    await import("/js/prompt-api-polyfill.js");
   }
-  if (typeof LanguageModel === 'undefined') {
+  if (typeof LanguageModel === "undefined") {
     return null;
   }
 
   try {
-    const lang = await detectLanguage(ui.contentInput.value || 'English');
+    const lang = await detectLanguage(ui.contentInput.value || "English");
     const options = {
-      expectedInputs: [{ type: 'text', languages: [lang] }, { type: 'image' }],
-      expectedOutputs: [{ type: 'text', languages: [lang] }],
+      expectedInputs: [{ type: "text", languages: [lang] }, { type: "image" }],
+      expectedOutputs: [{ type: "text", languages: [lang] }],
       initialPrompts: [
         {
-          role: 'system',
+          role: "system",
           content: `You are an expert at writing accessible alternative text and engaging captions for blog post images in ${lang}. Return a JSON object with "alt" and "caption" fields.`,
         },
       ],
@@ -45,7 +45,7 @@ export async function generateImageMetadata(imageSource, ui) {
 
     // Check availability with EXACT same options as per SKILL.md
     const status = await LanguageModel.availability(options);
-    if (status === 'unavailable') {
+    if (status === "unavailable") {
       return null;
     }
 
@@ -55,7 +55,7 @@ export async function generateImageMetadata(imageSource, ui) {
     let imageValue;
     let shouldClose = false;
     try {
-      if (imageSource instanceof Blob && imageSource.type === 'image/svg+xml') {
+      if (imageSource instanceof Blob && imageSource.type === "image/svg+xml") {
         // SVGs must be drawn to a canvas to be rasterized for createImageBitmap
         const url = URL.createObjectURL(imageSource);
         try {
@@ -65,10 +65,10 @@ export async function generateImageMetadata(imageSource, ui) {
             img.onerror = reject;
             img.src = url;
           });
-          const canvas = document.createElement('canvas');
+          const canvas = document.createElement("canvas");
           canvas.width = img.width || 512;
           canvas.height = img.height || 512;
-          const ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           imageValue = await createImageBitmap(canvas);
         } finally {
@@ -79,7 +79,7 @@ export async function generateImageMetadata(imageSource, ui) {
       }
       shouldClose = true;
     } catch (e) {
-      console.warn('createImageBitmap failed, falling back to Blob/Source', e);
+      console.warn("createImageBitmap failed, falling back to Blob/Source", e);
       imageValue = imageSource;
     }
 
@@ -87,14 +87,14 @@ export async function generateImageMetadata(imageSource, ui) {
       const response = await session.prompt(
         [
           {
-            role: 'user',
+            role: "user",
             content: [
               {
-                type: 'text',
+                type: "text",
                 value:
-                  'Describe this image for a blog post. Focus on a concise alt text for accessibility and a creative caption.',
+                  "Describe this image for a blog post. Focus on a concise alt text for accessibility and a creative caption.",
               },
-              { type: 'image', value: imageValue },
+              { type: "image", value: imageValue },
             ],
           },
         ],
@@ -108,7 +108,7 @@ export async function generateImageMetadata(imageSource, ui) {
       }
     }
   } catch (e) {
-    console.warn('Multimodal AI metadata generation failed', e);
+    console.warn("Multimodal AI metadata generation failed", e);
     return null;
   }
 }

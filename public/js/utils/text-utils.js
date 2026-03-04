@@ -5,17 +5,17 @@
  * @return {string} The wrapped text.
  */
 export function wrapText(text, limit) {
-  const words = text.split(' ');
+  const words = text.split(" ");
   const lines = [];
-  let currentLine = '';
+  let currentLine = "";
   words.forEach((word) => {
     if ((currentLine + word).length > limit) {
       lines.push(currentLine.trim());
-      currentLine = word + ' ';
+      currentLine = word + " ";
     } else {
-      currentLine += word + ' ';
+      currentLine += word + " ";
     }
   });
   lines.push(currentLine.trim());
-  return lines.join('\n    ');
+  return lines.join("\n    ");
 }

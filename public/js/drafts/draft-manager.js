@@ -1,11 +1,11 @@
-import { deleteImagesForDraft } from '../utils/db-storage.js';
-import { customConfirm } from '../utils/dialog-utils.js';
-import { performHousekeeping as h_performHousekeeping } from './draft-housekeeping.js';
+import { deleteImagesForDraft } from "../utils/db-storage.js";
+import { customConfirm } from "../utils/dialog-utils.js";
+import { performHousekeeping as h_performHousekeeping } from "./draft-housekeeping.js";
 
 /** @type {Array<Object>} */
-export let drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
+export let drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
 /** @type {string|null} */
-export let currentDraftId = localStorage.getItem('current-draft-id');
+export let currentDraftId = localStorage.getItem("current-draft-id");
 
 /**
  * Sets the current draft ID and persists it to localStorage.
@@ -13,14 +13,14 @@ export let currentDraftId = localStorage.getItem('current-draft-id');
  */
 export function setCurrentDraftId(id) {
   currentDraftId = id;
-  localStorage.setItem('current-draft-id', id);
+  localStorage.setItem("current-draft-id", id);
 }
 
 /**
  * Saves the drafts array to localStorage.
  */
 export function saveDrafts() {
-  localStorage.setItem('blog-drafts', JSON.stringify(drafts));
+  localStorage.setItem("blog-drafts", JSON.stringify(drafts));
 }
 
 /**
@@ -42,11 +42,11 @@ export async function createNewDraft(ui, loadDraftFn, renderListFn) {
   const id = Date.now().toString();
   const newDraft = {
     id,
-    title: '',
-    description: '',
-    date: '',
-    tags: '',
-    content: '',
+    title: "",
+    description: "",
+    date: "",
+    tags: "",
+    content: "",
     imageFiles: [],
     lastModified: Date.now(),
   };
@@ -81,7 +81,7 @@ export async function deleteDraft(
 ) {
   const confirmed = await customConfirm(
     ui,
-    'Are you sure you want to delete this draft?',
+    "Are you sure you want to delete this draft?",
   );
   if (!confirmed) {
     return;

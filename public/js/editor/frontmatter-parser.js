@@ -14,19 +14,19 @@ export function parseFrontmatter(text) {
   const content = match[2];
   const metadata = {};
 
-  yaml.split('\n').forEach((line) => {
+  yaml.split("\n").forEach((line) => {
     const part = line.match(/^\s*([^:]+):\s*(.*)$/);
     if (part) {
       const key = part[1].trim();
       let value = part[2].trim();
 
       // Basic cleanup for values (remove quotes, handle arrays)
-      value = value.replace(/^["']|["']$/g, '');
-      if (value.startsWith('[') && value.endsWith(']')) {
+      value = value.replace(/^["']|["']$/g, "");
+      if (value.startsWith("[") && value.endsWith("]")) {
         value = value
           .slice(1, -1)
-          .split(',')
-          .map((v) => v.trim().replace(/^["']|["']$/g, ''));
+          .split(",")
+          .map((v) => v.trim().replace(/^["']|["']$/g, ""));
       }
 
       metadata[key] = value;
@@ -54,7 +54,7 @@ export async function populateUIFromMetadata(metadata, ui, tagEditor) {
   }
   if (metadata.tags) {
     const tags = Array.isArray(metadata.tags)
-      ? metadata.tags.join(', ')
+      ? metadata.tags.join(", ")
       : metadata.tags;
     ui.tagsInput.value = tags;
     tagEditor.renderPills();

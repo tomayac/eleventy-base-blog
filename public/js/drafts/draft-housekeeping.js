@@ -1,4 +1,4 @@
-import { cleanupOrphanedImages } from '../utils/db-storage.js';
+import { cleanupOrphanedImages } from "../utils/db-storage.js";
 
 /**
  * Performs housekeeping on drafts by cleaning up orphaned images and

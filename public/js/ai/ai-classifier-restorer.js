@@ -1,4 +1,4 @@
-import { renderClassifierResults } from './ai-classifier-renderer.js';
+import { renderClassifierResults } from "./ai-classifier-renderer.js";
 
 /**
  * Parses advertising categories from the content string or restores them from the draft object.
@@ -25,14 +25,14 @@ export async function restoreClassifierResults(ui, updateCallback) {
         }));
       }
     } catch (e) {
-      console.warn('Initial category restoration from content failed', e);
+      console.warn("Initial category restoration from content failed", e);
     }
   }
 
   // Fallback to draft data if content parsing failed or returned no results
   if (results.length === 0) {
-    const id = localStorage.getItem('current-draft-id');
-    const drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
+    const id = localStorage.getItem("current-draft-id");
+    const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
     const draft = drafts.find((d) => d.id === id);
     if (draft) {
       if (draft.classifierResults) {

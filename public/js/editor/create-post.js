@@ -1,14 +1,14 @@
-import { ui } from './ui-elements.js';
-import { drafts, createNewDraft } from '../drafts/draft-manager.js';
-import { updatePreview } from './editor-logic.js';
-import { handleFiles } from './image-handler.js';
-import { initPasteHandler } from './paste-handler.js';
-import { initTagEditor } from './tag-editor.js';
-import { debounce } from '../utils/debounce.js';
-import { openAndLoadDraft } from '../drafts/load-draft.js';
-import { initEditorActions } from './editor-actions.js';
-import { initEditor } from './editor-init.js';
-import { sync, renderList, loadDraft } from './editor-ui.js';
+import { ui } from "./ui-elements.js";
+import { drafts, createNewDraft } from "../drafts/draft-manager.js";
+import { updatePreview } from "./editor-logic.js";
+import { handleFiles } from "./image-handler.js";
+import { initPasteHandler } from "./paste-handler.js";
+import { initTagEditor } from "./tag-editor.js";
+import { debounce } from "../utils/debounce.js";
+import { openAndLoadDraft } from "../drafts/load-draft.js";
+import { initEditorActions } from "./editor-actions.js";
+import { initEditor } from "./editor-init.js";
+import { sync, renderList, loadDraft } from "./editor-ui.js";
 
 /**
  * Debounced version of updatePreview to prevent excessive re-renders.
@@ -41,7 +41,7 @@ ui.titleInput.oninput = doSync;
 ui.descInput.oninput = doSync;
 ui.dateInput.oninput = doSync;
 ui.contentInput.oninput = doSync;
-window.addEventListener('classifier-updated', doSync);
+window.addEventListener("classifier-updated", doSync);
 
 ui.newDraftBtn.onclick = () =>
   createNewDraft(ui, doLoadDraft, () => renderList(ui, doLoadDraft));
@@ -55,7 +55,7 @@ ui.uploadBtn.onclick = () => ui.fileInput.click();
 ui.fileInput.onchange = () =>
   handleFiles(
     ui.fileInput.files,
-    localStorage.getItem('current-draft-id'),
+    localStorage.getItem("current-draft-id"),
     drafts,
     ui,
     doSync,

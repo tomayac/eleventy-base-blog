@@ -14,14 +14,14 @@ export async function runTagGeneration(
   addTags,
   isRestricted,
 ) {
-  let full = '';
+  let full = "";
   const stream = session.promptStreaming(`Content: ${content}`, {
     responseConstraint: isRestricted
       ? schema
       : {
-          type: 'object',
+          type: "object",
           properties: {
-            tags: { type: 'array', items: { type: 'string' } },
+            tags: { type: "array", items: { type: "string" } },
           },
         },
   });

@@ -1,4 +1,4 @@
-import { processImage, getMarkdownForImage } from './image-handler.js';
+import { processImage, getMarkdownForImage } from "./image-handler.js";
 
 /**
  * Handles HTML content pasted into the editor, converting it to Markdown and processing images.
@@ -9,39 +9,39 @@ import { processImage, getMarkdownForImage } from './image-handler.js';
  * @return {Promise<boolean>} True if HTML was handled, false otherwise.
  */
 export async function handleHtmlPaste(e, ui, drafts, sync) {
-  const html = e.clipboardData.getData('text/html');
+  const html = e.clipboardData.getData("text/html");
   if (!html) {
     return false;
   }
   e.preventDefault();
 
-  const id = localStorage.getItem('current-draft-id');
+  const id = localStorage.getItem("current-draft-id");
   const draft = drafts.find((d) => d.id === id);
   const turndownService = new TurndownService({
-    headingStyle: 'atx',
-    bullet: '*',
+    headingStyle: "atx",
+    bullet: "*",
   });
 
-  turndownService.addRule('figureImages', {
-    filter: 'img',
+  turndownService.addRule("figureImages", {
+    filter: "img",
     replacement: (content, node) => {
-      const src = node.getAttribute('src');
-      const alt = node.getAttribute('alt') || '';
-      if (src?.startsWith('__PASTED_IMG_')) {
+      const src = node.getAttribute("src");
+      const alt = node.getAttribute("alt") || "";
+      if (src?.startsWith("__PASTED_IMG_")) {
         return src;
       }
       return `<figure>\n  <img src="${src}" alt="${alt}" loading="lazy" decoding="async">\n  <figcaption>\n    ${alt}\n  </figcaption>\n</figure>`;
     },
   });
 
-  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const doc = new DOMParser().parseFromString(html, "text/html");
   const imageMap = new Map();
-  doc.querySelectorAll('img').forEach((img, i) => {
-    const src = img.getAttribute('src');
+  doc.querySelectorAll("img").forEach((img, i) => {
+    const src = img.getAttribute("src");
     if (src) {
       const p = `__PASTED_IMG_${i}__`;
       imageMap.set(p, src);
-      img.setAttribute('src', p);
+      img.setAttribute("src", p);
     }
   });
 
@@ -49,16 +49,16 @@ export async function handleHtmlPaste(e, ui, drafts, sync) {
   const start = ui.contentInput.selectionStart;
   const end = ui.contentInput.selectionEnd;
   const val = ui.contentInput.value;
-  const before = val.substring(0, start).replace(/\n+$/, '');
-  const after = val.substring(end).replace(/^\n+/, '');
+  const before = val.substring(0, start).replace(/\n+$/, "");
+  const after = val.substring(end).replace(/^\n+/, "");
 
   let imgIdx = 0;
   for (const [p, src] of imageMap) {
     try {
       const resp = await fetch(src);
       const blob = await resp.blob();
-      let name = src.split('/').pop().split('?')[0] || 'pasted-image.png';
-      if (name === 'image.png' || !name.includes('.')) {
+      let name = src.split("/").pop().split("?")[0] || "pasted-image.png";
+      if (name === "image.png" || !name.includes(".")) {
         name = `pasted-image-${Date.now()}-${imgIdx++}.png`;
       }
       const info = await processImage(
@@ -82,9 +82,9 @@ export async function handleHtmlPaste(e, ui, drafts, sync) {
   markdown = markdown.trim();
   ui.contentInput.value =
     before +
-    (before.length > 0 ? '\n\n' : '') +
+    (before.length > 0 ? "\n\n" : "") +
     markdown +
-    (after.length > 0 ? '\n\n' : '') +
+    (after.length > 0 ? "\n\n" : "") +
     after;
   sync();
   return true;

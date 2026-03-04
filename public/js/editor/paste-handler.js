@@ -1,9 +1,9 @@
-import { handleFiles } from './image-handler.js';
+import { handleFiles } from "./image-handler.js";
 import {
   parseFrontmatter,
   populateUIFromMetadata,
-} from './frontmatter-parser.js';
-import { handleHtmlPaste } from './html-paste-handler.js';
+} from "./frontmatter-parser.js";
+import { handleHtmlPaste } from "./html-paste-handler.js";
 
 /**
  * Initializes the paste handler for the content input and global drag-and-drop events.
@@ -18,7 +18,7 @@ export function initPasteHandler(ui, drafts, tagEditor, sync) {
       e.preventDefault();
       return handleFiles(
         e.clipboardData.files,
-        localStorage.getItem('current-draft-id'),
+        localStorage.getItem("current-draft-id"),
         drafts,
         ui,
         sync,
@@ -29,7 +29,7 @@ export function initPasteHandler(ui, drafts, tagEditor, sync) {
     }
 
     const { metadata, content } = parseFrontmatter(
-      e.clipboardData.getData('text'),
+      e.clipboardData.getData("text"),
     );
     if (metadata && Object.keys(metadata).length > 0) {
       e.preventDefault();
@@ -40,37 +40,37 @@ export function initPasteHandler(ui, drafts, tagEditor, sync) {
   };
 
   let dragCounter = 0;
-  window.addEventListener('dragenter', (e) => {
+  window.addEventListener("dragenter", (e) => {
     if (
-      ui.dropZone.getAttribute('data-disabled') !== 'true' &&
-      e.dataTransfer.types.includes('Files')
+      ui.dropZone.getAttribute("data-disabled") !== "true" &&
+      e.dataTransfer.types.includes("Files")
     ) {
       dragCounter++;
-      ui.dropZone.classList.add('dragover');
+      ui.dropZone.classList.add("dragover");
     }
   });
-  window.addEventListener('dragleave', () => {
-    if (ui.dropZone.getAttribute('data-disabled') !== 'true') {
+  window.addEventListener("dragleave", () => {
+    if (ui.dropZone.getAttribute("data-disabled") !== "true") {
       dragCounter = Math.max(0, dragCounter - 1);
       if (dragCounter === 0) {
-        ui.dropZone.classList.remove('dragover');
+        ui.dropZone.classList.remove("dragover");
       }
     }
   });
-  window.addEventListener('dragover', (e) => {
+  window.addEventListener("dragover", (e) => {
     e.preventDefault();
   });
-  window.addEventListener('drop', (e) => {
-    if (ui.dropZone.getAttribute('data-disabled') === 'true') {
+  window.addEventListener("drop", (e) => {
+    if (ui.dropZone.getAttribute("data-disabled") === "true") {
       return;
     }
     e.preventDefault();
     dragCounter = 0;
-    ui.dropZone.classList.remove('dragover');
+    ui.dropZone.classList.remove("dragover");
     if (e.dataTransfer.files?.length > 0) {
       handleFiles(
         e.dataTransfer.files,
-        localStorage.getItem('current-draft-id'),
+        localStorage.getItem("current-draft-id"),
         drafts,
         ui,
         sync,

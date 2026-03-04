@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { fromZodError } from 'zod-validation-error';
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
 
 // Draft content, validate `draft` front matter
 export default function () {
