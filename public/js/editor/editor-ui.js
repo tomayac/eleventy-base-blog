@@ -4,51 +4,19 @@ import {
   setCurrentDraftId,
 } from "../drafts/draft-manager.js";
 import { updatePreview } from "./editor-logic.js";
-import { deleteDraft, createNewDraft } from "../drafts/draft-manager.js";
+export { renderList } from "./editor-list-renderer.js";
 
 let lastSyncedTitle = "";
 
-export const sync = (ui, debouncedPreview, renderList) => {
+export const sync = (ui, debouncedPreview, renderListFn) => {
   const id = localStorage.getItem("current-draft-id");
   updateDraftData(id, ui);
   debouncedPreview(id, ui);
   if (ui.titleInput.value !== lastSyncedTitle) {
-    renderList();
+    renderListFn();
     lastSyncedTitle = ui.titleInput.value;
   }
 };
-
-export function renderList(ui, loadDraft) {
-  ui.draftsListEl.innerHTML = "";
-  const currentId = localStorage.getItem("current-draft-id");
-  drafts.forEach((d) => {
-    const li = document.createElement("li");
-    if (d.id === currentId) li.classList.add("active");
-    li.onclick = () => loadDraft(d.id);
-    const radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = "current-draft";
-    radio.checked = d.id === currentId;
-    const title = document.createElement("span");
-    title.className = "draft-title";
-    title.textContent = d.title || "Untitled Draft";
-    const del = document.createElement("button");
-    del.className = "delete-draft-btn";
-    del.textContent = "🗑️";
-    del.onclick = (e) => {
-      e.stopPropagation();
-      deleteDraft(
-        d.id,
-        ui,
-        () => createNewDraft(ui, loadDraft, renderList),
-        loadDraft,
-        renderList,
-      );
-    };
-    li.append(radio, title, del);
-    ui.draftsListEl.appendChild(li);
-  });
-}
 
 export async function loadDraft(id, ui, renderList, tagEditor) {
   const d = drafts.find((draft) => draft.id === id);
@@ -110,5 +78,5 @@ export async function loadDraft(id, ui, renderList, tagEditor) {
   }
 
   updatePreview(id, drafts, ui);
-  renderList();
+  renderList(ui, loadDraft);
 }

@@ -1,8 +1,6 @@
-import {
-  deleteImagesForDraft,
-  cleanupOrphanedImages,
-} from "../utils/db-storage.js";
+import { deleteImagesForDraft } from "../utils/db-storage.js";
 import { customConfirm } from "../utils/dialog-utils.js";
+import { performHousekeeping as h_performHousekeeping } from "./draft-housekeeping.js";
 
 export let drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
 export let currentDraftId = localStorage.getItem("current-draft-id");
@@ -40,18 +38,7 @@ export async function createNewDraft(ui, loadDraftFn, renderListFn) {
 }
 
 export async function performHousekeeping() {
-  const allValidImageIds = [];
-  drafts.forEach((draft) => {
-    if (!draft.imageFiles || !draft.content) return;
-    // Filter imageFiles to only those actually referenced in the content string
-    draft.imageFiles = draft.imageFiles.filter((img) => {
-      const isReferenced = draft.content.includes(`./${img.name}`);
-      if (isReferenced) allValidImageIds.push(img.id);
-      return isReferenced;
-    });
-  });
-  saveDrafts();
-  await cleanupOrphanedImages(allValidImageIds);
+  await h_performHousekeeping(drafts, saveDrafts);
 }
 
 export async function deleteDraft(

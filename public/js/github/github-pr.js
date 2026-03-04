@@ -6,8 +6,14 @@ import { ghFetch } from "./github-api.js";
 
 export async function createPR(ui, draft) {
   const { ghOwnerInput: owner, ghRepoInput: repo, ghTokenInput: token } = ui;
-  if (!owner.value || !repo.value || !token.value)
-    return customAlert(ui, "Please fill in GitHub settings first.");
+  if (!owner.value || !repo.value || !token.value) {
+    customAlert(ui, "Please fill in GitHub settings first.");
+    ui.settingsDetails.open = true;
+    if (!token.value) token.focus();
+    else if (!owner.value) owner.focus();
+    else if (!repo.value) repo.focus();
+    return;
+  }
   ui.githubPrBtn.disabled = true;
   ui.githubPrBtn.textContent = "⏳ Creating...";
   try {
