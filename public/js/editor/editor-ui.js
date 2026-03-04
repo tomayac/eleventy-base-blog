@@ -2,14 +2,23 @@ import {
   drafts,
   updateDraftData,
   setCurrentDraftId,
-} from "../drafts/draft-manager.js";
-import { updatePreview } from "./editor-logic.js";
-export { renderList } from "./editor-list-renderer.js";
+} from '../drafts/draft-manager.js';
+import { updatePreview } from './editor-logic.js';
+export { renderList } from './editor-list-renderer.js';
 
-let lastSyncedTitle = "";
+/**
+ * Tracks the last synced title to avoid redundant list renders.
+ */
+let lastSyncedTitle = '';
 
+/**
+ * Synchronizes the UI with the draft data and updates the preview.
+ * @param {Object} ui - The UI elements.
+ * @param {Function} debouncedPreview - Debounced preview update function.
+ * @param {Function} renderListFn - Function to render the draft list.
+ */
 export const sync = (ui, debouncedPreview, renderListFn) => {
-  const id = localStorage.getItem("current-draft-id");
+  const id = localStorage.getItem('current-draft-id');
   updateDraftData(id, ui);
   debouncedPreview(id, ui);
   if (ui.titleInput.value !== lastSyncedTitle) {
@@ -18,22 +27,33 @@ export const sync = (ui, debouncedPreview, renderListFn) => {
   }
 };
 
+/**
+ * Loads a draft's data into the UI.
+ * @param {string} id - The draft ID to load.
+ * @param {Object} ui - The UI elements.
+ * @param {Function} renderList - Function to refresh the draft list.
+ * @param {Object} tagEditor - The tag editor component instance.
+ */
 export async function loadDraft(id, ui, renderList, tagEditor) {
   const d = drafts.find((draft) => draft.id === id);
-  if (!d) return;
+  if (!d) {
+    return;
+  }
   setCurrentDraftId(id);
-  ui.titleInput.value = d.title || "";
-  ui.descInput.value = d.description || "";
-  ui.dateInput.value = d.date || "";
-  ui.tagsInput.value = d.tags || "";
+  ui.titleInput.value = d.title || '';
+  ui.descInput.value = d.description || '';
+  ui.dateInput.value = d.date || '';
+  ui.tagsInput.value = d.tags || '';
 
-  let content = d.content || "";
+  const content = d.content || '';
   let classifierResults = [];
 
   ui.contentInput.value = content;
-  ui.aiWriterInput.value = "";
+  ui.aiWriterInput.value = '';
   lastSyncedTitle = ui.titleInput.value;
-  if (tagEditor) tagEditor.renderPills();
+  if (tagEditor) {
+    tagEditor.renderPills();
+  }
 
   if (window.renderClassifierResults) {
     if (d.classifierResults) {
@@ -68,7 +88,7 @@ export async function loadDraft(id, ui, renderList, tagEditor) {
             }));
           }
         } catch (e) {
-          console.warn("Failed to parse categories from content", e);
+          console.warn('Failed to parse categories from content', e);
         }
       }
     }

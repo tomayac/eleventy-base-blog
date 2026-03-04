@@ -1,34 +1,47 @@
-import { detectLanguage } from "./ai-language-detection.js";
-import { customAlert } from "../utils/dialog-utils.js";
-import { runAIAction } from "./ai-features.js";
-import { refreshAIVisibility } from "./ai-toggle.js";
-import { runTagGeneration } from "./ai-tag-generator.js";
+import { detectLanguage } from './ai-language-detection.js';
+import { customAlert } from '../utils/dialog-utils.js';
+import { runAIAction } from './ai-features.js';
+import { refreshAIVisibility } from './ai-toggle.js';
+import { runTagGeneration } from './ai-tag-generator.js';
 
+/**
+ * Initializes the AI tag suggestions feature.
+ * @param {Object} ui - The UI elements.
+ * @param {Function} updateCallback - Callback for UI updates.
+ * @return {Promise<void>}
+ */
 export async function initTagSuggestions(ui, updateCallback) {
-  if (!("LanguageModel" in self)) await import("/js/prompt-api-polyfill.js");
+  if (!('LanguageModel' in self)) {
+    await import('/js/prompt-api-polyfill.js');
+  }
   let tagsSchema = null;
+  /**
+   * Fetches the tags schema JSON.
+   * @return {Promise<Object>} The tags schema.
+   */
   const fetchSchema = async () =>
     tagsSchema ||
-    (tagsSchema = await (await fetch("/tags-schema.json")).json());
+    (tagsSchema = await (await fetch('/tags-schema.json')).json());
 
   try {
     const status = await LanguageModel.availability({
       initialPrompts: [
-        { role: "system", content: "Suggest tags for this blog post." },
+        { role: 'system', content: 'Suggest tags for this blog post.' },
       ],
     });
-    if (status !== "unavailable") {
-      ui.aiSuggestTagsBtn.setAttribute("data-ai-available", "true");
+    if (status !== 'unavailable') {
+      ui.aiSuggestTagsBtn.setAttribute('data-ai-available', 'true');
       refreshAIVisibility(ui);
     }
   } catch (e) {
-    console.warn("AI LanguageModel availability check failed", e);
+    console.warn('AI LanguageModel availability check failed', e);
   }
 
   ui.aiSuggestTagsBtn.onclick = async () => {
     const content = ui.contentInput.value;
-    if (!content || content.length < 20)
-      return customAlert(ui, "Please write some content first.");
+    if (!content || content.length < 20) {
+      return customAlert(ui, 'Please write some content first.');
+    }
 
     await runAIAction(
       ui,
@@ -36,14 +49,22 @@ export async function initTagSuggestions(ui, updateCallback) {
       async () => {
         const onlyExisting = ui.aiOnlyExistingTagsToggle.checked;
         const finalTags = new Map();
+        /**
+         * Adds suggested tags to the tag collection and updates UI.
+         * @param {string[]} tags - The suggested tags.
+         */
         const addTags = (tags) => {
-          if (!Array.isArray(tags)) return;
+          if (!Array.isArray(tags)) {
+            return;
+          }
           tags.forEach((t) => {
-            const trimmed = t.trim(),
-              lower = trimmed.toLowerCase();
-            if (trimmed && !finalTags.has(lower)) finalTags.set(lower, trimmed);
+            const trimmed = t.trim();
+            const lower = trimmed.toLowerCase();
+            if (trimmed && !finalTags.has(lower)) {
+              finalTags.set(lower, trimmed);
+            }
           });
-          ui.tagsInput.value = Array.from(finalTags.values()).join(", ");
+          ui.tagsInput.value = Array.from(finalTags.values()).join(', ');
           updateCallback();
         };
 
@@ -54,7 +75,7 @@ export async function initTagSuggestions(ui, updateCallback) {
           LanguageModel.create({
             initialPrompts: [
               {
-                role: "system",
+                role: 'system',
                 content: `Suggest tags for this blog post in ${lang}. Only use the tags provided in the schema.`,
               },
             ],
@@ -66,7 +87,7 @@ export async function initTagSuggestions(ui, updateCallback) {
             LanguageModel.create({
               initialPrompts: [
                 {
-                  role: "system",
+                  role: 'system',
                   content: `Suggest 3-5 tags for this blog post in ${lang}. Return JSON: {"tags": ["tag1", "tag2"]}.`,
                 },
               ],

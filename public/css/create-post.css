@@ -332,7 +332,7 @@ body {
 }
 
 .classifier-actions {
-  align-items: center; /* Specific alignment for classifier */
+  align-items: center;
 }
 
 .classifier-actions p {
@@ -449,7 +449,7 @@ body {
   tab-size: 2;
 }
 
-#drop-zone[data-disabled="true"] {
+#drop-zone[data-disabled='true'] {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -700,12 +700,10 @@ body {
   }
 }
 
-/* ✨ AI Features label style consolidated above */
 #ai-features-toggle {
   accent-color: deeppink;
 }
 
-/* Dialog Styles */
 dialog {
   border: none;
   border-radius: 8px;

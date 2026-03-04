@@ -1,18 +1,26 @@
+/** @type {Promise<Object>|null} */
 let domPurifyPromise = null;
 
+/**
+ * Sanitizes HTML content and injects it into a container element.
+ * Tries to use the native Sanitizer API if available, otherwise falls back to DOMPurify.
+ * @param {HTMLElement} container - The element to inject the sanitized HTML into.
+ * @param {string} html - The raw HTML string to sanitize.
+ * @return {Promise<void>}
+ */
 export async function sanitizeHTML(container, html) {
   const config = {
-    ADD_ATTR: ["loading", "decoding"],
-    ADD_TAGS: ["figure", "figcaption"],
+    ADD_ATTR: ['loading', 'decoding'],
+    ADD_TAGS: ['figure', 'figcaption'],
     ALLOWED_URI_REGEXP:
       /^(?:(?:https?|mailto|tel|ftp|blob|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i,
   };
 
-  if ("setHTML" in container) {
+  if ('setHTML' in container) {
     try {
       container.setHTML(html);
-      if (html.includes("src=") && !container.querySelector("[src]")) {
-        throw new Error("Native Sanitizer stripped src");
+      if (html.includes('src=') && !container.querySelector('[src]')) {
+        throw new Error('Native Sanitizer stripped src');
       }
       return;
     } catch (e) {
@@ -21,19 +29,19 @@ export async function sanitizeHTML(container, html) {
   }
 
   if (!window.DOMPurify && !domPurifyPromise) {
-    const link = document.createElement("link");
-    link.rel = "modulepreload";
-    link.href = "/js/purify.min.js";
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = '/js/purify.min.js';
     document.head.appendChild(link);
 
     domPurifyPromise = (async () => {
       try {
-        await import("/js/purify.min.js");
+        await import('/js/purify.min.js');
         return window.DOMPurify;
       } catch (e) {
         return new Promise((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = "/js/purify.min.js";
+          const script = document.createElement('script');
+          script.src = '/js/purify.min.js';
           script.onload = () => resolve(window.DOMPurify);
           script.onerror = reject;
           document.head.appendChild(script);

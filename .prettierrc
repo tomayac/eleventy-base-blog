@@ -6,7 +6,7 @@
   "semi": true,
   "experimentalOperatorPosition": "end",
   "experimentalTernaries": false,
-  "singleQuote": false,
+  "singleQuote": true,
   "jsxSingleQuote": false,
   "quoteProps": "as-needed",
   "trailingComma": "all",
