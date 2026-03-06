@@ -180,7 +180,7 @@ eleventyExcludeFromCollections: true
 
 				<div class="form-group">
 					<label for="post-content">Content (Markdown)</label>
-					<p class="field-hint">💡 Tip: You can drag and drop images directly into the editor or use the button below to place them at the current cursor position.</p>
+					<p class="field-hint">💡 You can drag and drop images directly into the editor or use the button below to place them at the current cursor position.</p>
 					<div class="editor-header-actions">
 						<button type="button" id="upload-btn" class="btn">📂 Add Images</button>
 					</div>
@@ -202,6 +202,7 @@ eleventyExcludeFromCollections: true
 				<div class="form-group ai-rewriter-section" style="display: none;">
 					<label for="post-content">Rewrite content</label>
 					<p class="field-hint">💡 Refine your post content with specific tone and length. (Markdown layout is preserved)</p>
+					<p class="field-hint">💡 If you select text in the editor, only the selection will be rewritten.</p>
 					<div class="rewriter-options">
 						<div class="rewriter-option-group">
 							<label for="ai-rewriter-tone">Tone</label>
@@ -267,7 +268,7 @@ eleventyExcludeFromCollections: true
 		<p id="confirm-message"></p>
 		<div class="dialog-actions">
 			<button value="cancel" class="btn btn-secondary">Cancel</button>
-			<button value="confirm" class="btn btn-danger">Delete</button>
+			<button value="confirm" class="btn">Delete</button>
 		</div>
 	</form>
 </dialog>

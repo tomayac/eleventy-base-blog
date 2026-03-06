@@ -1,5 +1,5 @@
 import { detectLanguage } from './ai-language-detection.js';
-import { customAlert } from '../utils/dialog-utils.js';
+import { customAlert, customConfirm } from '../utils/dialog-utils.js';
 import { getMonitor, runAIAction } from './ai-features.js';
 import { refreshAIVisibility } from './ai-toggle.js';
 
@@ -51,8 +51,34 @@ export async function initAIRewriter(ui, updateCallback) {
   }
 
   ui.aiRewriterBtn.onclick = async () => {
-    const fullContent = ui.contentInput.value.trim();
-    if (!fullContent) {
+    const fullContent = ui.contentInput.value;
+    const selectionStart = ui.contentInput.selectionStart;
+    const selectionEnd = ui.contentInput.selectionEnd;
+    const selectedText = fullContent.substring(selectionStart, selectionEnd);
+
+    let rewriteTarget = 'all';
+    if (selectedText.trim().length > 0) {
+      const choice = await customConfirm(
+        ui,
+        'You have selected text. Should the AI rewrite only the selection or the entire post?',
+        {
+          confirmText: 'Selection',
+          cancelText: 'Entire post',
+        },
+      );
+      if (choice === 'confirm') {
+        rewriteTarget = 'selection';
+      } else if (choice === 'cancel') {
+        rewriteTarget = 'all';
+      } else {
+        return; // Dialog was dismissed without a choice
+      }
+    }
+
+    const inputToRewrite =
+      rewriteTarget === 'selection' ? selectedText : fullContent;
+
+    if (!inputToRewrite.trim()) {
       return customAlert(ui, 'Please write some content first.');
     }
 
@@ -60,21 +86,32 @@ export async function initAIRewriter(ui, updateCallback) {
       ui,
       ui.aiRewriterBtn,
       async () => {
-        const parts = fullContent.split(/(<figure>[\s\S]*?<\/figure>)/g);
-        ui.contentInput.value = '';
-        const lang = await detectLanguage(fullContent);
+        const partsSelectionAware = inputToRewrite.split(
+          /(<figure>[\s\S]*?<\/figure>)/g,
+        );
+        const lang = await detectLanguage(inputToRewrite);
         const options = getRewriterOptions(ui, lang);
         const rewriter = await Rewriter.create(options);
 
-        for (const part of parts) {
+        let rewrittenContent = '';
+
+        for (const part of partsSelectionAware) {
           if (part.startsWith('<figure>')) {
-            ui.contentInput.value =
-              ui.contentInput.value.trimEnd() + '\n\n' + part + '\n\n';
-            updateCallback();
+            rewrittenContent =
+              rewrittenContent.trimEnd() + '\n\n' + part + '\n\n';
           } else if (part.trim()) {
             const stream = rewriter.rewriteStreaming(part);
             for await (const chunk of stream) {
-              ui.contentInput.value += chunk;
+              rewrittenContent += chunk;
+              // Real-time update in the text area
+              if (rewriteTarget === 'selection') {
+                ui.contentInput.value =
+                  fullContent.substring(0, selectionStart) +
+                  rewrittenContent +
+                  fullContent.substring(selectionEnd);
+              } else {
+                ui.contentInput.value = rewrittenContent;
+              }
               updateCallback();
             }
           }

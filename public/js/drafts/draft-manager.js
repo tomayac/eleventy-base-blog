@@ -82,6 +82,7 @@ export async function deleteDraft(
   const confirmed = await customConfirm(
     ui,
     'Are you sure you want to delete this draft?',
+    { confirmText: 'Delete', confirmClass: 'btn btn-danger' },
   );
   if (!confirmed) {
     return;
