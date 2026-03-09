@@ -7,8 +7,11 @@ import { feedPlugin } from '@11ty/eleventy-plugin-rss';
 import pluginSyntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
 import pluginNavigation from '@11ty/eleventy-navigation';
 import { eleventyImageTransformPlugin } from '@11ty/eleventy-img';
-
+import i18n from 'eleventy-plugin-i18n';
+import translations from './_data/i18n/translations.js';
 import pluginFilters from './_config/filters.js';
+import locales from './_data/locales.js';
+import metadata from './_data/metadata.js';
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function (eleventyConfig) {
@@ -91,30 +94,68 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPlugin(HtmlBasePlugin);
   eleventyConfig.addPlugin(InputPathToUrlTransformPlugin);
 
-  eleventyConfig.addPlugin(feedPlugin, {
-    type: 'atom', // or "rss", "json"
-    outputPath: '/feed/feed.xml',
-    stylesheet: 'pretty-atom-feed.xsl',
-    templateData: {
-      eleventyNavigation: {
-        key: 'Feed',
-        order: 4,
+  // Localized collections for feeds
+  const mainLocales = ['en', 'es', 'ja'];
+  for (const lang of mainLocales) {
+    eleventyConfig.addCollection(`posts_${lang}`, function (collectionApi) {
+      return collectionApi.getFilteredByTag('posts').filter((item) => {
+        const itemLocale =
+          item.data.locale || (item.url ? item.url.split('/')[1] : '');
+        return itemLocale === lang;
+      });
+    });
+
+    eleventyConfig.addPlugin(feedPlugin, {
+      type: 'atom',
+      outputPath: `/${lang}/feed/feed.xml`,
+      stylesheet: '/feed/pretty-atom-feed.xsl',
+      templateData: {
+        locale: lang,
+        eleventyNavigation: {
+          key: 'feed',
+          order: 4,
+        },
       },
-    },
-    collection: {
-      name: 'posts',
-      limit: 10,
-    },
-    metadata: {
-      language: 'en',
-      title: 'Blog Title',
-      subtitle: 'This is a longer description about your blog.',
-      base: 'https://example.com/',
-      author: {
-        name: 'Your Name',
+      collection: {
+        name: `posts_${lang}`,
+        limit: 10,
       },
-    },
+      metadata: {
+        language: lang,
+        title: `${{ en: 'Posts', es: 'Publicaciones', ja: '記事' }[lang]} - ${metadata.title}`,
+        subtitle: metadata.description,
+        base: metadata.url,
+        author: metadata.author,
+      },
+    });
+  }
+
+  eleventyConfig.addCollection('tagLocaleCombos', function (collectionApi) {
+    const allItems = collectionApi.getAll();
+    const tags = new Set();
+    for (const item of allItems) {
+      let itemTags = item.data.tags || [];
+      if (typeof itemTags === 'string') {
+        itemTags = [itemTags];
+      }
+      for (const tag of itemTags) {
+        if (tag && tag !== 'all' && tag !== 'posts') {
+          tags.add(tag);
+        }
+      }
+    }
+    const combos = [];
+    for (const locale of ['en', 'es', 'ja']) {
+      for (const tag of tags) {
+        if (tag && locale) {
+          combos.push({ tag, locale });
+        }
+      }
+    }
+    return combos;
   });
+
+
 
   // Image optimization: https://www.11ty.dev/docs/plugins/image/#eleventy-transform
   eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
@@ -139,6 +180,34 @@ export default async function (eleventyConfig) {
 
   // Filters
   eleventyConfig.addPlugin(pluginFilters);
+
+  const fallbackLocales = {
+    'en-US': 'en',
+    'en-GB': 'en',
+    'es-ES': 'es',
+    'es-US': 'es',
+    '404.html': 'en',
+  };
+
+  // Silence i18n warnings by programmatically expanding translations
+  // for sub-locales so the plugin finds them and doesn't log a fallback warning.
+  for (const values of Object.values(translations)) {
+    for (const [locale, fallback] of Object.entries(fallbackLocales)) {
+      if (!values[locale] && values[fallback]) {
+        values[locale] = values[fallback];
+      }
+    }
+  }
+
+  eleventyConfig.addGlobalData('translations', translations);
+
+  eleventyConfig.addPlugin(i18n, {
+    translations,
+    fallbackLocales: {
+      ...fallbackLocales,
+      '*': 'en',
+    },
+  });
 
   eleventyConfig.addPlugin(IdAttributePlugin, {
     // by default we use Eleventy’s built-in `slugify` filter:

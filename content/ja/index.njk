@@ -1,0 +1,22 @@
+---
+locale: ja
+title: home
+eleventyNavigation:
+  key: Home-ja
+  title: home
+  order: 1
+permalink: /ja/index.html
+numberOfLatestPostsToShow: 3
+---
+{% set postsCount = collections.posts | filterByLocale(locale) | length %}
+{% set latestPostsCount = postsCount | min(numberOfLatestPostsToShow) %}
+<h1>{{ 'latest_posts' | i18n({ count: latestPostsCount }, locale) }}</h1>
+
+{% set postslist = collections.posts | filterByLocale(locale) | head(-1 * numberOfLatestPostsToShow) %}
+{% set postslistCounter = postsCount %}
+{% include "postslist.njk" %}
+
+{% set morePosts = postsCount - numberOfLatestPostsToShow %}
+{% if morePosts > 0 %}
+<p>{{ morePosts }} 件の追加記事は <a href="/{{ locale }}/blog/">アーカイブ</a> にあります。</p>
+{% endif %}

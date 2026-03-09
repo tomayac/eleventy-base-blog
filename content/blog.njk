@@ -1,10 +1,22 @@
 ---js
-const eleventyNavigation = {
-	key: "Archive",
-	order: 2
+const pagination = {
+	data: "locales",
+	size: 1,
+	alias: "locale",
+	addAllPagesToCollections: true
+};
+
+const eleventyComputed = {
+	eleventyNavigation: {
+		key: data => `Archive-${data.locale}`,
+		title: "archive",
+		order: 2
+	},
+	title: "archive",
+	permalink: data => `/${data.locale}/blog/index.html`
 };
 ---
-<h1>Archive</h1>
+<h1>{{ 'archive' | i18n({}, locale) }}</h1>
 
-{% set postslist = collections.posts %}
+{% set postslist = collections.posts | filterByLocale(locale) %}
 {% include "postslist.njk" %}
