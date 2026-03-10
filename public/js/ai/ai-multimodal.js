@@ -20,9 +20,10 @@ export const imageMetadataSchema = {
  */
 export async function generateImageMetadata(imageSource, ui) {
   const enabled = localStorage.getItem('ai-features-enabled') === 'true';
-  if (!enabled || !checkAIKeys(ui)) {
+  if (!enabled) {
     return null;
   }
+
   if (
     !('LanguageModel' in self) ||
     (await self.LanguageModel.availability({
@@ -32,7 +33,13 @@ export async function generateImageMetadata(imageSource, ui) {
   ) {
     await import('/js/prompt-api-polyfill.js');
   }
+
   if (typeof LanguageModel === 'undefined') {
+    return null;
+  }
+
+  const isNative = LanguageModel.toString().includes('[native code]');
+  if (!isNative && !checkAIKeys(ui)) {
     return null;
   }
 

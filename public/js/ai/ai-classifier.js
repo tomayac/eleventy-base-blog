@@ -41,9 +41,16 @@ export async function initAIClassifier(ui, updateCallback) {
         ui.aiClassifierSection?.setAttribute('data-ai-available', 'true');
         ui.aiClassifierBtn?.setAttribute('data-ai-available', 'true');
         refreshAIVisibility(ui);
+      } else {
+        ui.aiClassifierSection?.setAttribute('data-ai-available', 'true');
+        ui.aiClassifierBtn?.setAttribute('data-ai-available', 'true');
+        refreshAIVisibility(ui);
       }
     } catch (e) {
       console.warn('AI Classifier availability check failed', e);
+      ui.aiClassifierSection?.setAttribute('data-ai-available', 'true');
+      ui.aiClassifierBtn?.setAttribute('data-ai-available', 'true');
+      refreshAIVisibility(ui);
     }
   }
 
@@ -63,10 +70,17 @@ export async function initAIClassifier(ui, updateCallback) {
     }
 
     const input = `Title: ${title}\n\nContent: ${content}`;
+    const isNative = ClassifierClass.toString().includes('[native code]');
+
     await runAIAction(
       ui,
       ui.aiClassifierBtn,
       async () => {
+        const status = await ClassifierClass.availability();
+        if (status === 'unavailable') {
+          return customAlert(ui, 'Classifier unavailable.');
+        }
+
         ui.aiClassifierResults.innerHTML = 'Classifying...';
         const monitor = getMonitor(ui, 'en', 'Classifier');
         const classifier = await ClassifierClass.create({ ...monitor });
@@ -85,6 +99,7 @@ export async function initAIClassifier(ui, updateCallback) {
         }
       },
       updateCallback,
+      isNative,
     );
   };
 }

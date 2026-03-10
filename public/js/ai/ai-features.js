@@ -35,6 +35,8 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
   const btn =
     type === 'headline' ? ui.aiSuggestTitleBtn : ui.aiSuggestDescriptionBtn;
 
+  const isNative = Summarizer.toString().includes('[native code]');
+
   await runAIAction(
     ui,
     btn,
@@ -43,8 +45,9 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
       const options = getSummarizerOptions(ui, lang, type);
       const status = await Summarizer.availability(options);
       if (status === 'unavailable') {
-        throw new Error(`Summarizer unavailable for: ${lang}`);
+        return customAlert(ui, `Summarizer unavailable for: ${lang}`);
       }
+
       const summarizer = await Summarizer.create(options);
       const stream = summarizer.summarizeStreaming(input);
       targetInput.value = '';
@@ -58,6 +61,7 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
       }
     },
     updateCallback,
+    isNative,
   );
 }
 
@@ -89,6 +93,12 @@ export async function initAI(ui, updateCallback) {
         ui.aiSuggestTitleBtn.setAttribute('data-ai-available', 'true');
         ui.aiSuggestDescriptionBtn.setAttribute('data-ai-available', 'true');
         refreshAIVisibility(ui);
+      } else {
+        // Even if status is unavailable, if it's the polyfill, it might just be missing keys.
+        // We show it anyway if the API is defined.
+        ui.aiSuggestTitleBtn.setAttribute('data-ai-available', 'true');
+        ui.aiSuggestDescriptionBtn.setAttribute('data-ai-available', 'true');
+        refreshAIVisibility(ui);
       }
       if (status === 'downloadable' || status === 'downloading') {
         ui.aiStatus.style.display = 'flex';
@@ -96,6 +106,10 @@ export async function initAI(ui, updateCallback) {
       }
     } catch (e) {
       console.warn('AI Summarizer availability check failed', e);
+      // Fallback: show buttons if the API exists
+      ui.aiSuggestTitleBtn.setAttribute('data-ai-available', 'true');
+      ui.aiSuggestDescriptionBtn.setAttribute('data-ai-available', 'true');
+      refreshAIVisibility(ui);
     }
   }
   ui.aiSuggestTitleBtn.onclick = () =>

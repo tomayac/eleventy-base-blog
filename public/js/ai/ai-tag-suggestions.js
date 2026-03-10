@@ -38,9 +38,16 @@ export async function initTagSuggestions(ui, updateCallback) {
     if (status !== 'unavailable') {
       ui.aiSuggestTagsBtn.setAttribute('data-ai-available', 'true');
       refreshAIVisibility(ui);
+    } else {
+      ui.aiSuggestTagsBtn.setAttribute('data-ai-available', 'true');
+      refreshAIVisibility(ui);
     }
   } catch (e) {
     console.warn('AI LanguageModel availability check failed', e);
+    if (typeof LanguageModel !== 'undefined') {
+      ui.aiSuggestTagsBtn.setAttribute('data-ai-available', 'true');
+      refreshAIVisibility(ui);
+    }
   }
 
   ui.aiSuggestTagsBtn.onclick = async () => {
@@ -49,10 +56,21 @@ export async function initTagSuggestions(ui, updateCallback) {
       return customAlert(ui, 'Please write some content first.');
     }
 
+    const isNative = LanguageModel.toString().includes('[native code]');
+
     await runAIAction(
       ui,
       ui.aiSuggestTagsBtn,
       async () => {
+        const status = await LanguageModel.availability({
+          initialPrompts: [
+            { role: 'system', content: 'Suggest tags for this blog post.' },
+          ],
+        });
+        if (status === 'unavailable') {
+          return customAlert(ui, 'LanguageModel unavailable.');
+        }
+
         const onlyExisting = ui.aiOnlyExistingTagsToggle.checked;
         const finalTags = new Map();
         /**
@@ -105,6 +123,7 @@ export async function initTagSuggestions(ui, updateCallback) {
         await Promise.all(tasks);
       },
       updateCallback,
+      isNative,
     );
   };
 }

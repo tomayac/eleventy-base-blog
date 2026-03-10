@@ -43,9 +43,16 @@ export async function initAIWriter(ui, updateCallback) {
         ui.aiWriterSection.setAttribute('data-ai-available', 'true');
         ui.aiWriterBtn.setAttribute('data-ai-available', 'true');
         refreshAIVisibility(ui);
+      } else {
+        ui.aiWriterSection.setAttribute('data-ai-available', 'true');
+        ui.aiWriterBtn.setAttribute('data-ai-available', 'true');
+        refreshAIVisibility(ui);
       }
     } catch (e) {
       console.warn('AI Writer availability check failed', e);
+      ui.aiWriterSection.setAttribute('data-ai-available', 'true');
+      ui.aiWriterBtn.setAttribute('data-ai-available', 'true');
+      refreshAIVisibility(ui);
     }
   }
 
@@ -72,10 +79,19 @@ export async function initAIWriter(ui, updateCallback) {
       }
     }
 
+    const isNative = Writer.toString().includes('[native code]');
+
     await runAIAction(
       ui,
       ui.aiWriterBtn,
       async () => {
+        const lang = await detectLanguage(input);
+        const options = getWriterOptions(ui, lang);
+        const status = await Writer.availability(options);
+        if (status === 'unavailable') {
+          return customAlert(ui, `Writer unavailable for: ${lang}`);
+        }
+
         if (mode === 'replace') {
           ui.contentInput.value = '';
         } else {
@@ -83,12 +99,6 @@ export async function initAIWriter(ui, updateCallback) {
             ui.contentInput.value.replace(/\n+$/, '') + '\n\n';
         }
 
-        const lang = await detectLanguage(input);
-        const options = getWriterOptions(ui, lang);
-        const status = await Writer.availability(options);
-        if (status === 'unavailable') {
-          throw new Error(`Writer unavailable for: ${lang}`);
-        }
         const writer = await Writer.create(options);
         const stream = writer.writeStreaming(input);
 
@@ -101,6 +111,7 @@ export async function initAIWriter(ui, updateCallback) {
         ui.aiWriterInput.value = '';
         updateCallback();
       },
+      isNative,
     );
   };
 }

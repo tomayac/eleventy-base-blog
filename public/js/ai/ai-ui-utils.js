@@ -30,10 +30,17 @@ export const getMonitor = (ui, lang, modelName) => ({
  * @param {HTMLButtonElement} btn - The button that triggered the action.
  * @param {Function} actionFn - The asynchronous function containing the AI logic.
  * @param {Function} updateCallback - Callback for UI updates.
+ * @param {boolean} [isNative=false] - Whether the action uses native AI support (bypasses credential check).
  * @return {Promise<void>}
  */
-export async function runAIAction(ui, btn, actionFn, updateCallback) {
-  if (!checkAIKeys(ui)) {
+export async function runAIAction(
+  ui,
+  btn,
+  actionFn,
+  updateCallback,
+  isNative = false,
+) {
+  if (!isNative && !checkAIKeys(ui)) {
     return;
   }
   btn.disabled = true;

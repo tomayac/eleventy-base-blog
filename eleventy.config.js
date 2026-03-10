@@ -159,8 +159,6 @@ export default async function (eleventyConfig) {
     return combos;
   });
 
-
-
   // Image optimization: https://www.11ty.dev/docs/plugins/image/#eleventy-transform
   eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
     // Output formats for each image.

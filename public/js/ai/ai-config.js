@@ -30,6 +30,7 @@ export function saveBackendConfigs(configs) {
 export function checkAIKeys(ui) {
   const backend = ui.aiBackendSelect.value;
   if (backend === 'transformers-js') {
+    updateGlobalConfig(ui);
     return true;
   }
 
@@ -44,6 +45,7 @@ export function checkAIKeys(ui) {
     );
     return false;
   }
+  updateGlobalConfig(ui);
   return true;
 }
 

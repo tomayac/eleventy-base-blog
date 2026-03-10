@@ -44,9 +44,16 @@ export async function initAIRewriter(ui, updateCallback) {
         ui.aiRewriterSection.setAttribute('data-ai-available', 'true');
         ui.aiRewriterBtn.setAttribute('data-ai-available', 'true');
         refreshAIVisibility(ui);
+      } else {
+        ui.aiRewriterSection.setAttribute('data-ai-available', 'true');
+        ui.aiRewriterBtn.setAttribute('data-ai-available', 'true');
+        refreshAIVisibility(ui);
       }
     } catch (e) {
       console.warn('AI Rewriter availability check failed', e);
+      ui.aiRewriterSection.setAttribute('data-ai-available', 'true');
+      ui.aiRewriterBtn.setAttribute('data-ai-available', 'true');
+      refreshAIVisibility(ui);
     }
   }
 
@@ -82,15 +89,23 @@ export async function initAIRewriter(ui, updateCallback) {
       return customAlert(ui, 'Please write some content first.');
     }
 
+    const isNative = Rewriter.toString().includes('[native code]');
+
     await runAIAction(
       ui,
       ui.aiRewriterBtn,
       async () => {
+        const lang = await detectLanguage(inputToRewrite);
+        const options = getRewriterOptions(ui, lang);
+        const status = await Rewriter.availability(options);
+
+        if (status === 'unavailable') {
+          return customAlert(ui, `Rewriter unavailable for: ${lang}`);
+        }
+
         const partsSelectionAware = inputToRewrite.split(
           /(<figure>[\s\S]*?<\/figure>)/g,
         );
-        const lang = await detectLanguage(inputToRewrite);
-        const options = getRewriterOptions(ui, lang);
         const rewriter = await Rewriter.create(options);
 
         let rewrittenContent = '';
@@ -122,6 +137,7 @@ export async function initAIRewriter(ui, updateCallback) {
         ui.aiRewriterLength.value = 'as-is';
         updateCallback();
       },
+      isNative,
     );
   };
 }

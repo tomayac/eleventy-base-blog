@@ -1,18 +1,21 @@
 import { DateTime } from 'luxon';
 
 export default function (eleventyConfig) {
-  eleventyConfig.addFilter('readableDate', (dateObj, locale = 'en', options = {}) => {
-    // Default options if none provided
-    const defaultOptions = {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'UTC',
-      ...options,
-    };
+  eleventyConfig.addFilter(
+    'readableDate',
+    (dateObj, locale = 'en', options = {}) => {
+      // Default options if none provided
+      const defaultOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+        ...options,
+      };
 
-    return new Intl.DateTimeFormat(locale, defaultOptions).format(dateObj);
-  });
+      return new Intl.DateTimeFormat(locale, defaultOptions).format(dateObj);
+    },
+  );
 
   eleventyConfig.addFilter('htmlDateString', (dateObj) => {
     // dateObj input: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-date-string
@@ -44,26 +47,34 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter('filterTagList', function filterTagList(tags) {
     return (tags || []).filter(
       (tag) =>
-        ['all', 'posts', 'posts_en', 'posts_es', 'posts_ja'].indexOf(tag) === -1,
+        ['all', 'posts', 'posts_en', 'posts_es', 'posts_ja'].indexOf(tag) ===
+        -1,
     );
   });
 
-  eleventyConfig.addFilter('filterTagsByLocale', function (collections, locale) {
-    const tags = Object.keys(collections);
-    return tags.filter((tag) => {
-      // Filter out internal tags
-      if (['all', 'posts', 'posts_en', 'posts_es', 'posts_ja'].indexOf(tag) !== -1) {
-        return false;
-      }
-      // Check if this tag has any posts in the target locale
-      const postsForTag = collections[tag] || [];
-      return postsForTag.some((item) => {
-        if (!item || !item.data) return false;
-        const itemLocale = item.data.locale || (item.url ? item.url.split('/')[1] : '');
-        return itemLocale === locale;
+  eleventyConfig.addFilter(
+    'filterTagsByLocale',
+    function (collections, locale) {
+      const tags = Object.keys(collections);
+      return tags.filter((tag) => {
+        // Filter out internal tags
+        if (
+          ['all', 'posts', 'posts_en', 'posts_es', 'posts_ja'].indexOf(tag) !==
+          -1
+        ) {
+          return false;
+        }
+        // Check if this tag has any posts in the target locale
+        const postsForTag = collections[tag] || [];
+        return postsForTag.some((item) => {
+          if (!item || !item.data) return false;
+          const itemLocale =
+            item.data.locale || (item.url ? item.url.split('/')[1] : '');
+          return itemLocale === locale;
+        });
       });
-    });
-  });
+    },
+  );
 
   eleventyConfig.addFilter('sortAlphabetically', (strings) =>
     (strings || []).sort((b, a) => b.localeCompare(a)),
@@ -72,7 +83,8 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter('filterByLocale', function (collection, locale) {
     return (collection || []).filter((item) => {
       // Use the locale from the item's data if available, or infer from URL
-      const itemLocale = item.data.locale || (item.url ? item.url.split('/')[1] : '');
+      const itemLocale =
+        item.data.locale || (item.url ? item.url.split('/')[1] : '');
       return itemLocale === locale;
     });
   });
@@ -97,6 +109,8 @@ export default function (eleventyConfig) {
     const pluralRules = new Intl.PluralRules(locale);
     const rule = pluralRules.select(count);
     const pluralKey = `${key}_${rule}`;
-    return eleventyConfig.getFilter('i18n').call(this, pluralKey, { count, locale }, locale);
+    return eleventyConfig
+      .getFilter('i18n')
+      .call(this, pluralKey, { count, locale }, locale);
   });
 }
