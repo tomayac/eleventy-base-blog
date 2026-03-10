@@ -1,9 +1,9 @@
-import { getImage } from '../utils/db-storage.js';
-import { generateMarkdown } from '../export/zip-exporter.js';
+import { generateMarkdown } from '../utils/markdown-utils.js';
 import { customAlert } from '../utils/dialog-utils.js';
-import { toBase64, bufferToBase64 } from '../utils/base64-utils.js';
+import { toBase64 } from '../utils/base64-utils.js';
 import { ghFetch } from './github-api.js';
 import { ensureAllTranslationsReady } from '../ai/ai-translator.js';
+import { uploadDraftImages } from './github-utils.js';
 
 /**
  * Creates a commit and a pull request on GitHub for the current draft.
@@ -65,42 +65,9 @@ export async function createPR(ui, draft) {
       }
     };
 
+    // Upload images
     const defaultLocale = window.DEFAULT_LOCALE || 'en';
-
-    for (const img of draft.imageFiles || []) {
-      const data = await getImage(img.id);
-      if (data) {
-        const content = await bufferToBase64(data);
-        const imgPath = `content/${defaultLocale}/blog/${slug}/${img.name}`;
-        const existingImgSha = await getSha(imgPath);
-        await ghFetch(ui, `/contents/${imgPath}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            message: `${existingImgSha ? 'Update' : 'Add'} image ${img.name}`,
-            content,
-            branch: branchName,
-            sha: existingImgSha,
-          }),
-        });
-
-        // Redundant copies for each locale
-        if (draft.translations) {
-          for (const locale of Object.keys(draft.translations)) {
-            const localeImgPath = `content/${locale}/blog/${slug}/${img.name}`;
-            const existingLocaleImgSha = await getSha(localeImgPath);
-            await ghFetch(ui, `/contents/${localeImgPath}`, {
-              method: 'PUT',
-              body: JSON.stringify({
-                message: `${existingLocaleImgSha ? 'Update' : 'Add'} localized image ${img.name} for ${locale}`,
-                content,
-                branch: branchName,
-                sha: existingLocaleImgSha,
-              }),
-            });
-          }
-        }
-      }
-    }
+    await uploadDraftImages(ui, draft, slug, branchName, defaultLocale, getSha);
 
     // Main post
     const mainPostPath = `content/${defaultLocale}/blog/${slug}/${slug}.md`;

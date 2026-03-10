@@ -1,6 +1,7 @@
 import { deleteImagesForDraft } from '../utils/db-storage.js';
 import { customConfirm } from '../utils/dialog-utils.js';
 import { performHousekeeping as h_performHousekeeping } from './draft-housekeeping.js';
+import { updateDraftTranslations } from './draft-utils.js';
 
 /** @type {Array<Object>} */
 export let drafts = JSON.parse(localStorage.getItem('blog-drafts') || '[]');
@@ -127,23 +128,7 @@ export function updateDraftData(id, ui) {
   }
 
   // Get translations from UI
-  if (ui.aiTranslationsContainer) {
-    draft.translations = {};
-    const slug = ui.getSlug(ui.titleInput.value);
-    const translationElements = ui.aiTranslationsContainer.querySelectorAll(
-      '.translation-markdown',
-    );
-    translationElements.forEach((el) => {
-      const locale = el.closest('details').getAttribute('data-locale');
-      if (el.value.trim()) {
-        const localizedPath = `content/${locale}/blog/${slug}/${slug}.md`;
-        draft.translations[locale] = {
-          content: el.value.trim(),
-          path: localizedPath,
-        };
-      }
-    });
-  }
+  updateDraftTranslations(draft, ui);
 
   draft.lastModified = Date.now();
   saveDrafts();
