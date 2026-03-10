@@ -1,35 +1,16 @@
 import { detectLanguage } from './ai-language-detection.js';
 import { customAlert, customConfirm } from '../utils/dialog-utils.js';
-import { getMonitor, runAIAction } from './ai-features.js';
-import { updatePreview } from './ai-translator-ui.js';
-
-/**
- * Supported locales for translation.
- * Filters out the default locale from window.DEFAULT_LOCALE.
- * @return {Array<string>} The supported locales.
- */
-export const getSupportedLocales = () => {
-  const locales = window.APP_LOCALES || ['en', 'es', 'ja'];
-  const defaultLocale = window.DEFAULT_LOCALE || 'en';
-  const defaultBase = defaultLocale.split('-')[0];
-  return locales.filter((l) => {
-    const base = l.split('-')[0];
-    return base !== defaultBase;
-  });
-};
-
-/**
- * Generates options for the AI Translator.
- * @param {Object} ui - The UI elements.
- * @param {string} sourceLanguage - The source language code.
- * @param {string} targetLanguage - The target language code.
- * @return {Object} The translator options.
- */
-export const getTranslatorOptions = (ui, sourceLanguage, targetLanguage) => ({
-  sourceLanguage,
-  targetLanguage,
-  ...getMonitor(ui, targetLanguage, `Translator (${targetLanguage})`),
-});
+import { runAIAction } from './ai-features.js';
+import { updatePreview } from './ai-translator-preview.js';
+import { drafts, currentDraftId } from '../drafts/draft-manager.js';
+import { generateMarkdown } from '../utils/markdown-utils.js';
+import {
+  getSupportedLocales,
+  getTranslatorOptions,
+  translateMediaAttributes,
+  translateMetadata,
+  translateBlocks,
+} from './ai-translator-utils.js';
 
 /**
  * Runs the translation for a specific locale.
@@ -58,10 +39,13 @@ export async function runTranslation(
     isSelection = true;
   }
 
-  if (!sourceText) {
-    return customAlert(ui, 'Please write some content first.');
+  if (!sourceText && !ui.titleInput.value) {
+    return customAlert(ui, 'Please write some content or a title first.');
   }
 
+  const titleInput = details.querySelector('.translation-title');
+  const descInput = details.querySelector('.translation-description');
+  const tagsHidden = details.querySelector('.translation-tags-hidden');
   const textarea = details.querySelector('.translation-markdown');
   const preview = details.querySelector('.translation-preview');
   const btn = details.querySelector('.translate-btn');
@@ -85,34 +69,22 @@ export async function runTranslation(
 
       const translator = await Translator.create(options);
 
-      // Split into paragraphs/blocks
+      // 1. Translate Metadata (Title, Description, Tags)
+      const metadata = await translateMetadata(translator, {
+        title: ui.titleInput.value.trim(),
+        description: ui.descInput.value.trim(),
+        tagsValue: ui.tagsInput.value.trim(),
+      });
+      if (metadata.title) titleInput.value = metadata.title;
+      if (metadata.description) descInput.value = metadata.description;
+      if (metadata.tags) {
+        tagsHidden.value = metadata.tags;
+        details._tagEditor?.renderPills();
+      }
+
+      // 2. Translate Content
       const blocks = sourceText.split(/\n\s*\n/);
-      let translatedContent = '';
-
-      if (isSelection) {
-        // If selection, we'll try to figure out where to put it later.
-      } else {
-        textarea.value = '';
-      }
-
-      for (const block of blocks) {
-        if (block.trim().startsWith('<figure')) {
-          translatedContent +=
-            (await translateFigure(translator, block)) + '\n\n';
-        } else {
-          const stream = translator.translateStreaming(block);
-          let blockResult = '';
-          for await (const chunk of stream) {
-            blockResult += chunk;
-          }
-          translatedContent += blockResult + '\n\n';
-        }
-
-        if (!isSelection) {
-          textarea.value = translatedContent.trim();
-          await updatePreview(textarea, preview);
-        }
-      }
+      const translatedContent = await translateBlocks(translator, blocks);
 
       if (isSelection) {
         let mode = 'append';
@@ -136,8 +108,12 @@ export async function runTranslation(
         }
       }
 
+      // 5. Finalize content (store body only in UI)
+      if (!isSelection) {
+        textarea.value = translatedContent.trim();
+      }
+
       textarea.style.display = 'block';
-      textarea.value = textarea.value.trim();
       await updatePreview(textarea, preview);
     },
     updateCallback,
@@ -176,38 +152,4 @@ export async function ensureAllTranslationsReady(ui, updateCallback) {
 
   await Promise.all(promises);
   updateCallback();
-}
-
-/**
- * Translates the alt attribute and figcaption of a <figure> tag.
- * @param {Object} translator - The translator instance.
- * @param {string} figureHtml - The original figure HTML.
- * @return {Promise<string>} The figure HTML with translated text.
- */
-async function translateFigure(translator, figureHtml) {
-  // Simple regex-based translation for alt and figcaption
-  let result = figureHtml;
-
-  // Translate alt
-  const altMatch = result.match(/alt=["']([^"']*)["']/);
-  if (altMatch && altMatch[1]) {
-    const altText = altMatch[1];
-    const translatedAlt = await translator.translate(altText);
-    result = result
-      .replace(`alt="${altText}"`, `alt="${translatedAlt}"`)
-      .replace(`alt='${altText}'`, `alt='${translatedAlt}'`);
-  }
-
-  // Translate figcaption
-  const figMatch = result.match(/<figcaption>([\s\S]*?)<\/figcaption>/);
-  if (figMatch && figMatch[1]) {
-    const figText = figMatch[1];
-    const translatedFig = await translator.translate(figText);
-    result = result.replace(
-      `<figcaption>${figText}</figcaption>`,
-      `<figcaption>${translatedFig}</figcaption>`,
-    );
-  }
-
-  return result.trim();
 }

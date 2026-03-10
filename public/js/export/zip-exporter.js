@@ -66,10 +66,10 @@ export async function downloadZIP(
     for (const [locale, data] of Object.entries(draft.translations)) {
       const mdLocale = generateMarkdown(
         { ...draft, translations: undefined },
-        title,
-        description,
+        data.title || title,
+        data.description || description,
         date,
-        tagsValue,
+        data.tags || tagsValue,
         data.content,
         classifierResults,
       );

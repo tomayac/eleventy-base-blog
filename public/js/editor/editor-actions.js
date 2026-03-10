@@ -1,5 +1,6 @@
 import { performHousekeeping, drafts } from '../drafts/draft-manager.js';
-import { generateMarkdown, downloadZIP } from '../export/zip-exporter.js';
+import { downloadZIP } from '../export/zip-exporter.js';
+import { generateMarkdown } from '../utils/markdown-utils.js';
 import { createPR } from '../github/github-integration.js';
 import { customAlert } from '../utils/dialog-utils.js';
 

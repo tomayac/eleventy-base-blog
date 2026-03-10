@@ -5,7 +5,8 @@ import {
   restoreTranslations,
   refreshAITranslationUI,
 } from './ai-translator-ui.js';
-import { getSupportedLocales, runTranslation } from './ai-translator-core.js';
+import { runTranslation } from './ai-translator-core.js';
+import { getSupportedLocales } from './ai-translator-utils.js';
 
 export { ensureAllTranslationsReady } from './ai-translator-core.js';
 

@@ -87,10 +87,10 @@ export async function createPR(ui, draft) {
       for (const [locale, data] of Object.entries(draft.translations)) {
         const mdLocale = generateMarkdown(
           { ...draft, translations: undefined },
-          ui.titleInput.value,
-          ui.descInput.value,
+          data.title || ui.titleInput.value,
+          data.description || ui.descInput.value,
           ui.dateInput.value,
-          ui.tagsInput.value,
+          data.tags || ui.tagsInput.value,
           data.content,
           classifierResults,
         );

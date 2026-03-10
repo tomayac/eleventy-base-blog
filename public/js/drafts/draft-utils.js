@@ -15,9 +15,20 @@ export function updateDraftTranslations(draft, ui) {
     const details = el.closest('details');
     if (!details) return;
     const locale = details.getAttribute('data-locale');
-    if (el.value.trim()) {
+
+    const title =
+      details.querySelector('.translation-title')?.value.trim() || '';
+    const description =
+      details.querySelector('.translation-description')?.value.trim() || '';
+    const tags =
+      details.querySelector('.translation-tags-hidden')?.value.trim() || '';
+
+    if (el.value.trim() || title) {
       const localizedPath = `content/${locale}/blog/${slug}/${slug}.md`;
       draft.translations[locale] = {
+        title,
+        description,
+        tags,
         content: el.value.trim(),
         path: localizedPath,
       };
