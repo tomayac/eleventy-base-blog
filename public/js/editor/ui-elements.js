@@ -56,6 +56,13 @@ export const ui = {
   aiWriterSection: document.querySelector('.ai-writer-section'),
   aiRewriterSection: document.querySelector('.ai-rewriter-section'),
   aiClassifierSection: document.querySelector('.ai-classifier-section'),
+  aiTranslationSection: document.querySelector('.ai-translation-section'),
+  aiTranslateToggle: document.getElementById('ai-translate-toggle'),
+  aiTranslationLocalesContainer: document.getElementById(
+    'ai-translation-locales-container',
+  ),
+  aiTranslationsContainer: document.getElementById('ai-translations-container'),
+  aiTranslateAllBtn: document.getElementById('ai-translate-all-btn'),
   alertDialog: document.getElementById('alert-dialog'),
   alertMessage: document.getElementById('alert-message'),
   confirmDialog: document.getElementById('confirm-dialog'),

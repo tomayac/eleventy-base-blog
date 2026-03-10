@@ -126,6 +126,25 @@ export function updateDraftData(id, ui) {
     draft.classifierResults = window.getSelectedClassifierResults();
   }
 
+  // Get translations from UI
+  if (ui.aiTranslationsContainer) {
+    draft.translations = {};
+    const slug = ui.getSlug(ui.titleInput.value);
+    const translationElements = ui.aiTranslationsContainer.querySelectorAll(
+      '.translation-markdown',
+    );
+    translationElements.forEach((el) => {
+      const locale = el.closest('details').getAttribute('data-locale');
+      if (el.value.trim()) {
+        const localizedPath = `content/${locale}/blog/${slug}/${slug}.md`;
+        draft.translations[locale] = {
+          content: el.value.trim(),
+          path: localizedPath,
+        };
+      }
+    });
+  }
+
   draft.lastModified = Date.now();
   saveDrafts();
 }

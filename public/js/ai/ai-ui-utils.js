@@ -67,35 +67,37 @@ export async function runAIAction(
  * @param {Object} ui - The UI elements.
  */
 export function refreshAIVisibility(ui) {
-  const enabled = ui.aiFeaturesToggle.checked;
+  const aiEnabled = ui.aiFeaturesToggle.checked;
+  const translateEnabled = ui.aiTranslateToggle.checked;
   const aiButtons = Array.from(document.querySelectorAll('.ai-button'));
-  const isAiSupported = aiButtons.some(
-    (btn) => btn?.getAttribute('data-ai-available') === 'true',
-  );
 
   if (ui.aiWriterSection) {
-    ui.aiWriterSection.style.display =
-      enabled && isAiSupported ? 'block' : 'none';
+    ui.aiWriterSection.style.display = aiEnabled ? 'block' : 'none';
   }
   if (ui.aiRewriterSection) {
-    ui.aiRewriterSection.style.display =
-      enabled && isAiSupported ? 'block' : 'none';
+    ui.aiRewriterSection.style.display = aiEnabled ? 'block' : 'none';
   }
   if (ui.aiClassifierSection) {
-    ui.aiClassifierSection.style.display =
-      enabled && isAiSupported ? 'block' : 'none';
+    ui.aiClassifierSection.style.display = aiEnabled ? 'block' : 'none';
   }
-  if (!enabled && ui.aiStatus) {
+  if (ui.aiTranslationSection) {
+    ui.aiTranslationSection.style.display = translateEnabled ? 'block' : 'none';
+  }
+  if (!aiEnabled && ui.aiStatus) {
     ui.aiStatus.style.display = 'none';
   }
   if (ui.aiKeysSection) {
-    ui.aiKeysSection.style.display = enabled ? 'block' : 'none';
+    ui.aiKeysSection.style.display = aiEnabled ? 'block' : 'none';
   }
 
   aiButtons.forEach((btn) => {
     if (btn) {
       const isAvailable = btn.getAttribute('data-ai-available') === 'true';
-      const shouldShow = enabled && isAvailable;
+      const isTranslateBtn =
+        btn.classList.contains('translate-btn') ||
+        btn.id === 'ai-translate-all-btn';
+      const shouldShow =
+        isAvailable && (isTranslateBtn ? translateEnabled : aiEnabled);
       btn.style.display = shouldShow ? 'flex' : 'none';
       if (btn.parentElement?.classList.contains('input-with-action')) {
         btn.parentElement.style.display = shouldShow ? 'flex' : 'block';

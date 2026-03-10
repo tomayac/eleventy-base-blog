@@ -60,6 +60,11 @@ export function generateMarkdown(
     classifierConfidences.length > 0
       ? `ad_confidences: ${JSON.stringify(classifierConfidences)}`
       : '',
+    draft.translations
+      ? `translations:\n${Object.entries(draft.translations)
+          .map(([locale, data]) => `  ${locale}: ${escapeYamlValue(data.path)}`)
+          .join('\n')}`
+      : '',
     '---',
     '',
   ]
@@ -107,7 +112,8 @@ export async function downloadZIP(
   );
 
   const zip = new JSZip();
-  const folder = zip.folder(slug);
+  const defaultLocale = window.DEFAULT_LOCALE || 'en';
+  const folder = zip.folder(`content/${defaultLocale}/blog/${slug}`);
 
   folder.file(`${slug}.md`, md);
 
@@ -116,7 +122,30 @@ export async function downloadZIP(
       const data = await getImage(img.id);
       if (data) {
         folder.file(img.name, data);
+        // Redundant copies for each locale
+        if (draft.translations) {
+          for (const locale of Object.keys(draft.translations)) {
+            const localeFolder = zip.folder(`content/${locale}/blog/${slug}`);
+            localeFolder.file(img.name, data);
+          }
+        }
       }
+    }
+  }
+
+  // Add localized markdown files
+  if (draft.translations) {
+    for (const [locale, data] of Object.entries(draft.translations)) {
+      const mdLocale = generateMarkdown(
+        { ...draft, translations: undefined },
+        title,
+        description,
+        date,
+        tagsValue,
+        data.content,
+        classifierResults,
+      );
+      zip.file(data.path, mdLocale);
     }
   }
 

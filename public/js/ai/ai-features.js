@@ -2,6 +2,7 @@ import { detectLanguage } from './ai-language-detection.js';
 import { customAlert } from '../utils/dialog-utils.js';
 import { refreshAIVisibility } from './ai-toggle.js';
 import { getMonitor, runAIAction } from './ai-ui-utils.js';
+
 export { getMonitor, runAIAction };
 
 /**
@@ -66,7 +67,7 @@ async function runSummarizer(ui, type, input, targetInput, updateCallback) {
 }
 
 /**
- * Initializes AI features, specifically the Summarizer.
+ * Initializes AI features, specifically the Summarizer and Translator.
  * @param {Object} ui - The UI elements.
  * @param {Function} updateCallback - Callback for UI updates.
  * @return {Promise<void>}

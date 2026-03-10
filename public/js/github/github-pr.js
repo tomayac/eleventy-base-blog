@@ -3,6 +3,7 @@ import { generateMarkdown } from '../export/zip-exporter.js';
 import { customAlert } from '../utils/dialog-utils.js';
 import { toBase64, bufferToBase64 } from '../utils/base64-utils.js';
 import { ghFetch } from './github-api.js';
+import { ensureAllTranslationsReady } from '../ai/ai-translator.js';
 
 /**
  * Creates a commit and a pull request on GitHub for the current draft.
@@ -27,6 +28,9 @@ export async function createPR(ui, draft) {
   ui.githubPrBtn.disabled = true;
   ui.githubPrBtn.textContent = '⏳ Creating...';
   try {
+    const { sync } = await import('../editor/create-post.js');
+    await ensureAllTranslationsReady(ui, sync);
+
     const slug = ui.getSlug(ui.titleInput.value);
     const branchName = `post-${slug}-${Date.now()}`;
     const classifierResults = window.getSelectedClassifierResults
@@ -52,36 +56,89 @@ export async function createPR(ui, draft) {
       body: JSON.stringify({ ref: `refs/heads/${branchName}`, sha: baseSha }),
     });
 
+    const getSha = async (path) => {
+      try {
+        const file = await ghFetch(ui, `/contents/${path}?ref=${branchName}`);
+        return file.sha;
+      } catch (e) {
+        return undefined;
+      }
+    };
+
+    const defaultLocale = window.DEFAULT_LOCALE || 'en';
+
     for (const img of draft.imageFiles || []) {
       const data = await getImage(img.id);
       if (data) {
         const content = await bufferToBase64(data);
-        const imgPath = img.path || `content/blog/${slug}/${img.name}`;
+        const imgPath = `content/${defaultLocale}/blog/${slug}/${img.name}`;
+        const existingImgSha = await getSha(imgPath);
         await ghFetch(ui, `/contents/${imgPath}`, {
           method: 'PUT',
           body: JSON.stringify({
-            message: `${img.sha ? 'Update' : 'Add'} image ${img.name}`,
+            message: `${existingImgSha ? 'Update' : 'Add'} image ${img.name}`,
             content,
             branch: branchName,
-            sha: img.sha,
+            sha: existingImgSha,
+          }),
+        });
+
+        // Redundant copies for each locale
+        if (draft.translations) {
+          for (const locale of Object.keys(draft.translations)) {
+            const localeImgPath = `content/${locale}/blog/${slug}/${img.name}`;
+            const existingLocaleImgSha = await getSha(localeImgPath);
+            await ghFetch(ui, `/contents/${localeImgPath}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                message: `${existingLocaleImgSha ? 'Update' : 'Add'} localized image ${img.name} for ${locale}`,
+                content,
+                branch: branchName,
+                sha: existingLocaleImgSha,
+              }),
+            });
+          }
+        }
+      }
+    }
+
+    // Main post
+    const mainPostPath = `content/${defaultLocale}/blog/${slug}/${slug}.md`;
+    const existingMainPostSha = await getSha(mainPostPath);
+    await ghFetch(ui, `/contents/${mainPostPath}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message: `${existingMainPostSha ? 'Update' : 'Add'} post ${slug}`,
+        content: toBase64(md),
+        branch: branchName,
+        sha: existingMainPostSha,
+      }),
+    });
+
+    // Localized posts
+    if (draft.translations) {
+      for (const [locale, data] of Object.entries(draft.translations)) {
+        const mdLocale = generateMarkdown(
+          { ...draft, translations: undefined },
+          ui.titleInput.value,
+          ui.descInput.value,
+          ui.dateInput.value,
+          ui.tagsInput.value,
+          data.content,
+          classifierResults,
+        );
+        const existingLocalePostSha = await getSha(data.path);
+        await ghFetch(ui, `/contents/${data.path}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            message: `${existingLocalePostSha ? 'Update' : 'Add'} ${locale} translation for ${slug}`,
+            content: toBase64(mdLocale),
+            branch: branchName,
+            sha: existingLocalePostSha,
           }),
         });
       }
     }
-
-    await ghFetch(
-      ui,
-      `/contents/${draft.path || `content/blog/${slug}/${slug}.md`}`,
-      {
-        method: 'PUT',
-        body: JSON.stringify({
-          message: `${draft.sha ? 'Update' : 'Add'} post ${slug}`,
-          content: toBase64(md),
-          branch: branchName,
-          sha: draft.sha,
-        }),
-      },
-    );
 
     const pr = await ghFetch(ui, '/pulls', {
       method: 'POST',

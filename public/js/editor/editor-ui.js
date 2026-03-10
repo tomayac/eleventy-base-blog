@@ -75,6 +75,10 @@ export async function loadDraft(id, ui, renderList, tagEditor) {
     );
   }
 
+  if (window.restoreTranslations) {
+    window.restoreTranslations(d.translations || {});
+  }
+
   updatePreview(id, drafts, ui);
   renderList(ui, loadDraft);
 }

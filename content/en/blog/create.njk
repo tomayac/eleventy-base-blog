@@ -128,6 +128,19 @@ eleventyExcludeFromCollections: true
 
 						<hr>
 
+						<section class="settings-section">
+							<h3>Translations</h3>
+							<label class="ai-toggle-label">
+								🌐 Translate blog posts
+								<input type="checkbox" switch id="ai-translate-toggle">
+							</label>
+							<div id="ai-translation-locales-container" style="display: none; padding-left: 1.5rem;">
+								<!-- Populated dynamically -->
+							</div>
+						</section>
+
+						<hr>
+
 						<section class="settings-section">							
 							<div class="settings-file-actions">
 								<button type="button" id="save-settings-btn" class="btn" title="Save settings to a file">💾 Save Settings</button>
@@ -232,6 +245,16 @@ eleventyExcludeFromCollections: true
 					</div>
 					<div id="ai-classifier-results" style="margin-top: 1rem;"></div>
 				</div>
+
+				<div class="form-group ai-translation-section" style="display: none;">
+					<div class="classifier-actions">
+						<label style="flex-grow: 1;">Translations</label>
+						<button type="button" id="ai-translate-all-btn" class="btn ai-button" style="display: none;" title="Translate all enabled locales">✨</button>
+					</div>
+					<p class="field-hint">💡 AI will translate your post paragraph by paragraph. Markdown structure is preserved.</p>
+					<div id="ai-translations-container"></div>
+				</div>
+
 				<div class="editor-footer-actions">
 					<div id="ai-status" style="font-size: 0.7rem; color: #666; display: none;">
 						<progress id="ai-download-progress" value="0" max="100" style="width: 100px;"></progress>
@@ -271,3 +294,8 @@ eleventyExcludeFromCollections: true
 		</div>
 	</form>
 </dialog>
+
+<script>
+	window.APP_LOCALES = {{ locales | dump | safe }};
+	window.DEFAULT_LOCALE = {{ metadata.language | dump | safe }};
+</script>

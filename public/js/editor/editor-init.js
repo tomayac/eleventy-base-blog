@@ -14,6 +14,7 @@ import { saveImage } from '../utils/db-storage.js';
 import { customAlert } from '../utils/dialog-utils.js';
 import { initAIToggle } from '../ai/ai-toggle.js';
 import { initSettingsFileHandler } from './settings-file-handler.js';
+import { initAITranslator } from '../ai/ai-translator.js';
 
 /**
  * Initializes the editor, handles loading posts from GitHub if an 'edit' parameter is present,
@@ -91,6 +92,7 @@ export async function initEditor(ui, loadDraft, renderList, sync, tagEditor) {
 
   initAIToggle(ui);
   initSettingsFileHandler(ui);
+  await initAITranslator(ui, sync);
   if (ui.aiFeaturesToggle.checked) {
     const { initAIFeatures } = await import('../ai/ai-init.js');
     await initAIFeatures(ui, sync, tagEditor);

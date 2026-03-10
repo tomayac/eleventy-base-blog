@@ -49,6 +49,11 @@ export function initEditorActions(ui) {
       customAlert(ui, 'Please select or create a draft first.');
       return;
     }
+    const { ensureAllTranslationsReady } =
+      await import('../ai/ai-translator.js');
+    const { sync } = await import('./create-post.js');
+    await ensureAllTranslationsReady(ui, sync);
+
     const classifierResults = window.getSelectedClassifierResults
       ? window.getSelectedClassifierResults()
       : [];
