@@ -92,4 +92,11 @@ export default function (eleventyConfig) {
     }
     return parts.join('/');
   });
+
+  eleventyConfig.addFilter('plural', function (key, count, locale = 'en') {
+    const pluralRules = new Intl.PluralRules(locale);
+    const rule = pluralRules.select(count);
+    const pluralKey = `${key}_${rule}`;
+    return eleventyConfig.getFilter('i18n').call(this, pluralKey, { count, locale }, locale);
+  });
 }

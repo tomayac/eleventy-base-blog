@@ -132,7 +132,7 @@ export default async function (eleventyConfig) {
 
   eleventyConfig.addCollection('tagLocaleCombos', function (collectionApi) {
     const allItems = collectionApi.getAll();
-    const tags = new Set();
+    const tagsMap = new Map();
     for (const item of allItems) {
       let itemTags = item.data.tags || [];
       if (typeof itemTags === 'string') {
@@ -140,10 +140,14 @@ export default async function (eleventyConfig) {
       }
       for (const tag of itemTags) {
         if (tag && tag !== 'all' && tag !== 'posts') {
-          tags.add(tag);
+          const slug = tag.toLowerCase().replace(/\s+/g, '-');
+          if (!tagsMap.has(slug)) {
+            tagsMap.set(slug, tag);
+          }
         }
       }
     }
+    const tags = Array.from(tagsMap.values());
     const combos = [];
     for (const locale of ['en', 'es', 'ja']) {
       for (const tag of tags) {

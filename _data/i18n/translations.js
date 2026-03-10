@@ -84,10 +84,25 @@ export default {
     es: 'Ver ',
     ja: '',
   },
-  latest_posts: {
-    en: '{{ latest }} {{ count }} Post{{ s }}',
-    es: '{{ latest }} {{ count }} {{ posts }}',
+  latest_posts_one: {
+    en: 'Latest {{ count }} Post',
+    es: 'Última {{ count }} publicación',
     ja: '最新の{{ count }}投稿',
+  },
+  latest_posts_other: {
+    en: 'Latest {{ count }} Posts',
+    es: 'Últimas {{ count }} publicaciones',
+    ja: '最新の{{ count }}投稿',
+  },
+  more_posts_one: {
+    en: '{{ count }} more post can be found in <a href="/{{ locale }}/blog/">the archive</a>.',
+    es: 'Se puede encontrar {{ count }} publicación más en <a href="/{{ locale }}/blog/">el archivo</a>.',
+    ja: '{{ count }} 件の追加記事は <a href="/{{ locale }}/blog/">アーカイブ</a> にあります。',
+  },
+  more_posts_other: {
+    en: '{{ count }} more posts can be found in <a href="/{{ locale }}/blog/">the archive</a>.',
+    es: 'Se pueden encontrar {{ count }} publicaciones más en <a href="/{{ locale }}/blog/">el archivo</a>.',
+    ja: '{{ count }} 件の追加記事は <a href="/{{ locale }}/blog/">アーカイブ</a> にあります。',
   },
   tagged_tag: {
     en: 'Posts tagged ‘{{ tag }}’',

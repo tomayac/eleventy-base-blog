@@ -82,6 +82,8 @@ export async function initAI(ui, updateCallback) {
       const status = await Summarizer.availability({
         type: 'teaser',
         format: 'plain-text',
+        expectedInputLanguages: ['en'],
+        outputLanguage: 'en',
       });
       if (status !== 'unavailable') {
         ui.aiSuggestTitleBtn.setAttribute('data-ai-available', 'true');
