@@ -26,8 +26,10 @@ export async function initTagSuggestions(ui, updateCallback) {
    * @return {Promise<Object>} The tags schema.
    */
   const fetchSchema = async () =>
-    tagsSchema ||
-    (tagsSchema = await (await fetch('/tags-schema.json')).json());
+    !tagsSchema &&
+    (tagsSchema = await (
+      await fetch(`/${window.CURRENT_LOCALE || 'en'}/tags-schema.json`)
+    ).json());
 
   try {
     const status = await LanguageModel.availability({
