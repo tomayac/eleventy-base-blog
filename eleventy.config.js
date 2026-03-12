@@ -48,6 +48,8 @@ export default async function (eleventyConfig) {
       './node_modules/jszip/dist/jszip.js': '/js/jszip.js',
       './node_modules/marked/lib/marked.umd.js': '/js/marked.js',
       './node_modules/onnxruntime-web/dist/': '/js/onnxruntime-web/',
+      './node_modules/onnxruntime-web/dist/ort.webgpu.min.mjs':
+        '/js/onnxruntime-web/webgpu.js',
       './node_modules/openai/': '/js/openai/',
       './node_modules/prismjs/prism.js': '/js/prism.js',
       './node_modules/prismjs/themes/prism-okaidia.css':
