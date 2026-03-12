@@ -1,6 +1,7 @@
 import { sanitizeHTML } from '../utils/sanitizer.js';
 import { getImage } from '../utils/db-storage.js';
 import { drafts, currentDraftId } from '../drafts/draft-manager.js';
+import { formatPreviewDate } from '../utils/date-utils.js';
 
 /**
  * Cache for blob URLs to avoid redundant ObjectURL creations.
@@ -21,13 +22,20 @@ export async function updatePreview(textarea, preview) {
 
   let content = textarea.value;
 
+  const dateInput = document.querySelector('#post-date');
+  const dateValue = dateInput ? dateInput.value : '';
+  const dateHtml = dateValue
+    ? `<time datetime="${dateValue}">${formatPreviewDate(dateValue)}</time>`
+    : '';
+
   const tagsHtml = tags
     .map((t) => `<li><a href="#" class="post-tag">${t}</a></li>`)
     .join('');
   const titleHtml = title ? `<h1>${title}</h1>` : '';
-  const metadataHtml = tagsHtml
-    ? `<ul class="post-metadata">${tagsHtml}</ul>`
-    : '';
+  const metadataHtml =
+    dateHtml || tagsHtml
+      ? `<ul class="post-metadata"><li>${dateHtml}</li>${tagsHtml}</ul>`
+      : '';
 
   const draft = drafts.find((d) => d.id === currentDraftId);
   if (draft && draft.imageFiles) {

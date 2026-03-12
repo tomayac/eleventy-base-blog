@@ -1,22 +1,6 @@
 import { getImage } from '../utils/db-storage.js';
 import { sanitizeHTML } from '../utils/sanitizer.js';
-
-/**
- * Formats a date string for the preview.
- * @param {string} dateStr - The date string from the input.
- * @return {string} The formatted date string.
- */
-function formatPreviewDate(dateStr) {
-  if (!dateStr) {
-    return '';
-  }
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
+import { formatPreviewDate } from '../utils/date-utils.js';
 
 /**
  * Cache for blob URLs to avoid redundant ObjectURL creations.
