@@ -60,8 +60,7 @@ export default async function (eleventyConfig) {
         '/js/prompt-api-polyfill.js',
       './node_modules/prompt-api-polyfill/dot_env.json': '/dot_env.json',
       './node_modules/turndown/dist/turndown.js': '/js/turndown.js',
-    })
-    .addPassthroughCopy('./content/feed/pretty-atom-feed.xsl');
+    });
 
   // Run Eleventy when these files change:
   // https://www.11ty.dev/docs/watch-serve/#add-your-own-watch-targets
@@ -110,7 +109,7 @@ export default async function (eleventyConfig) {
     eleventyConfig.addPlugin(feedPlugin, {
       type: 'atom',
       outputPath: `/${lang}/feed/feed.xml`,
-      stylesheet: '/feed/pretty-atom-feed.xsl',
+      stylesheet: '../../feed/pretty-atom-feed.xsl',
       templateData: {
         locale: lang,
         eleventyNavigation: {
